@@ -346,7 +346,7 @@ const BLOCO_TIME = { 'Terça': '20:00', 'Quinta': '20:00', 'Sábado': '09:00', '
 const PHASES = [[1, 4, '1. Pesquisa real'], [5, 6, '2. Redesenho'], [7, 9, '3. Teste'], [10, 12, '4. Entrega']];
 const phaseOf = w => (PHASES.find(p => w >= p[0] && w <= p[1]) || PHASES[0])[2];
 function careerFromProgram() { return { name: CAREER_PROGRAM.name, goal: CAREER_PROGRAM.goal, foco: CAREER_PROGRAM.foco, tasks: CAREER_PROGRAM.tasks.map(([w, bloco, title, deliv, tempo, prazo]) => ({ id: newId(), w, bloco, title, deliv, tempo, prazo, status: 'A fazer', learn: '' })) }; }
-function ensureCareer() { if (!S.career || !Array.isArray(S.career.tasks) || !S.career.tasks.length) { S.career = careerFromProgram(); return true; } return false; }
+function ensureCareer() { if (S.meta && S.meta.careerOff) { if (S.career && !Array.isArray(S.career.tasks)) S.career = null; return false; } if (!S.career || !Array.isArray(S.career.tasks) || !S.career.tasks.length) { S.career = careerFromProgram(); return true; } return false; }
 const OUT_CATS = ['Moradia', 'Mercado', 'Transporte', 'Saúde', 'Educação', 'Lazer', 'Contas', 'Cartão', 'Outros'];
 const IN_CATS = ['Salário', 'Comissão', 'Freela', 'Outros'];
 const PRIO = { alta: ['Alta', 'var(--danger)'], media: ['Média', 'var(--c-reun)'], baixa: ['Baixa', 'var(--c-tarefa)'] };
@@ -364,6 +364,12 @@ function emptyState() {
     workouts: { plans: [], log: [] }, finance: { tx: [], accounts: [], cards: [], purchases: [], budget: 0 },
     study: { subjects: [], sessions: [] }, tasks: [], habits: { list: [], checks: {} }, books: [], career: null, writing: { projects: [], texts: {} }, games: [],
   };
+}
+function blankState(name) {
+  const st = emptyState();
+  st.meta.name = name || '';
+  st.meta.careerOff = true; st.meta.writingImported = true; st.meta.taskListsSeeded = true; st.meta.taskLists = [];
+  return st;
 }
 function demoState() {
   const D = n => iso(addDays(new Date(), n));
@@ -1574,7 +1580,7 @@ const ACT = {
   'new': el => { const f = NEW[el.dataset.k]; if (f) f(el.dataset.date); },
   'open': el => { const k = el.dataset.k, id = el.dataset.id; if (k === 'reuniao') EDIT.reuniao(id); else if (k === 'evento') EDIT.eventoView(id); else if (k === 'tarefa') EDIT.tarefaView(id); else if (k === 'livro') EDIT.livroView(id); else if (k === 'conta') EDIT.contaView(id); else if (k === 'capitulo') EDIT.capitulo(id); else if (k === 'jogo') EDIT.jogoView(id); else if (k === 'cartao') EDIT.cartaoView(id); else if (EDIT[k]) EDIT[k](id); },
   'close-sheet': () => closeSheet(),
-  'clear-demo': () => { const name = S.meta.name; const car = S.career; S = emptyState(); S.meta.name = name; S.career = car; ensureCareer(); ensureFinance(); persist(...MODULES); toast('Tudo pronto. Seu programa de carreira continua aqui.'); render(); },
+  'clear-demo': () => { S = blankState(S.meta.name); normalize(); persist(...MODULES); toast('Tudo em branco. Bom começo!'); render(); },
   'ag-day': el => { UI.agDay = el.dataset.d; UI.agMonth = el.dataset.d.slice(0, 7); render(); },
   'ag-month': el => { UI.agMonth = shiftMonth(UI.agMonth, +el.dataset.n); render(); },
   'ag-today': () => { UI.agDay = today(); UI.agMonth = today().slice(0, 7); render(); },
@@ -1611,7 +1617,7 @@ const ACT = {
   'ct-save': () => { const t = $('#sheet')._ctask; t.status = ($$('[name="ct-status"]').find(r => r.checked) || {}).value || t.status; t.learn = $('#ct-learn').value.trim(); persist('career'); toast('Tarefa salva'); closeSheet(); },
   'ct-agenda': () => { const t = $('#sheet')._ctask; t.learn = $('#ct-learn').value.trim(); S.events.push({ id: newId(), title: t.title, date: t.prazo, time: BLOCO_TIME[t.bloco] || '', cat: 'carreira', notes: `Entregável: ${t.deliv}
 Tempo: ${t.tempo} · Semana ${t.w} — ${S.career.foco[t.w] || ''}` }); persist('events', 'career'); toast('Bloco adicionado à agenda'); closeSheet(); },
-  'car-reimport': el => { if (!el.classList.contains('arm')) { el.classList.add('arm'); el.textContent = 'Toque de novo: o progresso será zerado'; setTimeout(() => { if (el.isConnected) { el.classList.remove('arm'); el.textContent = 'Reimportar programa original'; } }, 3000); return; } S.career = careerFromProgram(); persist('career'); toast('Programa reimportado'); render(); },
+  'car-reimport': el => { if (!el.classList.contains('arm')) { el.classList.add('arm'); el.textContent = 'Toque de novo: o progresso será zerado'; setTimeout(() => { if (el.isConnected) { el.classList.remove('arm'); el.textContent = 'Reimportar programa original'; } }, 3000); return; } S.meta.careerOff = false; S.career = careerFromProgram(); persist('career', 'meta'); toast('Programa reimportado'); render(); },
   'meet-filter': el => { UI.meetFilter = el.dataset.k; saveUI(); render(); },
   'tl-pick': el => { UI.taskList = el.dataset.k || null; saveUI(); render(); },
   'tl-new': () => EDIT.lista(null),
@@ -1665,7 +1671,7 @@ Tempo: ${t.tempo} · Semana ${t.w} — ${S.career.foco[t.w] || ''}` }); persist(
   },
   'wipe': el => {
     if (!el.classList.contains('arm')) { el.classList.add('arm'); el.textContent = 'Toque de novo para apagar tudo'; setTimeout(() => { if (el.isConnected) { el.classList.remove('arm'); el.textContent = 'Apagar todos os dados'; } }, 3000); return; }
-    const name = S.meta.name; S = emptyState(); S.meta.name = name; ensureCareer(); ensureFinance(); persist(...MODULES); toast('Dados apagados'); render();
+    S = blankState(S.meta.name); normalize(); persist(...MODULES); toast('Dados apagados'); render();
   },
 };
 document.addEventListener('click', e => {
