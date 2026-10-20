@@ -4,8 +4,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Rotina">
-<meta name="theme-color" content="#F3F4F7" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0D0F13" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F4F5F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E1014" media="(prefers-color-scheme: dark)">
 <meta name="description" content="Organize agenda, treinos, estudos, leituras, finanças e hábitos — funciona offline.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
@@ -324,6 +324,11 @@ select.inp{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 5
 /* barra de abas */
 .tabbar button{font-weight:500}
 .tabbar button.on{font-weight:600}
+.jgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.jgrid button{display:flex;flex-direction:column;gap:5px;text-align:left;min-width:0}
+.jimg{display:block;width:100%;aspect-ratio:3/4;border-radius:10px;background:var(--surface-2) center/cover no-repeat;border:1px solid var(--line)}
+.jd{font-size:12px;color:var(--muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jfull{display:block;width:100%;border-radius:12px;border:1px solid var(--line);background:var(--surface-2)}
 </style>
 
 <div id="app" aria-live="polite"></div>
@@ -334,6 +339,7 @@ select.inp{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 5
 <div class="toast" id="toast"></div>
 
 <script>
+document.documentElement.lang = 'pt-BR';
 /* ---------- utilidades ---------- */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -439,6 +445,16 @@ function ensureDetails() {
     ['cat', 'min', 'max', 'time', 'age', 'desc'].forEach(k => { if (d[k] !== null && d[k] !== undefined && fresh(g[k], sd[k])) g[k] = d[k]; }); });
   S.meta.detailsApplied = true; colImportedNow = true; return true;
 }
+const PAGES_FIX = {};
+function ensurePagesFix() {
+  if (S.meta.pagesFix1) return false;
+  const norm = x => String(x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+  const m = new Map(Object.entries(PAGES_FIX).map(([k, v]) => [norm(k), v]));
+  S.books.forEach(b => { const v = m.get(norm(b.title)); if (v && !b.pages) b.pages = v; });
+  S.meta.pagesFix1 = true; colImportedNow = true; return true;
+}
+function ensureFix2() { S.meta.fix2 = true; return false; }
+function ensureFix3() { S.meta.fix3 = true; return false; }
 function ensureWriting() {
   if (!S.writing || typeof S.writing !== 'object') S.writing = { projects: [], texts: {} };
   if (!Array.isArray(S.writing.projects)) S.writing.projects = []; if (!S.writing.texts || typeof S.writing.texts !== 'object') S.writing.texts = {};
@@ -472,13 +488,13 @@ function emptyState() {
   return {
     meta: { demo: false, name: '' }, events: [], meetings: [],
     workouts: { plans: [], log: [] }, finance: { tx: [], accounts: [], cards: [], purchases: [], budget: 0 },
-    study: { subjects: [], sessions: [] }, tasks: [], habits: { list: [], checks: {} }, books: [], career: null, writing: { projects: [], texts: {} }, games: [],
+    study: { subjects: [], sessions: [], summaries: [] }, tasks: [], habits: { list: [], checks: {}, journal: [] }, books: [], career: null, writing: { projects: [], texts: {} }, games: [],
   };
 }
 function blankState(name) {
   const st = emptyState();
   st.meta.name = name || '';
-  Object.assign(st.meta, { careerOff: true, writingImported: true, taskListsSeeded: true, taskLists: [], collectionImported: true, collectionImported2: true, coversApplied: true, detailsApplied: true });
+  Object.assign(st.meta, { careerOff: true, writingImported: true, taskListsSeeded: true, taskLists: [], collectionImported: true, collectionImported2: true, coversApplied: true, detailsApplied: true, pagesFix1: true, fix2: true, fix3: true });
   return st;
 }
 function demoState() { return blankState(''); }
@@ -494,7 +510,29 @@ function loadLocal() {
   try { const raw = localStorage.getItem('rotina.state'); if (raw) return JSON.parse(raw); } catch (e) {}
   return null;
 }
-function saveLocal() { try { localStorage.setItem('rotina.state', JSON.stringify(S)); } catch (e) {} }
+function saveLocal() { try { localStorage.setItem('rotina.state', JSON.stringify(S)); } catch (e) { try { toast('Sem espaço para salvar. Exporte um backup e apague registros antigos.'); } catch (_) {} } }
+
+/* fotos do diário: guardadas no aparelho (IndexedDB), fora do armazenamento principal */
+const IDB = { db: null };
+function idbOpen() { if (IDB.db) return Promise.resolve(IDB.db); return new Promise((res, rej) => { const r = indexedDB.open('rotina-fotos', 1); r.onupgradeneeded = () => r.result.createObjectStore('img'); r.onsuccess = () => { IDB.db = r.result; res(r.result); }; r.onerror = () => rej(r.error); }); }
+function idbDo(mode, fn) { return idbOpen().then(db => new Promise((res, rej) => { const tx = db.transaction('img', mode); const q = fn(tx.objectStore('img')); tx.oncomplete = () => res(q && q.result); tx.onerror = () => rej(tx.error); })); }
+const idbPut = (k, blob) => idbDo('readwrite', st => st.put(blob, k));
+const idbGet = k => idbDo('readonly', st => st.get(k));
+const idbDel = k => idbDo('readwrite', st => st.delete(k));
+const IMG = {}, IMG_PENDING = new Set();
+function imgUrl(u) {
+  u = String(u || ''); if (!u.startsWith('idb:')) return u;
+  if (IMG[u]) return IMG[u];
+  if (!IMG_PENDING.has(u)) { IMG_PENDING.add(u); idbGet(u.slice(4)).then(b => { if (b) { IMG[u] = URL.createObjectURL(b); render(); } }).catch(() => {}); }
+  return '';
+}
+const blobToDataURL = b => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(b); });
+async function journalToIdb() {
+  for (const x of (S.habits && S.habits.journal) || []) {
+    if (!String(x.url).startsWith('data:')) continue;
+    try { const b = await (await fetch(x.url)).blob(); const k = newId(); await idbPut(k, b); x.url = 'idb:' + k; } catch (e) {}
+  }
+}
 function persist(...mods) {
   saveLocal();
   if (!store.db || !store.uid) return;
@@ -569,9 +607,9 @@ const SUBS = { ajustes: ['Ajustes', 'var(--c-agenda)'] };
 const AG_COL = { calendario: 'var(--c-agenda)', reunioes: 'var(--c-reun)', tarefas: 'var(--c-tarefa)', habitos: 'var(--c-habito)' };
 const EST_NEST = { escritor: 'var(--c-escrita)' };
 const COL_NEST = { leituras: 'var(--c-leitura)', jogos: 'var(--c-jogo)' };
-const EST_SECTIONS = [['foco', 'Foco e metas'], ['carreira', 'Carreira'], ['escritor', 'Escritor']];
+const EST_SECTIONS = [['foco', 'Foco e metas'], ['carreira', 'Carreira'], ['escritor', 'Escritor'], ['resumos', 'Resumos']];
 const COL_SECTIONS = [['leituras', 'Livros'], ['jogos', 'Jogos']];
-const estSeg = () => `<div class="seg" role="tablist">${EST_SECTIONS.filter(([k]) => k !== 'carreira' || S.career).map(([k, l]) => `<button class="${(UI.estMode || 'foco') === k ? 'on' : ''}" data-act="est-mode" data-k="${k}">${l}</button>`).join('')}</div>`;
+const estSeg = () => `<div class="seg sm" role="tablist">${EST_SECTIONS.filter(([k]) => k !== 'carreira' || S.career).map(([k, l]) => `<button class="${(UI.estMode || 'foco') === k ? 'on' : ''}" data-act="est-mode" data-k="${k}">${l}</button>`).join('')}</div>`;
 const colSeg = () => `<div class="seg" role="tablist">${COL_SECTIONS.map(([k, l]) => `<button class="${(UI.colMode || 'leituras') === k ? 'on' : ''}" data-act="col-mode" data-k="${k}">${l}</button>`).join('')}</div>`;
 let NEST = null;
 function mapTab(tab) { if (EST_NEST[tab]) { UI.estMode = tab; return 'estudos'; } if (COL_NEST[tab]) { UI.colMode = tab; return 'colecao'; } if (tab === 'livros') { UI.colMode = 'leituras'; return 'colecao'; } return tab; }
@@ -632,9 +670,9 @@ function normalize() {
   S.meetings.forEach(m => { if (!Array.isArray(m.agenda)) m.agenda = []; if (!Array.isArray(m.actions)) m.actions = []; });
   S.books.forEach(b => { if (!Array.isArray(b.log)) b.log = []; });
   if (!S.workouts || typeof S.workouts !== 'object') S.workouts = base.workouts; ['plans', 'log'].forEach(k => { if (!Array.isArray(S.workouts[k])) S.workouts[k] = []; }); S.workouts.plans.forEach(p => { if (!Array.isArray(p.exercises)) p.exercises = []; if (!Array.isArray(p.days)) p.days = []; });
-  if (!S.study || typeof S.study !== 'object') S.study = base.study; ['subjects', 'sessions'].forEach(k => { if (!Array.isArray(S.study[k])) S.study[k] = []; });
-  if (!S.habits || typeof S.habits !== 'object') S.habits = base.habits; if (!Array.isArray(S.habits.list)) S.habits.list = []; if (!S.habits.checks || typeof S.habits.checks !== 'object') S.habits.checks = {};
-  if (!S.finance || typeof S.finance !== 'object') S.finance = base.finance; ensureFinance(); ensureCareer(); ensureWriting(); ensureCollection(); ensureCollection2(); ensureCovers(); ensureDetails();
+  if (!S.study || typeof S.study !== 'object') S.study = base.study; ['subjects', 'sessions', 'summaries'].forEach(k => { if (!Array.isArray(S.study[k])) S.study[k] = []; });
+  if (!S.habits || typeof S.habits !== 'object') S.habits = base.habits; if (!Array.isArray(S.habits.list)) S.habits.list = []; if (!S.habits.checks || typeof S.habits.checks !== 'object') S.habits.checks = {}; if (!Array.isArray(S.habits.journal)) S.habits.journal = [];
+  if (!S.finance || typeof S.finance !== 'object') S.finance = base.finance; ensureFinance(); ensureCareer(); ensureWriting(); ensureCollection(); ensureCollection2(); ensureCovers(); ensureDetails(); ensurePagesFix(); ensureFix2(); ensureFix3();
 }
 function ensureFinance() { const f = S.finance; ['accounts', 'cards', 'purchases', 'tx'].forEach(k => { if (!Array.isArray(f[k])) f[k] = []; }); if (typeof f.budget !== 'number') f.budget = 0; f.cards.forEach(c => { if (!Array.isArray(c.paid)) c.paid = []; }); }
 const daysIn = (y, m) => new Date(y, m + 1, 0).getDate();
@@ -681,6 +719,41 @@ function taskRow(t) {
 
 /* ---------- telas ---------- */
 const VIEWS = {};
+function debtSeries() {
+  const f = S.finance, cur = today().slice(0, 7), pts = [];
+  const cardLeft = ym => f.cards.reduce((a, c) => a + invoices(c).filter(v => !v.paid && v.key > ym).reduce((b, v) => b + v.items.filter(i => !i.p.rec).reduce((q, i) => q + i.amount, 0), 0), 0);
+  const txLeft = ym => f.tx.filter(t => t.type === 'out' && !t.paid && t.rep === 'divida' && t.date.slice(0, 7) > ym).reduce((a, t) => a + t.amount, 0);
+  let m = cur, guard = 0;
+  const P = f.plan, teto = ym => { const ph = P && P.phases && P.phases.find(x => ym >= x.from && ym <= x.to); return ph ? ph.teto : 0; }; let gastos = 0;
+  while (guard++ < 72) { const d = Math.round(cardLeft(m) + txLeft(m)); gastos += teto(m); const c = carryIn(shiftMonth(m, 1)); pts.push({ m, d, s: c === null ? null : Math.round(c - gastos) }); if (d <= 0 && pts.length > 1) break; m = shiftMonth(m, 1); }
+  return pts;
+}
+function debtChart() {
+  const pts = debtSeries(); if (pts.length < 2 || pts[0].d <= 0) return '';
+  const W = 340, H = 190, x0 = 8, x1 = W - 8, y0 = 34, yb = H - 26, n = pts.length;
+  const mx = Math.max(...pts.map(p => Math.max(p.d, p.s || 0)), 1);
+  const x = i => x0 + i * (x1 - x0) / (n - 1), y = v => yb - Math.max(0, v) / mx * (yb - y0);
+  const lab = ym => `${MES[+ym.slice(5) - 1].slice(0, 3)}/${ym.slice(2, 4)}`;
+  const dPath = pts.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.d).toFixed(1)}`).join(' ');
+  const area = `${dPath} L${x(n - 1).toFixed(1)},${yb} L${x(0).toFixed(1)},${yb} Z`;
+  const sp = pts.filter(p => p.s !== null); const sPath = pts.map((p, i) => p.s === null ? '' : `${sp.indexOf(p) ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.s).toFixed(1)}`).join(' ');
+  const end = pts.at(-1), half = pts.find(p => p.d <= pts[0].d / 2);
+  const ticks = [0, Math.round((n - 1) / 3), Math.round(2 * (n - 1) / 3), n - 1];
+  return `<section class="blk"><div class="blk-h"><h2>Dívidas</h2><button class="link" data-act="tab" data-k="financas">Ver finanças</button></div><div class="group" style="padding:14px 12px 10px">
+    <div style="font-size:15px;font-weight:600">${money(pts[0].d)} hoje · quitado em ${lab(end.m)}</div>
+    <div style="font-size:13px;color:var(--muted);margin-top:2px">${half ? `Metade paga em ${lab(half.m)}. ` : ''}Cartões e parcelas, mês a mês.</div>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Dívida restante até ${lab(end.m)}" style="width:100%;height:auto;display:block;margin-top:6px">
+      <line x1="${x0}" x2="${x1}" y1="${yb}" y2="${yb}" stroke="var(--line)"/>
+      <path d="${area}" fill="var(--danger)" fill-opacity=".10"/>
+      <path d="${dPath}" fill="none" stroke="var(--danger)" stroke-width="2.2" stroke-linejoin="round"/>
+      ${sp.length > 1 ? `<path d="${sPath}" fill="none" stroke="var(--c-fin)" stroke-width="2.2" stroke-linejoin="round"/>` : ''}
+      ${pts.map((p, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(p.d).toFixed(1)}" r="9" fill="transparent"><title>${lab(p.m)}: falta ${money(p.d)}${p.s !== null ? ` · guardado ${money(p.s)}` : ''}</title></circle>`).join('')}
+      <circle cx="${x(0)}" cy="${y(pts[0].d)}" r="3.5" fill="var(--danger)"/><circle cx="${x(n - 1)}" cy="${y(0)}" r="3.5" fill="var(--danger)"/>
+      ${ticks.map(i => `<text x="${x(i)}" y="${H - 8}" font-size="11" fill="var(--muted)" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}">${lab(pts[i].m)}</text>`).join('')}
+      <g font-size="11"><rect x="${x0}" y="6" width="10" height="3" rx="1.5" fill="var(--danger)"/><text x="${x0 + 14}" y="11" fill="var(--muted)">Dívida restante</text>${sp.length > 1 ? `<rect x="${x0 + 112}" y="6" width="10" height="3" rx="1.5" fill="var(--c-fin)"/><text x="${x0 + 126}" y="11" fill="var(--muted)">Dinheiro guardado previsto</text>` : ''}</g>
+    </svg>
+    <p class="note" style="padding:4px 2px 0">Previsão com os lançamentos do app, já descontando o teto de gastos de cada fase do plano. Toque no gráfico para ver cada mês.</p></div></section>`;
+}
 VIEWS.hoje = () => {
   const t = today(), d = new Date();
   const items = itemsOn(t);
@@ -695,10 +768,11 @@ VIEWS.hoje = () => {
   <section class="blk"><div class="tiles">
     <button class="tile" data-act="tab" data-k="agenda" style="--c:var(--c-agenda)"><div class="k">Hoje</div><div class="v">${items.length}</div></button>
     <button class="tile" data-act="sub" data-k="tarefas" style="--c:var(--c-tarefa)"><div class="k">A fazer</div><div class="v">${open.length}</div></button>
-    <button class="tile" data-act="tab" data-k="financas" style="--c:${mt.bal >= 0 ? 'var(--c-fin)' : 'var(--danger)'}"><div class="k">Saldo</div><div class="v sm">${moneyS(mt.bal)}</div></button>
+    ${(() => { const inv = (S.finance.plan || {}).investAccountId, accs = S.finance.accounts.filter(a => a.id !== inv), v = accs.length ? accs.reduce((a, c) => a + accBalance(c), 0) : mt.bal; return `<button class="tile" data-act="tab" data-k="financas" style="--c:${v >= 0 ? 'var(--c-fin)' : 'var(--danger)'}"><div class="k">${accs.length ? 'Em conta' : 'Saldo'}</div><div class="v sm">${moneyS(v)}</div></button>`; })()}
   </div></section>
   <section class="blk"><div class="blk-h"><h2>Seu dia</h2><button class="link" data-act="new" data-k="evento" data-date="${t}">Adicionar</button></div>
     <div class="group">${items.length ? items.map(itemRow).join('') : '<div class="empty"><b>Dia livre</b>Nada marcado para hoje.</div>'}</div></section>
+  ${debtChart()}
   ${careerToday()}
   ${next ? `<section class="blk"><div class="blk-h"><h2>Próxima reunião</h2><button class="link" data-act="go-meetings" style="color:var(--c-reun)">Ver todas</button></div>${meetingCard(next)}</section>` : ''}
   <section class="blk"><div class="blk-h"><h2>Hábitos de hoje</h2><button class="link" data-act="sub" data-k="habitos" style="color:var(--c-habito)">Editar</button></div>
@@ -815,7 +889,7 @@ VIEWS.financas = () => {
   const mode = UI.finMode || 'resumo';
   const seg = `<div class="seg" role="tablist">${[['resumo', 'Resumo'], ['contas', 'Contas'], ['cartoes', 'Cartões'], ['plano', 'Plano']].filter(([k]) => k !== 'plano' || (f.plan && (f.plan.phases || []).length)).map(([k, l]) => `<button class="${mode === k ? 'on' : ''}" data-act="fin-mode" data-k="${k}">${l}</button>`).join('')}</div>`;
   const nav = `<section class="blk"><div class="cal-h" style="padding:0 2px 10px"><b style="font-family:var(--f-display);font-size:20px;text-transform:capitalize">${MES[m - 1]} ${y}</b><div><button class="icon-btn" data-act="fin-month" data-n="-1" aria-label="Mês anterior">${I.left}</button><button class="icon-btn" data-act="fin-month" data-n="1" aria-label="Próximo mês">${I.right}</button></div></div>
-    <div class="tiles"><div class="tile" style="--c:var(--c-fin)"><div class="k">Entradas</div><div class="v sm">${moneyS(inn)}</div></div><div class="tile" style="--c:var(--danger)"><div class="k">Saídas</div><div class="v sm">${moneyS(out)}</div></div><div class="tile" style="--c:${bal >= 0 ? 'var(--fg)' : 'var(--danger)'}"><div class="k">Saldo</div><div class="v sm">${moneyS(bal)}</div></div></div></section>`;
+    <div class="tiles"><div class="tile" style="--c:var(--c-fin)"><div class="k">Entradas</div><div class="v sm">${moneyS(inn)}</div></div><div class="tile" style="--c:var(--danger)"><div class="k">Saídas</div><div class="v sm">${moneyS(out)}</div></div><div class="tile" style="--c:${bal >= 0 ? 'var(--fg)' : 'var(--danger)'}"><div class="k">Saldo do mês</div><div class="v sm">${moneyS(bal)}</div></div></div></section>`;
   const carry = carryIn(ym), endBal = carry === null ? null : carry + bal, opM = f.opening && f.opening.month;
   const conta = `<section class="blk"><div class="blk-h"><h2>Saldo em conta</h2><button class="link" data-act="new" data-k="saldo" style="color:var(--c-fin)">${opM ? 'Ajustar' : 'Definir'}</button></div><div class="group">
     ${carry === null ? `<div class="empty" style="text-align:left;padding:14px">${opM ? `O saldo em conta começa a ser contado em <b style="display:inline;font-size:inherit">${MES[+opM.slice(5) - 1]} de ${opM.slice(0, 4)}</b>.` : 'Informe quanto você tinha em conta no início de um mês. A partir dele, o app soma as entradas, subtrai as saídas e leva o que sobrou para o mês seguinte.'}</div>` : `
@@ -953,6 +1027,8 @@ VIEWS.estudos = () => {
   if (EST_NEST[UI.estMode]) { if (UI.estMode === 'escritor' && S.writing.projects.some(p => p.id === UI.wProj)) return VIEWS.escritor(); NEST = { title: 'Estudos', seg: estSeg }; try { return VIEWS[UI.estMode](); } finally { NEST = null; } }
   if (UI.estMode === 'carreira' && !S.career) UI.estMode = 'foco';
   if (UI.estMode === 'carreira') return `${header('Programa de 12 semanas', 'Estudos')}${estSeg()}${careerBody()}`;
+  if (UI.estMode === 'resumos') { const list = [...(S.study.summaries || [])].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    return `${header('Resumos', 'Estudos')}${estSeg()}<section class="blk"><div class="group">${list.map(r => `<button class="row" data-act="open" data-k="resumo" data-id="${r.id}"><span class="stripe" style="--c:var(--c-estudo)"></span><div class="main"><div class="t">${esc(r.title)}</div><div class="s">${esc([r.author, r.date ? fmtDay(r.date) : '', r.min ? r.min + ' min de vídeo' : ''].filter(Boolean).join(' · '))}</div></div>${I.chev}</button>`).join('') || '<div class="empty"><b>Nenhum resumo ainda</b>Os resumos de vídeos e leituras aparecem aqui.</div>'}</div></section>`; }
   return `${header('', 'Estudos')}${estSeg()}
   <section class="blk"><div class="timer">
     <div class="radios" style="justify-content:center">${S.study.subjects.map(s => `<label><input type="radio" name="tsub" value="${s.id}" ${timer.subjectId === s.id ? 'checked' : ''} data-act="timer-subj"><span>${esc(s.name)}</span></label>`).join('') || '<span style="color:var(--muted);font-size:14px">Crie uma matéria para usar o foco</span>'}</div>
@@ -994,8 +1070,47 @@ VIEWS.habitos = () => {
     let streak = 0; for (let i = 0; i < 365; i++) { const k = iso(addDays(new Date(), -i)); if ((S.habits.checks[k] || []).includes(h.id)) streak++; else if (i > 0) break; }
     return `<div class="group" style="padding:12px 14px"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><button style="text-align:left;flex:1;min-width:0" data-act="open" data-k="habito" data-id="${h.id}"><div class="t" style="font-weight:600">${esc(h.name)}</div><div class="s" style="font-size:13px;color:var(--muted)">${n}/7 dias${streak > 1 ? ` · sequência de ${streak}` : ''}</div></button></div>
     <div class="hgrid">${days.map(d => { const on = (S.habits.checks[d] || []).includes(h.id); return `<button class="${on ? 'on' : ''}" data-act="toggle-habit" data-id="${h.id}" data-date="${d}" aria-pressed="${on}" aria-label="${fmtDay(d)}">${WD[parse(d).getDay()].slice(0, 1)}</button>`; }).join('')}</div></div>`;
-  }).join('') : '<div class="group"><div class="empty"><b>Nenhum hábito</b>Toque em + para criar um hábito e marcar todo dia.</div></div>'}</section>`;
+  }).join('') : '<div class="group"><div class="empty"><b>Nenhum hábito</b>Toque em + para criar um hábito e marcar todo dia.</div></div>'}</section>${journalBlock()}`;
 };
+function journalBlock() {
+  if (!UI.jrDay) UI.jrDay = today(); if (!UI.jrMonth) UI.jrMonth = UI.jrDay.slice(0, 7);
+  const [y, m] = UI.jrMonth.split('-').map(Number), first = new Date(y, m - 1, 1), start = addDays(first, -((first.getDay() + 6) % 7)), t = today();
+  const byDay = {}; S.habits.journal.forEach(j => { (byDay[j.date] = byDay[j.date] || []).push(j); });
+  let cells = '';
+  for (let i = 0; i < 42; i++) {
+    const d = addDays(start, i), k = iso(d); if (i >= 35 && d.getMonth() !== m - 1) break;
+    const n = (byDay[k] || []).length;
+    cells += `<button class="${d.getMonth() !== m - 1 ? 'out ' : ''}${k === t ? 'today ' : ''}${k === UI.jrDay ? 'sel' : ''}" data-act="jr-day" data-d="${k}" aria-label="${d.getDate()} de ${MES[d.getMonth()]}${n ? `, ${n} ${n > 1 ? 'páginas' : 'página'}` : ''}">${d.getDate()}<span class="dots">${n ? '<i style="--c:var(--c-habito)"></i>' : ''}</span></button>`;
+  }
+  const mc = Object.keys(byDay).filter(k => k.startsWith(UI.jrMonth)).reduce((a, k) => a + byDay[k].length, 0);
+  const list = (byDay[UI.jrDay] || []).sort((a, b) => (a.at || 0) - (b.at || 0));
+  const dl = UI.jrDay === t ? 'hoje' : fmtDay(UI.jrDay);
+  return `<section class="blk"><div class="blk-h"><h2>Diário</h2><span style="font-size:13px;color:var(--muted)">${mc ? `${mc} ${mc > 1 ? 'páginas' : 'página'} no mês` : ''}</span></div>
+  <div class="cal"><div class="cal-h"><b>${MES[m - 1]} ${y}</b><div>
+    <button class="icon-btn" data-act="jr-month" data-n="-1" aria-label="Mês anterior">${I.left}</button><button class="icon-btn" data-act="jr-month" data-n="1" aria-label="Próximo mês">${I.right}</button></div></div>
+    <div class="cal-g">${['S', 'T', 'Q', 'Q', 'S', 'S', 'D'].map(w => `<div class="wd">${w}</div>`).join('')}${cells}</div></div></section>
+  <section class="blk"><div class="blk-h"><h2>${esc(fmtDay(UI.jrDay))}</h2><label class="link" for="journal-file" style="color:var(--tint);font-weight:550;font-size:14px;cursor:pointer">Anexar páginas</label></div>
+  <input type="file" id="journal-file" accept="image/*" multiple hidden>
+  ${list.length ? `<div class="jgrid">${list.map((j, i) => `<button data-act="open" data-k="diario" data-id="${j.id}" aria-label="Página ${i + 1} de ${esc(dl)}"><span class="jimg" style="background-image:url('${esc(imgUrl(j.url))}')"></span><span class="jd">${j.note ? esc(j.note) : `Página ${i + 1}`}</span></button>`).join('')}</div>`
+    : `<label class="group empty" for="journal-file" style="display:block;cursor:pointer"><b>Nenhuma página em ${esc(dl)}</b>Toque para fotografar ou escolher as páginas deste dia.</label>`}</section>`;
+}
+async function addJournal(files) {
+  const arr = [...files].filter(f => /^image\//.test(f.type) || /\.(jpe?g|png|heic|webp)$/i.test(f.name)); if (!arr.length) return;
+  toast(arr.length > 1 ? `Enviando ${arr.length} páginas…` : 'Enviando página…');
+  const assets = (store.db && window.claude?.use) ? await window.claude.use('assets').catch(() => null) : null;
+  let ok = 0, small = 0;
+  for (const f of arr) {
+    try {
+      let url = null;
+      if (assets) { const c = await resizeImg(f, 1600); const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.85)); try { url = (await assets.upload(blob)).url; } catch (e) { url = null; } }
+      if (!url) { const c = await resizeImg(f, 1600); const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.82)); const k = newId(); await idbPut(k, blob); url = 'idb:' + k; }
+      S.habits.journal.push({ id: newId(), date: UI.jrDay || today(), url, note: '', at: Date.now() }); ok++;
+    } catch (e) {}
+  }
+  if (ok) { persist('habits'); render(); toast(ok === arr.length ? (ok > 1 ? `${ok} páginas anexadas em ${fmtDay(UI.jrDay || today())}` : `Página anexada em ${fmtDay(UI.jrDay || today())}`) : `${ok} de ${arr.length} anexadas`); }
+  else toast('Não consegui abrir essas imagens. Tente outra foto.');
+  if (false) setTimeout(() => toast('Sem conta conectada: as fotos ficam só neste aparelho, em resolução menor.'), 2400);
+}
 
 const EDIT = {};
 const BOOK_ST = { lendo: 'Lendo', quero: 'Quero ler', lido: 'Lidos' };
@@ -1244,7 +1359,7 @@ VIEWS.ajustes = () => `${header('', 'Ajustes')}
     <button class="btn" data-act="export">Exportar backup</button><label class="btn" for="import-file" style="cursor:pointer">Importar backup</label></div>
     <input type="file" id="import-file" accept="application/json,.json" hidden>
     <p class="note">O backup é um arquivo .json com tudo: agenda, reuniões, treinos, finanças, estudos, tarefas, hábitos e leituras.</p></section>
-  ${CAREER_PROGRAM ? `<section class=\"blk\"><div class=\"blk-h\"><h2>Programa de carreira</h2></div><div class=\"btns\" style=\"margin:0\"><button class=\"btn\" data-act=\"car-reimport\">Reimportar programa original</button></div></section>` : ''}
+  ${CAREER_PROGRAM ? `<section class="blk"><div class="blk-h"><h2>Programa de carreira</h2></div><div class="btns" style="margin:0"><button class="btn" data-act="car-reimport">Reimportar programa original</button></div></section>` : ''}
   <section class="blk"><div class="btns" style="margin:0"><button class="btn danger" data-act="wipe">Apagar todos os dados</button></div></section>`;
 
 /* ---------- folha (sheet) ---------- */
@@ -1415,6 +1530,23 @@ EDIT.carreira = id => {
     sections: [['Entregável', `<div class="md"><p>${esc(t.deliv)}</p></div>`], ['Aprendizado', `<textarea class="inp" id="ct-learn" placeholder="1 frase sobre o que você descobriu. Vira material para o case e para entrevistas.">${esc(t.learn || '')}</textarea>`]],
     actions: `<div class="btns"><button class="btn" data-act="ct-agenda">Pôr na agenda</button><button class="btn primary" data-act="ct-save">Salvar</button></div>` });
   $('#sheet')._ctask = t; autoGrow($('#ct-learn'));
+};
+EDIT.diario = id => {
+  const j = S.habits.journal.find(x => x.id === id); if (!j) return;
+  pageView({ label: 'Diário', title: `Página de ${fmtDay(j.date)}`, color: 'var(--c-habito)',
+    sections: [['', `<a href="${esc(imgUrl(j.url))}" target="_blank" rel="noopener"><img class="jfull" src="${esc(imgUrl(j.url))}" alt="Página do diário"></a>`],
+      ['Data', `<input class="inp" type="date" id="jr-date" value="${esc(j.date)}">`],
+      ['Anotação', `<textarea class="inp" id="jr-note" placeholder="Do que fala esta página? (opcional)">${esc(j.note || '')}</textarea>`]],
+    actions: `<div class="btns"><button class="btn primary" data-act="jr-save" data-id="${j.id}">Salvar</button></div><div class="btns" style="margin:0"><button class="btn danger sm" data-act="arm-delete">Excluir página</button></div>`,
+    onDelete: () => { if (String(j.url).startsWith('idb:')) idbDel(j.url.slice(4)).catch(() => {}); S.habits.journal = S.habits.journal.filter(x => x !== j); persist('habits'); render(); toast('Página excluída'); } });
+};
+EDIT.resumo = id => {
+  const r = (S.study.summaries || []).find(x => x.id === id); if (!r) return;
+  pageView({ label: 'Resumo', title: r.title, color: 'var(--c-estudo)',
+    props: [r.author ? ['text', 'Autor', esc(r.author)] : null, ['date', 'Data', r.date ? fmtDay(r.date) : ''], r.min ? ['clock', 'Duração', r.min + ' min'] : null, r.url ? ['tag', 'Fonte', `<a href="${esc(r.url)}" target="_blank" rel="noopener" style="color:var(--tint)">Abrir vídeo</a>`] : null],
+    sections: [['', `<div class="md">${md(r.text)}</div>`]],
+    actions: `<div class="btns"><button class="btn danger sm" data-act="arm-delete">Excluir</button></div>`,
+    onDelete: () => { S.study.summaries = S.study.summaries.filter(x => x !== r); persist('study'); render(); toast('Resumo excluído'); } });
 };
 EDIT.tarefaView = id => {
   const t = S.tasks.find(x => x.id === id); if (!t) return;
@@ -1712,6 +1844,9 @@ Tempo: ${t.tempo} · Semana ${t.w} — ${S.career.foco[t.w] || ''}` }); persist(
   'tl-clear': el => { const n = S.tasks.filter(t => t.listId === el.dataset.id && t.done).length; S.tasks = S.tasks.filter(t => !(t.listId === el.dataset.id && t.done)); persist('tasks'); toast(`${n} ${n === 1 ? 'item removido' : 'itens removidos'}`); render(); },
   'task-filter': el => { UI.taskFilter = el.dataset.k; saveUI(); render(); },
   'toggle-task': el => { const t = S.tasks.find(x => x.id === el.dataset.id); if (!t) return; t.done = !t.done; persist('tasks'); if (t.done) toast('Tarefa concluída'); render(); },
+  'jr-day': el => { UI.jrDay = el.dataset.d; UI.jrMonth = el.dataset.d.slice(0, 7); render(); },
+  'jr-month': el => { UI.jrMonth = shiftMonth(UI.jrMonth || today().slice(0, 7), +el.dataset.n); render(); },
+  'jr-save': el => { const j = S.habits.journal.find(x => x.id === el.dataset.id); if (!j) return; const d = $('#jr-date').value; if (d) { j.date = d; UI.jrDay = d; UI.jrMonth = d.slice(0, 7); } j.note = $('#jr-note').value.trim(); persist('habits'); closeSheet(); render(); toast('Página salva'); },
   'toggle-habit': el => { const d = el.dataset.date; S.habits.checks[d] = S.habits.checks[d] || []; toggleIn(S.habits.checks[d], el.dataset.id); persist('habits'); render(); },
   'toggle-paid': el => { const t = S.finance.tx.find(x => x.id === el.dataset.id); if (!t) return; t.paid = true; persist('finance'); toast('Conta marcada como paga'); render(); },
   'toggle-action': el => { const m = S.meetings.find(x => x.id === el.dataset.mid); const a = m?.actions.find(x => x.id === el.dataset.id); if (!a) return; a.done = !a.done; persist('meetings'); render(); },
@@ -1751,14 +1886,16 @@ Tempo: ${t.tempo} · Semana ${t.w} — ${S.career.foco[t.w] || ''}` }); persist(
     inp.value = ''; toast(b.status === 'lido' ? 'Livro concluído!' : `+${read} páginas registradas`);
   },
   'export': async () => {
-    const data = JSON.stringify({ app: 'Rotina', version: 1, exported: new Date().toISOString(), state: S }, null, 2);
+    const st = JSON.parse(JSON.stringify(S));
+    for (const x of (st.habits && st.habits.journal) || []) if (String(x.url).startsWith('idb:')) { try { const b = await idbGet(x.url.slice(4)); if (b) x.url = await blobToDataURL(b); } catch (e) {} }
+    const data = JSON.stringify({ app: 'Rotina', version: 1, exported: new Date().toISOString(), state: st }, null, 2);
     const name = `rotina-backup-${today()}.json`;
     try { const dl = window.claude?.use ? await window.claude.use('downloads') : null; if (dl) { await dl.save({ filename: name, data }); return; } } catch (e) { if (e && e.code !== 'unavailable') return; }
     try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type: 'application/json' })); a.download = name; a.click(); } catch (e) { toast('Não foi possível exportar aqui'); }
   },
   'wipe': el => {
     if (!el.classList.contains('arm')) { el.classList.add('arm'); el.textContent = 'Toque de novo para apagar tudo'; setTimeout(() => { if (el.isConnected) { el.classList.remove('arm'); el.textContent = 'Apagar todos os dados'; } }, 3000); return; }
-    S = blankState(S.meta.name); normalize(); persist(...MODULES); toast('Dados apagados'); render();
+    S = blankState(S.meta.name); normalize(); idbDo('readwrite', st => st.clear()).catch(() => {}); persist(...MODULES); toast('Dados apagados'); render();
   },
 };
 document.addEventListener('click', e => {
@@ -1784,14 +1921,15 @@ document.addEventListener('change', e => {
     r.onerror = () => toast('Não consegui ler esse arquivo. Use .txt ou .md.'); r.readAsText(f); t.value = '';
   }
   if (t.id === 'cover-file' && t.files[0]) { setCover(t.files[0]); t.value = ''; }
+  if (t.id === 'journal-file' && t.files.length) { addJournal(t.files); t.value = ''; }
   if (t.id === 'import-file' && t.files[0]) {
     const r = new FileReader();
     r.onload = () => {
       try {
         const j = JSON.parse(r.result); const st = j.state || j; const base = emptyState();
         if (typeof st !== 'object' || !st.events) throw 0;
-        MODULES.forEach(m => S[m] = st[m] ?? base[m]); ensureCareer(); ensureFinance(); S.meta.demo = false;
-        persist(...MODULES); toast('Backup importado'); render();
+        MODULES.forEach(m => S[m] = st[m] ?? base[m]); ensureCareer(); ensureFinance(); S.meta.demo = false; normalize();
+        journalToIdb().then(() => { persist(...MODULES); toast('Backup importado'); render(); });
       } catch (err) { toast('Arquivo inválido. Escolha um backup .json do Rotina.'); }
     };
     r.readAsText(t.files[0]); t.value = '';
@@ -1837,11 +1975,10 @@ try { if (navigator.storage && navigator.storage.persist) navigator.storage.pers
   else S = demoState();
   normalize(); if (listsSeededNow || colImportedNow) saveLocal();
   if (!SUBS[UI.sub]) UI.sub = null;
-  UI.tab = mapTab(UI.tab); if (!['foco', 'carreira', 'escritor'].includes(UI.estMode)) UI.estMode = 'foco'; if (!COL_NEST[UI.colMode]) UI.colMode = 'leituras';
+  UI.tab = mapTab(UI.tab); if (!['foco', 'carreira', 'escritor', 'resumos'].includes(UI.estMode)) UI.estMode = 'foco'; if (!COL_NEST[UI.colMode]) UI.colMode = 'leituras';
   if (!TABS.some(t => t.k === UI.tab)) UI.tab = 'hoje';
   render();
   connectDb();
 })();
 </script>
-
 </body></html>
