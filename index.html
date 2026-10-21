@@ -593,6 +593,15 @@ body{background:var(--bg)}
 .hh-chips{display:flex;flex-wrap:wrap;gap:6px}
 .hh-chip{font-size:12px;font-weight:700;background:#fff;color:#1B1D2A;padding:4px 9px;border-radius:999px}
 .hero.hx-hoje .ov{margin-top:0}
+
+.gradpick{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.gp-prev{height:64px;border-radius:14px;display:flex;align-items:flex-end;padding:10px 12px;color:#fff;font-size:13px;font-weight:700;box-shadow:var(--shadow)}
+.gp-c{display:flex;align-items:center;gap:10px;background:var(--surface-2);border-radius:12px;padding:8px 10px;cursor:pointer;min-width:0}
+.gp-c input{width:36px;height:36px;border:0;padding:0;border-radius:10px;background:none;flex:none;cursor:pointer}
+.gp-c input::-webkit-color-swatch-wrapper{padding:0}.gp-c input::-webkit-color-swatch{border:0;border-radius:10px}
+.gp-c span{display:flex;flex-direction:column;min-width:0;font-size:13px}.gp-c small{color:var(--muted);font-size:12px}
+.gp-presets{display:flex;flex-wrap:wrap;gap:8px}
+.gp-pre{width:38px;height:38px;border-radius:12px;box-shadow:var(--shadow)}
 </style>
 
 <div id="app" aria-live="polite"></div>
@@ -893,7 +902,7 @@ function accentNow() {
 function render() {
   if (!S) return;
   const app = $('#app');
-  document.documentElement.style.setProperty('--accent', 'var(--brand)'); document.documentElement.dataset.brand = (S.meta && S.meta.brand) || 'roxo'; { const tm = document.querySelector('meta[name=theme-color]'), bb = BRANDS.find(x => x[0] === document.documentElement.dataset.brand); if (tm && bb) tm.content = bb[2]; }
+  document.documentElement.style.setProperty('--accent', 'var(--brand)'); document.documentElement.dataset.brand = (S.meta && S.meta.brand) || 'roxo'; applyCustomGrad();
   try { gameSync(); } catch (e) {}
   const v = UI.sub || UI.tab;
   let html;
@@ -2009,9 +2018,19 @@ function alertsCard() {
   return `<section class="blk"><div class="blk-h"><h2>Atenção</h2></div><div class="group">${out.map(([txt, lab, act, k, c]) => `<button class="row alert-row" data-act="${act}" data-k="${k}" data-id="${k}"><span class="dot" style="--c:${c}"></span><div class="main"><div class="t" style="font-weight:600">${esc(txt)}</div></div><span class="end" style="color:${c};font-weight:600;font-size:13px">${lab}</span></button>`).join('')}</div></section>`;
 }
 
+function applyCustomGrad() {
+  const st = document.documentElement.style;
+  if (S.meta && S.meta.brand === 'custom') { const [a, b] = S.meta.grad || ['#6A3FD8', '#B03FC4'], n = parseInt(a.slice(1), 16); st.setProperty('--brand', a); st.setProperty('--brand-2', b); st.setProperty('--brand-soft', `rgba(${n >> 16},${n >> 8 & 255},${n & 255},.14)`); }
+  else ['--brand', '--brand-2', '--brand-soft'].forEach(k => st.removeProperty(k));
+  const tm = document.querySelector('meta[name=theme-color]'); if (tm) tm.content = S.meta && S.meta.brand === 'custom' ? (S.meta.grad || ['#6A3FD8'])[0] : ((BRANDS.find(x => x[0] === ((S.meta && S.meta.brand) || 'roxo')) || BRANDS[0])[2]);
+}
 const BRANDS = [['roxo', 'Roxo', '#6A3FD8', '#B03FC4'], ['azul', 'Azul', '#2F6FE0', '#2BA7E0'], ['verde', 'Verde', '#13897F', '#3BB273'], ['laranja', 'Laranja', '#E2632A', '#F2A33A'], ['rosa', 'Rosa', '#D23C78', '#8E44D6'], ['grafite', 'Grafite', '#2C3142', '#5A6178']];
 VIEWS.ajustes = () => `${header('', 'Ajustes')}
-  <section class="blk"><div class="blk-h"><h2>Tema do aplicativo</h2></div><div class="group" style="padding:14px"><div class="swatches">${BRANDS.map(([k, l, a, b]) => `<button class="swatch${(S.meta.brand || 'roxo') === k ? ' on' : ''}" data-act="set-brand" data-k="${k}" aria-pressed="${(S.meta.brand || 'roxo') === k}" style="--a:${a};--b:${b}"><i>${I.tick}</i>${l}</button>`).join('')}</div><p class="note" style="padding:10px 0 0">A cor aparece no topo da tela Hoje, nos botões e na aba ativa. As cores de cada área continuam as mesmas.</p></div></section>
+  <section class="blk"><div class="blk-h"><h2>Tema do aplicativo</h2></div><div class="group" style="padding:14px"><div class="swatches">${BRANDS.map(([k, l, a, b]) => `<button class="swatch${(S.meta.brand || 'roxo') === k ? ' on' : ''}" data-act="set-brand" data-k="${k}" aria-pressed="${(S.meta.brand || 'roxo') === k}" style="--a:${a};--b:${b}"><i>${I.tick}</i>${l}</button>`).join('')}${(() => { const [ga, gb] = S.meta.grad || ['#6A3FD8', '#B03FC4'], on = S.meta.brand === 'custom'; return `<button class="swatch${on ? ' on' : ''}" data-act="set-brand" data-k="custom" aria-pressed="${on}" style="--a:${ga};--b:${gb}"><i>${I.tick}</i>Meu degradê</button>`; })()}</div>
+    ${(() => { const [ga, gb] = S.meta.grad || ['#6A3FD8', '#B03FC4']; return `<div class="gradpick"><div class="gp-prev" style="background:linear-gradient(140deg,${ga},${gb})"><span>Prévia do degradê</span></div>
+      <div class="two"><label class="gp-c" for="grad-a"><input type="color" id="grad-a" value="${ga}"><span><b>Cor inicial</b><small>${ga.toUpperCase()}</small></span></label><label class="gp-c" for="grad-b"><input type="color" id="grad-b" value="${gb}"><span><b>Cor final</b><small>${gb.toUpperCase()}</small></span></label></div>
+      <div class="gp-presets">${[['#FF5F6D', '#FFC371'], ['#11998E', '#38EF7D'], ['#4776E6', '#8E54E9'], ['#F7971E', '#FFD200'], ['#0F2027', '#2C5364'], ['#EE0979', '#FF6A00'], ['#00C6FF', '#0072FF'], ['#834D9B', '#D04ED6']].map(([x, y]) => `<button class="gp-pre" data-act="set-grad" data-a="${x}" data-b="${y}" style="background:linear-gradient(140deg,${x},${y})" aria-label="Degradê ${x} para ${y}"></button>`).join('')}</div></div>`; })()}
+    <p class="note" style="padding:10px 0 0">A cor aparece na faixa colorida do topo de todas as telas, nos botões e na aba ativa. Em "Meu degradê" você escolhe as duas cores; as cores de cada área continuam as mesmas.</p></div></section>
   <section class="blk"><div class="fld"><label for="set-name">Seu nome</label><input class="inp" id="set-name" value="${esc(S.meta.name)}" placeholder="Como quer ser chamado" data-act="set-name"></div></section>
   <section class="blk"><div class="blk-h"><h2>Onde seus dados ficam</h2></div><div class="group" style="padding:14px">
     <span class="sync" style="--c:${store.mode === 'conta' ? 'var(--c-fin)' : 'var(--c-reun)'}"><i></i>${store.mode === 'conta' ? 'Sincronizado com sua conta Claude' : 'Salvo neste aparelho · funciona offline'}</span>
@@ -2492,6 +2511,7 @@ const ACT = {
   'ch-move': el => { const P = S.writing.projects.find(p => p.chapters.some(c => c.id === el.dataset.id)); const i = P.chapters.findIndex(c => c.id === el.dataset.id), j = i + (+el.dataset.n); if (j < 0 || j >= P.chapters.length) return; [P.chapters[i], P.chapters[j]] = [P.chapters[j], P.chapters[i]]; persist('writing'); EDIT.capitulo(el.dataset.id); },
   'ev-del-next': el => { const e = S.events.find(x => x.id === el.dataset.id); if (!e) return; if (!el.classList.contains('arm')) { el.classList.add('arm'); el.textContent = 'Toque de novo para excluir'; return; } const n = S.events.filter(x => x.rid === e.rid && x.date >= e.date).length; S.events = S.events.filter(x => !(x.rid === e.rid && x.date >= e.date)); persist('events'); toast(`${n} compromissos excluídos`); closeSheet(); },
   'plan-step': el => { const P = S.finance.plan; const st = P && P.steps.find(x => x.id === el.dataset.id); if (!st) return; st.done = !st.done; persist('finance'); render(); },
+  'set-grad': el => { S.meta.grad = [el.dataset.a, el.dataset.b]; S.meta.brand = 'custom'; persist('meta'); render(); toast('Degradê aplicado'); },
   'set-brand': el => { S.meta.brand = el.dataset.k; persist('meta'); render(); toast('Tema aplicado'); },
   'chart-year': el => { UI.chartYear = +(UI.chartYear || UI.finMonth.slice(0, 4)) + (+el.dataset.n); render(); },
   'fin-goto': el => { UI.finMonth = el.dataset.m; UI.chartYear = +el.dataset.m.slice(0, 4); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); },
@@ -2591,6 +2611,7 @@ document.addEventListener('change', e => {
   const t = e.target;
   if (t.dataset.act === 'timer-subj') { timer.subjectId = t.value; }
   if (t.dataset.act === 'timer-goal') { timer.goal = +t.value; tickTimer(); }
+  if (t.id === 'grad-a' || t.id === 'grad-b') { const g = S.meta.grad || ['#6A3FD8', '#B03FC4']; g[t.id === 'grad-a' ? 0 : 1] = t.value; S.meta.grad = [...g]; S.meta.brand = 'custom'; persist('meta'); render(); toast('Degradê aplicado'); }
   if (t.id === 'set-name') { S.meta.name = t.value.trim(); persist('meta'); toast('Nome salvo'); }
   if (t.id === 'att-file' && t.files[0]) {
     const f = t.files[0]; const r = new FileReader();
