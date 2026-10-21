@@ -187,6 +187,9 @@ select.inp{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 5
 .hgrid button.on{background:var(--c-habito);color:var(--on-accent)}
 .ex-table{width:100%;border-collapse:collapse;font-size:14px}
 .ex-table td{padding:6px 0;border-top:1px solid var(--line)}
+.ex-row .ex-vid{grid-column:1/-1;text-align:left!important;font-size:13px;padding:8px 10px;margin-top:-2px}
+.exlink{display:inline-flex;align-items:center;gap:8px;color:inherit;text-decoration:none}
+.exlink svg{width:20px;height:20px;padding:5px;flex:none;border-radius:50%;background:#E62117;color:#fff}
 .ex-table td+td{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums;padding-left:8px;white-space:nowrap}
 .shelf-wrap{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:14px 0 0;overflow:hidden}
 .shelf-wrap + .shelf-wrap{margin-top:12px}
@@ -490,6 +493,7 @@ body{background:var(--bg)}
 .hero.band .cal-h b{color:#fff}
 .hero.band .tile{background:var(--surface);box-shadow:0 8px 22px rgba(20,10,60,.16);color:var(--fg)}
 .hero.band .tiles{gap:8px}
+.hero .group{color:var(--fg)}
 .swatches{display:flex;gap:12px;flex-wrap:wrap}
 .swatch{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--muted)}
 .swatch i{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--a),var(--b));box-shadow:var(--shadow);display:grid;place-items:center;color:#fff}
@@ -497,6 +501,98 @@ body{background:var(--bg)}
 .swatch.on{color:var(--fg)}
 .swatch.on i{outline:3px solid var(--fg);outline-offset:2px}
 .swatch.on i svg{opacity:1}
+
+/* gamificação */
+.player{position:relative;z-index:1;display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:rgba(255,255,255,.16);border-radius:18px;padding:8px 14px 8px 8px;margin:0 0 12px;color:#fff}
+.avbox{display:grid;place-items:end center;flex:none;background:var(--av);border-radius:14px;padding:4px 6px 2px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.06)}
+.avbox.big{border-radius:24px;padding:10px 18px 6px}
+.pxav{display:block}
+.pl-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.pl-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.pl-top b{font-size:17px;font-weight:750}
+.pl-top span{font-size:12px;opacity:.85;font-weight:600}
+.pl-sub{display:flex;justify-content:space-between;gap:8px;font-size:12px;opacity:.9;font-weight:600}
+.xpbar{display:block;height:8px;border-radius:8px;background:rgba(255,255,255,.28);overflow:hidden}
+.xpbar i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#FFE27A,#FFB547)}
+.xpbar.lg{height:12px;margin-top:8px}
+.prof{display:flex;gap:16px;align-items:center;color:#fff}
+.prof-main{flex:1;min-width:0}
+.prof-name{font-size:22px;font-weight:800;letter-spacing:-.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prof-t{font-size:14px;font-weight:600;opacity:.9}
+.prof-xp{font-size:12px;opacity:.85;margin-top:4px;font-weight:600}
+.prof .btn{background:#fff;color:var(--brand);flex:none}
+.achs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ach{background:var(--surface);border-radius:14px;box-shadow:var(--shadow);padding:12px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+.ach-i{font-size:28px;line-height:1.1;filter:grayscale(1);opacity:.45}
+.ach b{font-size:12px;font-weight:700;line-height:1.2}
+.ach small{font-size:11px;color:var(--muted);line-height:1.25}
+.ach:not(.on) b{color:var(--muted)}
+.ach.on{box-shadow:var(--shadow),inset 0 0 0 2px var(--brand-soft)}
+.ach.on .ach-i{filter:none;opacity:1}
+.flame{flex:none;font-size:13px;font-weight:800;padding:4px 9px;border-radius:999px;background:color-mix(in srgb,#FF8A3D 16%,var(--surface));color:#D9561B;white-space:nowrap}
+.flame.hot{background:linear-gradient(135deg,#FF8A3D,#FF4D6D);color:#fff}
+.boss{margin-bottom:12px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--danger) 8%,var(--surface))}
+.boss-h{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:700;margin-bottom:6px}
+.boss-h b{color:var(--c-fin)}
+.hp{position:relative;height:12px;border-radius:6px;background:var(--surface-2);overflow:hidden}
+.hp i{display:block;height:100%;background:linear-gradient(90deg,#E34948,#FF7A59);border-radius:6px;transition:width .3s}
+.hp s{position:absolute;top:0;bottom:0;width:2px;background:var(--surface);opacity:.9}
+.avprev{display:grid;place-items:center;background:var(--av);border-radius:20px;padding:14px 0 8px;margin:4px 0 12px}
+.avsw-row{display:flex;flex-wrap:wrap;gap:8px}
+.avsw{width:34px;height:34px;border-radius:10px;background:var(--a);box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.avsw.on{outline:3px solid var(--brand);outline-offset:2px}
+.avthumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px}
+.avth{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px 6px;border-radius:12px;background:var(--surface);box-shadow:var(--shadow);font-size:11px;font-weight:600;color:var(--muted);min-width:0}
+.avth span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.avth.on{outline:2px solid var(--brand);color:var(--fg)}
+.avchip{padding:8px 13px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:14px;font-weight:600}
+.avchip.on{background:var(--brand);color:var(--on-brand);border-color:transparent}
+
+/* cabeçalho com avatar */
+.top.hx{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start;padding-top:4px}
+.hx-av{display:flex;flex-direction:column;align-items:center;gap:6px;color:#fff;min-width:0}
+.hx-date{font-size:12px;font-weight:600;opacity:.92;white-space:nowrap;text-align:center}
+.hx-card{display:grid;place-items:end center;background:var(--av);border-radius:16px;padding:8px 8px 4px;box-shadow:0 10px 24px rgba(20,10,60,.24),inset 0 -8px 0 rgba(0,0,0,.06)}
+.hx-main{min-width:0;display:flex;flex-direction:column;gap:6px}
+.hx-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.top.hx h1{font-size:28px;overflow-wrap:anywhere}
+.top.hx .eyebrow{font-size:13px}
+.hx-xpwrap{display:flex;flex-direction:column;gap:5px;width:100%;text-align:left;color:#fff}
+.hx-xp{display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:700;opacity:.92}
+.hx .xpbar{height:10px}
+.hx-ch{font-size:12px;font-weight:600;opacity:.9}
+.hero.hx-hoje{overflow:visible;margin-bottom:22px;padding-bottom:16px}
+.hero.hx-hoje::after{display:none}
+.hx.big{margin-bottom:0}
+.hx.big .hx-av{align-self:center}
+.hx.big .hx-card{padding:8px 8px 8px;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:6px}
+.hx-lv{align-self:flex-start;font-size:11px;font-weight:800;letter-spacing:.06em;background:rgba(0,0,0,.72);color:#FFE27A;padding:3px 8px;border-radius:999px}
+.hx.big .ov{margin-top:6px}
+.hx.big .tiles{gap:6px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.hx.big .tile:last-child{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}
+.hx.big .tile:last-child .k{order:2}
+.hx.big .tile{padding:8px 7px}
+.hx.big .tile .v{font-size:19px;gap:6px}
+.hx.big .tile .v::before{width:16px;height:16px;border-width:3px}
+.hx.big .tile .v.sm{font-size:16px}
+@media (min-width:600px){.top.hx h1{font-size:32px}}
+.xpb{display:inline-flex;align-items:center;flex:none;font-size:11px;font-weight:800;padding:2px 7px;border-radius:999px;background:color-mix(in srgb,#F2A33A 18%,var(--surface));color:#B5650C;white-space:nowrap;letter-spacing:.01em}
+.row .xpb{margin-left:4px}
+
+/* Hoje: saudação em cima, painel do jogador e visão geral em largura total */
+.hh-top{margin-bottom:12px}
+.hh-top .icon-btn{color:#fff!important;background:rgba(255,255,255,.16)}
+.hh-player{position:relative;z-index:1;display:flex;align-items:center;gap:14px;width:100%;text-align:left;color:#fff;background:rgba(255,255,255,.14);border-radius:20px;padding:10px 14px 10px 10px;margin-bottom:12px}
+.hh-av{flex:none;display:grid;place-items:end center;background:var(--av);border-radius:16px;padding:6px 10px 4px;box-shadow:0 8px 20px rgba(20,10,60,.22),inset 0 -6px 0 rgba(0,0,0,.06)}
+.hh-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.hh-lv{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.hh-lv b{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.hh-lv span{font-size:12px;font-weight:700;background:rgba(0,0,0,.22);padding:2px 8px;border-radius:999px;white-space:nowrap}
+.hh-info .xpbar{height:12px}
+.hh-xp{font-size:12px;font-weight:600;opacity:.92}
+.hh-chips{display:flex;flex-wrap:wrap;gap:6px}
+.hh-chip{font-size:12px;font-weight:700;background:#fff;color:#1B1D2A;padding:4px 9px;border-radius:999px}
+.hero.hx-hoje .ov{margin-top:0}
 </style>
 
 <div id="app" aria-live="polite"></div>
@@ -559,8 +655,10 @@ const I = {
   left: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>',
   right: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>',
   tick: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+  play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>',
   x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
 };
+const exVideo = e => /^https?:\/\//i.test(e.video || '') ? e.video : `https://www.youtube.com/results?search_query=${encodeURIComponent((e.name || '') + ' execução correta')}`;
 const CHECK = (on, c, sq) => `<span class="check${on ? ' on' : ''}${sq ? ' sq' : ''}" style="--c:${c}">${I.tick}</span>`;
 
 /* ---------- catálogos ---------- */
@@ -771,7 +869,7 @@ const TABS = [
   { k: 'hoje', l: 'Hoje', c: 'var(--c-agenda)' }, { k: 'agenda', l: 'Agenda', c: 'var(--c-agenda)' }, { k: 'treinos', l: 'Treinos', c: 'var(--c-treino)' },
   { k: 'estudos', l: 'Estudos', c: 'var(--c-estudo)' }, { k: 'colecao', l: 'Coleção', c: 'var(--c-leitura)' }, { k: 'financas', l: 'Finanças', c: 'var(--c-fin)' },
 ];
-const SUBS = { ajustes: ['Ajustes', 'var(--c-agenda)'] };
+const SUBS = { ajustes: ['Ajustes', 'var(--c-agenda)'], perfil: ['Perfil', 'var(--brand)'] };
 const AG_COL = { calendario: 'var(--c-agenda)', reunioes: 'var(--c-reun)', tarefas: 'var(--c-tarefa)', habitos: 'var(--c-habito)' };
 const EST_NEST = { escritor: 'var(--c-escrita)' };
 const COL_NEST = { leituras: 'var(--c-leitura)', jogos: 'var(--c-jogo)' };
@@ -796,6 +894,7 @@ function render() {
   if (!S) return;
   const app = $('#app');
   document.documentElement.style.setProperty('--accent', 'var(--brand)'); document.documentElement.dataset.brand = (S.meta && S.meta.brand) || 'roxo'; { const tm = document.querySelector('meta[name=theme-color]'), bb = BRANDS.find(x => x[0] === document.documentElement.dataset.brand); if (tm && bb) tm.content = bb[2]; }
+  try { gameSync(); } catch (e) {}
   const v = UI.sub || UI.tab;
   let html;
   try { html = (VIEWS[v] || VIEWS.hoje)(); }
@@ -810,18 +909,18 @@ function render() {
   fab.setAttribute('aria-label', { evento: 'Novo compromisso', reuniao: 'Nova reunião', lancamento: 'Novo lançamento', ficha: 'Nova ficha de treino', sessao: 'Registrar estudo', tarefa: 'Nova tarefa', habito: 'Novo hábito', livro: 'Novo livro', projeto: 'Novo projeto de livro', jogo: 'Novo jogo', capitulo: 'Novo capítulo', conta: 'Nova conta bancária', compra: 'Nova compra no cartão' }[fabFor] || 'Adicionar');
   tickTimer();
 }
-const header = (eyebrow, title, right = '') => NEST ? (n => (NEST = null, `${header('', n.title, right)}${n.seg()}`))(NEST) : `<div class="top"><div style="min-width:0">${UI.sub ? `<button class="back" data-act="tab" data-k="hoje">${I.left}Hoje</button>` : ''}${eyebrow ? `<div class="eyebrow">${eyebrow}</div>` : ''}<h1>${title}</h1></div>${right}</div>`;
+const header = (eyebrow, title, right = '') => NEST ? (n => (NEST = null, `${header('', n.title, right)}${n.seg()}`))(NEST) : UI.sub !== 'perfil' ? hxTop({ eyebrow, title, right }) : `<div class="top"><div style="min-width:0">${UI.sub ? `<button class="back" data-act="tab" data-k="hoje">${I.left}Hoje</button>` : ''}${eyebrow ? `<div class="eyebrow">${eyebrow}</div>` : ''}<h1>${title}</h1></div>${right}</div>`;
 const demoBanner = () => S.meta.demo ? `<div class="banner"><p><b>Você está vendo dados de exemplo.</b> Explore à vontade e, quando quiser, comece com tudo em branco.</p><button class="btn primary" data-act="clear-demo">Começar do zero</button></div>` : '';
 
 /* ---------- derivados ---------- */
 function itemsOn(date) {
   const out = [];
-  S.events.filter(e => e.date === date).forEach(e => { const snip = (e.notes || '').trim().split('\n')[0]; out.push({ kind: 'evento', id: e.id, time: e.time, title: e.title, sub: (EV_CATS[e.cat]?.[0] || '') + (snip ? ' · ' + (snip.length > 60 ? snip.slice(0, 60) + '…' : snip) : ''), c: EV_CATS[e.cat]?.[1] || 'var(--c-agenda)' }); });
+  S.events.filter(e => e.date === date).forEach(e => { const snip = (e.notes || '').trim().split('\n')[0]; out.push({ kind: 'evento', done: !!e.done, xp: XP_PRIO[e.prio || 'media'], id: e.id, time: e.time, title: e.title, sub: (EV_CATS[e.cat]?.[0] || '') + (snip ? ' · ' + (snip.length > 60 ? snip.slice(0, 60) + '…' : snip) : ''), c: EV_CATS[e.cat]?.[1] || 'var(--c-agenda)' }); });
   (S.career?.tasks || []).filter(t => t.prazo === date && t.status !== 'Adiado').forEach(t => out.push({ kind: 'carreira', id: t.id, time: BLOCO_TIME[t.bloco] || '', title: t.title, sub: `Carreira · Semana ${t.w} · ${t.tempo}`, c: 'var(--c-estudo)', done: t.status === 'Feito' }));
   S.meetings.filter(m => m.date === date).forEach(m => out.push({ kind: 'reuniao', id: m.id, time: m.time, title: m.title, sub: `Reunião${m.place ? ' · ' + m.place : ''}`, c: 'var(--c-reun)', done: m.status === 'realizada' }));
   const wd = parse(date).getDay();
-  S.workouts.plans.filter(p => (p.days || []).includes(wd)).forEach(p => out.push({ kind: 'ficha', id: p.id, time: '', title: p.name, sub: `Treino · ${p.exercises.length} exercícios`, c: 'var(--c-treino)', done: S.workouts.log.some(l => l.planId === p.id && l.date === date) }));
-  S.tasks.filter(t => t.due === date && !t.done).forEach(t => out.push({ kind: 'tarefa', id: t.id, time: '', title: t.title, sub: `Tarefa · ${t.area}`, c: 'var(--c-tarefa)' }));
+  S.workouts.plans.filter(p => (p.days || []).includes(wd)).forEach(p => out.push({ kind: 'ficha', xp: 40, id: p.id, time: '', title: p.name, sub: `Treino · ${p.exercises.length} exercícios`, c: 'var(--c-treino)', done: S.workouts.log.some(l => l.planId === p.id && l.date === date) }));
+  S.tasks.filter(t => t.due === date && !t.done).forEach(t => out.push({ kind: 'tarefa', xp: XP_PRIO[t.prio || 'media'], id: t.id, time: '', title: t.title, sub: `Tarefa · ${t.area}`, c: 'var(--c-tarefa)' }));
   S.finance.tx.filter(t => t.date === date && t.type === 'out' && !t.paid).forEach(t => out.push({ kind: 'lancamento', id: t.id, time: '', title: `Pagar ${t.desc || t.cat}`, sub: money(t.amount), c: 'var(--c-fin)' }));
   S.finance.cards.forEach(c => invoices(c).filter(v => v.due === date && !v.paid && v.total > 0).forEach(v => out.push({ kind: 'cartao', id: c.id, time: '', title: `Fatura ${c.name}`, sub: `Vence hoje · ${money(v.total)}`, c: 'var(--c-fin)' })));
   return out.sort(byTime);
@@ -881,15 +980,15 @@ function evCard(it, day) {
 function itemRow(it) {
   return `<button class="row${it.done ? ' done' : ''}" data-act="open" data-k="${it.kind}" data-id="${it.id}">
     <div class="timebox">${it.time ? esc(it.time) : '<small>Dia todo</small>'}</div><span class="stripe" style="--c:${it.c}"></span>
-    <div class="main"><div class="t">${esc(it.title)}</div><div class="s">${esc(it.sub)}</div></div>${I.chev}</button>`;
+    <div class="main"><div class="t">${esc(it.title)}</div><div class="s">${esc(it.sub)}</div></div>${it.xp ? xpBadge(it.xp) : ''}${I.chev}</button>`;
 }
 function taskRow(t) {
   const p = PRIO[t.prio] || PRIO.media;
   const late = t.due && t.due < today() && !t.done;
   if (UI.tab === 'agenda' && UI.taskList && UI.taskList === t.listId) { const sub = [t.prio !== 'media' ? `<span class="tag" style="--c:${p[1]}">${p[0]}</span>` : '', t.due ? `<span style="${late ? 'color:var(--danger);font-weight:600' : ''}">${late ? 'Atrasada · ' : ''}${fmtDay(t.due)}</span>` : ''].filter(Boolean).join(' ');
-    return `<div class="row${t.done ? ' done' : ''}"><button data-act="toggle-task" data-id="${t.id}" aria-label="${t.done ? 'Desmarcar' : 'Marcar como feito'} ${esc(t.title)}">${CHECK(t.done, tList(t.listId).color)}</button><button class="main" style="text-align:left" data-act="open" data-k="tarefa" data-id="${t.id}"><div class="t">${esc(t.title)}</div>${sub ? `<div class="s">${sub}</div>` : ''}</button></div>`; }
+    return `<div class="row${t.done ? ' done' : ''}"><button data-act="toggle-task" data-id="${t.id}" aria-label="${t.done ? 'Desmarcar' : 'Marcar como feito'} ${esc(t.title)}">${CHECK(t.done, tList(t.listId).color)}</button><button class="main" style="text-align:left" data-act="open" data-k="tarefa" data-id="${t.id}"><div class="t">${esc(t.title)}</div>${sub ? `<div class="s">${sub}</div>` : ''}</button>${t.done ? '' : `<span style="flex:none;align-self:center">${xpBadge(XP_PRIO[t.prio || 'media'])}</span>`}</div>`; }
   return `<div class="row${t.done ? ' done' : ''}"><button data-act="toggle-task" data-id="${t.id}" aria-label="${t.done ? 'Reabrir' : 'Concluir'} ${esc(t.title)}">${CHECK(t.done, 'var(--c-tarefa)')}</button>
-    <button class="main" style="text-align:left" data-act="open" data-k="tarefa" data-id="${t.id}"><div class="t">${esc(t.title)}</div><div class="s"><span class="tag" style="--c:${p[1]}">${p[0]}</span> ${tList(t.listId) && UI.taskList !== t.listId ? `<span style="color:${tList(t.listId).color};font-weight:600">${esc(tList(t.listId).name)}</span>` : esc(t.area || '')}${t.due ? ` · <span style="${late ? 'color:var(--danger);font-weight:600' : ''}">${late ? 'Atrasada · ' : ''}${fmtDay(t.due)}</span>` : ''}</div></button></div>`;
+    <button class="main" style="text-align:left" data-act="open" data-k="tarefa" data-id="${t.id}"><div class="t">${esc(t.title)}</div><div class="s"><span class="tag" style="--c:${p[1]}">${p[0]}</span> ${tList(t.listId) && UI.taskList !== t.listId ? `<span style="color:${tList(t.listId).color};font-weight:600">${esc(tList(t.listId).name)}</span>` : esc(t.area || '')}${t.due ? ` · <span style="${late ? 'color:var(--danger);font-weight:600' : ''}">${late ? 'Atrasada · ' : ''}${fmtDay(t.due)}</span>` : ''}</div></button>${t.done ? '' : `<span style="flex:none;align-self:center">${xpBadge(XP_PRIO[t.prio || 'media'])}</span>`}</div>`;
 }
 
 /* ---------- telas ---------- */
@@ -903,6 +1002,352 @@ function debtSeries() {
   while (guard++ < 72) { const d = Math.round(cardLeft(m) + txLeft(m)); gastos += teto(m); const c = carryIn(shiftMonth(m, 1)); pts.push({ m, d, s: c === null ? null : Math.round(c - gastos) }); if (d <= 0 && pts.length > 1) break; m = shiftMonth(m, 1); }
   return pts;
 }
+/* ---------- gamificação: XP, nível, conquistas, desafio da semana, avatar em pixel art ---------- */
+const XP_PRIO = { baixa: 10, media: 20, alta: 35 }, XP_HAB = { baixa: 5, media: 10, alta: 15 };
+const URG_OPTS = (tab = XP_PRIO, sfx = '') => [['baixa', `Baixa · +${tab.baixa} XP${sfx}`], ['media', `Média · +${tab.media} XP${sfx}`], ['alta', `Alta · +${tab.alta} XP${sfx}`]];
+const xpBadge = n => `<span class="xpb">+${n} XP</span>`;
+const XP_RULES = [
+  ['Hábitos', 'var(--c-habito)', '5, 10 ou 15 por marcação, conforme a importância do hábito · 10 por página do diário'],
+  ['Treinos', 'var(--c-treino)', '40 por treino · 50 por recorde de carga'],
+  ['Estudos', 'var(--c-estudo)', '1 a cada 2 min estudados · 1 a cada 50 palavras escritas'],
+  ['Leitura', 'var(--c-leitura)', '1 por página lida · 100 por livro terminado'],
+  ['Tarefas', 'var(--c-tarefa)', 'Tarefas e compromissos concluídos: 10, 20 ou 35 conforme a urgência'],
+  ['Finanças', 'var(--c-fin)', '25 por parcela de dívida paga · 200 por dívida quitada'],
+  ['Jogos', 'var(--c-jogo)', '15 por partida registrada'],
+  ['Desafios', 'var(--brand)', '150 por desafio da semana cumprido'],
+];
+function habitStreak(h) {
+  const has = k => (S.habits.checks[k] || []).includes(h.id); let n = 0, shield = false; const used = new Set(), ws0 = iso(weekStart());
+  for (let i = 0; i < 400; i++) {
+    const d = addDays(new Date(), -i), k = iso(d);
+    if (has(k)) { n++; continue; }
+    if (i === 0) continue;
+    const wk = iso(weekStart(d)), prev = iso(addDays(d, -1));
+    if (n > 0 && !used.has(wk) && has(prev)) { used.add(wk); if (wk === ws0) shield = true; continue; }
+    break;
+  }
+  return { n, shield };
+}
+function bestRun(h) {
+  const ds = Object.keys(S.habits.checks).filter(k => (S.habits.checks[k] || []).includes(h.id)).sort(); let best = 0, run = 0, last = null;
+  ds.forEach(k => { run = last && iso(addDays(parse(last), 1)) === k ? run + 1 : 1; best = Math.max(best, run); last = k; });
+  return best;
+}
+function debtHP() {
+  const f = S.finance; let total = 0, paid = 0;
+  f.tx.filter(t => t.rep === 'divida' && t.type === 'out').forEach(t => { total += t.amount; if (t.paid) paid += t.amount; });
+  f.cards.forEach(c => invoices(c).forEach(v => v.items.filter(i => !i.p.rec).forEach(i => { total += i.amount; if (v.paid) paid += i.amount; })));
+  return { total, paid, pct: total ? Math.round(paid / total * 100) : 0 };
+}
+function gameStats() {
+  const st = {};
+  const hp = {}; S.habits.list.forEach(h => hp[h.id] = XP_HAB[h.prio || 'media'] || 10); let checks = 0, habXp = 0;
+  Object.values(S.habits.checks).forEach(l => (l || []).forEach(id => { checks++; habXp += hp[id] || 10; }));
+  st.checks = checks; st.journal = S.habits.journal.length;
+  st.workouts = S.workouts.log.length;
+  const wm = {}; S.workouts.log.forEach(l => { const k = l.date.slice(0, 7); wm[k] = (wm[k] || 0) + 1; }); st.workMonth = Math.max(0, ...Object.values(wm));
+  st.prs = S.workouts.plans.reduce((a, p) => a + p.exercises.reduce((b, e) => b + (e.prs || 0), 0), 0);
+  st.studyMin = S.study.sessions.reduce((a, x) => a + (+x.min || 0), 0);
+  st.studyXp = S.study.sessions.reduce((a, x) => a + Math.round((+x.min || 0) / 2), 0);
+  st.words = Object.values(S.writing.texts || {}).reduce((a, t) => a + wordCount(t), 0);
+  st.pages = S.books.reduce((a, b) => a + (b.log || []).reduce((q, l) => q + Math.max(0, +l.read || 0), 0), 0);
+  st.booksDone = S.books.filter(b => b.status === 'lido').length;
+  st.tasks = S.tasks.filter(t => t.done).length;
+  st.taskXp = S.tasks.filter(t => t.done).reduce((a, t) => a + (XP_PRIO[t.prio || 'media'] || 20), 0) + S.events.filter(e => e.done).reduce((a, e) => a + (XP_PRIO[e.prio || 'media'] || 20), 0);
+  const dv = S.finance.tx.filter(t => t.rep === 'divida' && t.type === 'out'); st.debtPaid = dv.filter(t => t.paid).length;
+  const groups = {}; dv.forEach(t => { const g = groups[t.rid || t.id] = groups[t.rid || t.id] || { n: 0, p: 0 }; g.n++; if (t.paid) g.p++; });
+  st.debtsCleared = Object.values(groups).filter(g => g.n && g.p === g.n).length;
+  st.plays = S.games.reduce((a, g) => a + (g.plays || []).length, 0);
+  st.challenges = Object.keys((S.meta.game || {}).ch || {}).length;
+  st.best = Math.max(0, ...S.habits.list.map(bestRun));
+  st.hp = debtHP();
+  st.area = {
+    'Hábitos': habXp + st.journal * 10, 'Treinos': st.workouts * 40 + st.prs * 50, 'Estudos': st.studyXp + Math.floor(st.words / 50),
+    'Leitura': st.pages + st.booksDone * 100, 'Tarefas': st.taskXp, 'Finanças': st.debtPaid * 25 + st.debtsCleared * 200, 'Jogos': st.plays * 15, 'Desafios': st.challenges * 150,
+  };
+  st.xp = Object.values(st.area).reduce((a, v) => a + v, 0);
+  let L = 1, into = st.xp, need = 100; while (into >= need) { into -= need; L++; need = 100 + 50 * (L - 1); }
+  Object.assign(st, { level: L, into, need });
+  return st;
+}
+const LEVEL_TITLE = L => L >= 25 ? 'Mestre da rotina' : L >= 18 ? 'Veterano' : L >= 12 ? 'Dedicado' : L >= 6 ? 'Constante' : 'Iniciante';
+const ACHIEVEMENTS = [
+  ['inicio', '✨', 'Primeiro passo', 'Ganhe seus primeiros pontos', s => s.xp > 0],
+  ['nivel5', '⭐', 'Pegando o ritmo', 'Chegue ao nível 5', s => s.level >= 5],
+  ['nivel10', '🌟', 'Rotina de respeito', 'Chegue ao nível 10', s => s.level >= 10],
+  ['nivel20', '👑', 'Lenda da rotina', 'Chegue ao nível 20', s => s.level >= 20],
+  ['seq7', '🔥', 'Uma semana firme', '7 dias seguidos num hábito', s => s.best >= 7],
+  ['seq30', '🌋', '30 dias seguidos', '30 dias seguidos num hábito', s => s.best >= 30],
+  ['marcas100', '✅', 'Cem marcações', 'Marque hábitos 100 vezes', s => s.checks >= 100],
+  ['treino1', '🏋️', 'Primeiro treino', 'Registre um treino', s => s.workouts >= 1],
+  ['treino10', '💪', 'Mês de ferro', '10 treinos no mesmo mês', s => s.workMonth >= 10],
+  ['treino100', '🦾', 'Cem treinos', 'Registre 100 treinos', s => s.workouts >= 100],
+  ['recorde', '🏆', 'Recorde pessoal', 'Aumente a carga máxima de um exercício', s => s.prs >= 1],
+  ['livro1', '📖', 'Primeira estante', 'Termine um livro', s => s.booksDone >= 1],
+  ['livro10', '📚', 'Rato de biblioteca', 'Termine 10 livros', s => s.booksDone >= 10],
+  ['pag1000', '🔖', 'Mil páginas', 'Leia 1.000 páginas', s => s.pages >= 1000],
+  ['estudo20', '🎓', 'Vinte horas', 'Estude 20 horas no total', s => s.studyMin >= 1200],
+  ['palavras10k', '✍️', 'Dez mil palavras', 'Escreva 10.000 palavras', s => s.words >= 10000],
+  ['diario50', '📔', 'Diário em dia', 'Anexe 50 páginas ao diário', s => s.journal >= 50],
+  ['tarefa50', '📋', 'Resolvedor', 'Conclua 50 tarefas', s => s.tasks >= 50],
+  ['jogo10', '🎲', 'Mesa cheia', 'Registre 10 partidas', s => s.plays >= 10],
+  ['divida1', '💸', 'Uma dívida a menos', 'Quite uma dívida parcelada', s => s.debtsCleared >= 1],
+  ['chefe50', '⚔️', 'Metade do chefão', 'Pague metade das dívidas', s => s.hp.total > 0 && s.hp.pct >= 50],
+  ['chefe100', '🛡️', 'Chefão derrotado', 'Quite todas as dívidas', s => s.hp.total > 0 && s.hp.pct >= 100],
+  ['desafio1', '🎯', 'Desafio aceito', 'Cumpra um desafio da semana', s => s.challenges >= 1],
+  ['desafio10', '🥇', 'Colecionador de desafios', 'Cumpra 10 desafios da semana', s => s.challenges >= 10],
+];
+function weekRange(d = new Date()) { const a = weekStart(d); return [iso(a), iso(addDays(a, 6))]; }
+function weekAmount(type, [a, b]) {
+  const inR = k => k >= a && k <= b;
+  if (type === 'treino') return S.workouts.log.filter(l => inR(l.date)).length;
+  if (type === 'habito') return Object.entries(S.habits.checks).filter(([k]) => inR(k)).reduce((s, [, l]) => s + (l || []).length, 0);
+  if (type === 'leitura') return S.books.reduce((s, x) => s + (x.log || []).filter(l => inR(l.date)).reduce((q, l) => q + Math.max(0, +l.read || 0), 0), 0);
+  if (type === 'estudo') return S.study.sessions.filter(x => inR(x.date)).reduce((s, x) => s + (+x.min || 0), 0);
+  if (type === 'tarefa') return S.tasks.filter(t => t.done && t.doneAt && inR(t.doneAt)).length;
+  return 0;
+}
+const CH_LABEL = { treino: n => `Fazer ${n} treinos`, habito: n => `Marcar ${n} hábitos`, leitura: n => `Ler ${n} páginas`, estudo: n => `Estudar ${n >= 60 ? (n / 60).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' h' : n + ' min'}`, tarefa: n => `Concluir ${n} tarefas` };
+const CH_UNIT = { treino: 'treinos', habito: 'marcações', leitura: 'páginas', estudo: 'min', tarefa: 'tarefas' };
+function pickChallenge(k) {
+  const avg = type => { let s = 0; for (let i = 1; i <= 4; i++) s += weekAmount(type, weekRange(addDays(parse(k), -7 * i))); return s / 4; };
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v)), opts = [];
+  if (S.workouts.plans.length) opts.push(['treino', clamp(Math.round(avg('treino')) + 1, 2, 6)]);
+  if (S.habits.list.length) opts.push(['habito', clamp(Math.round(avg('habito') * 1.15) + 2, 5, S.habits.list.length * 7)]);
+  if (S.books.some(b => b.status === 'lendo')) opts.push(['leitura', clamp(Math.round(avg('leitura') * 1.2 / 10) * 10, 50, 600)]);
+  if (S.study.subjects.length) opts.push(['estudo', clamp(Math.round(avg('estudo') * 1.15 / 30) * 30 + 30, 60, 900)]);
+  if (S.tasks.filter(t => !t.done).length >= 3) opts.push(['tarefa', Math.min(5, S.tasks.filter(t => !t.done).length)]);
+  if (!opts.length) return null;
+  const [type, target] = opts[Math.floor(parse(k).getTime() / 6048e5) % opts.length];
+  return { k, type, target };
+}
+function weekChallenge() {
+  const g = S.meta.game || {}, k = iso(weekStart());
+  if (!g.week || g.week.k !== k) return null;
+  const prog = weekAmount(g.week.type, weekRange()); return { ...g.week, prog, done: !!(g.ch || {})[k] };
+}
+let GAME = null;
+function gameSync() {
+  if (!S || !S.meta) return;
+  let ch = false; const g = S.meta.game = S.meta.game || {}; g.ach = g.ach || {}; g.ch = g.ch || {};
+  const k = iso(weekStart()), msgs = [];
+  if (!g.week || g.week.k !== k) { const w = pickChallenge(k); if (w) { g.week = w; ch = true; } }
+  if (g.week && g.week.k === k && !g.ch[k] && weekAmount(g.week.type, weekRange()) >= g.week.target) { g.ch[k] = today(); ch = true; msgs.push('🎯 Desafio da semana cumprido! +150 XP'); }
+  const st = gameStats();
+  ACHIEVEMENTS.forEach(([id, ic, name, , test]) => { if (!g.ach[id] && test(st)) { g.ach[id] = today(); ch = true; if (g.seeded) msgs.push(`${ic} Conquista: ${name}`); } });
+  if (g.seeded && g.lvl && st.level > g.lvl) msgs.unshift(`⬆️ Você subiu para o nível ${st.level}!`);
+  if (g.lvl !== st.level) { g.lvl = st.level; ch = true; }
+  if (!g.seeded) { g.seeded = true; ch = true; }
+  GAME = st;
+  if (ch) persist('meta');
+  if (msgs.length) setTimeout(() => toast(msgs.join(' · ')), 350);
+}
+
+/* avatar em pixel art: grade 24×32, contorno escuro automático e sombra nas bordas direita e de baixo */
+const AV_SKIN = ['#FFDDC4', '#F4C39B', '#DFA06C', '#B97646', '#8C5232', '#5C3520'];
+const AV_HAIR = ['#2B201C', '#5A3A26', '#93602F', '#E2B24C', '#C4472E', '#B9BCC4', '#F3F1EC', '#7A4FD6', '#2F8F8A'];
+const AV_CLOTH = ['#C93A4A', '#2F6FE0', '#2E9E6A', '#E8A13A', '#7A4FD6', '#3A3F52', '#F1EEE6', '#8A5A3C', '#E06A9A'];
+const AV_BG = ['#DCE7F5', '#E9DDF8', '#DDF2E4', '#FBE7D2', '#F8DCE4', '#E4E6EC', '#FFF1C2', '#2C3142'];
+const AV_OPTS = {
+  base: [['masc', 'Masculino'], ['fem', 'Feminino'], ['andro', 'Andrógino']],
+  body: [['reto', 'Reto'], ['curvo', 'Curvo']],
+  hair: [['careca', 'Careca'], ['curto', 'Curto'], ['espetado', 'Espetado'], ['lateral', 'Franja'], ['chanel', 'Chanel'], ['longo', 'Longo'], ['rabo', 'Rabo de cavalo'], ['coque', 'Coque'], ['trancas', 'Tranças'], ['afro', 'Black power']],
+  eyes: [['normal', 'Normal'], ['cilios', 'Cílios'], ['feliz', 'Feliz'], ['bravo', 'Determinado']],
+  mouth: [['sorriso', 'Sorriso'], ['neutro', 'Neutro'], ['aberto', 'Animado']],
+  beard: [['nenhuma', 'Sem barba'], ['bigode', 'Bigode'], ['cavanhaque', 'Cavanhaque'], ['curta', 'Barba curta'], ['cheia', 'Barba cheia']],
+  hat: [['nenhum', 'Sem chapéu'], ['bone', 'Boné'], ['gorro', 'Gorro'], ['touca', 'Touca'], ['boina', 'Boina'], ['chapeu', 'Chapéu'], ['bandana', 'Bandana']],
+  top: [['camiseta', 'Camiseta'], ['regata', 'Regata'], ['colete', 'Colete'], ['jaqueta', 'Jaqueta']],
+  bottom: [['calca', 'Calça'], ['shorts', 'Shorts'], ['saia', 'Saia']],
+  acc: [['nenhum', 'Nada'], ['oculos', 'Óculos'], ['escuros', 'Óculos escuros'], ['fone', 'Fone'], ['brinco', 'Brincos'], ['cachecol', 'Cachecol']],
+};
+const AV_PRESET = {
+  masc: { body: 'reto', hair: 'curto', eyes: 'normal', beard: 'curta', bottom: 'calca' },
+  fem: { body: 'curvo', hair: 'longo', eyes: 'cilios', beard: 'nenhuma', bottom: 'saia' },
+  andro: { body: 'reto', hair: 'chanel', eyes: 'normal', beard: 'nenhuma', bottom: 'calca' },
+};
+const AV_DEF = { base: 'andro', body: 'reto', skin: 1, hair: 'chanel', hc: 1, eyes: 'normal', mouth: 'sorriso', beard: 'nenhuma', hat: 'nenhum', hatc: 0, top: 'camiseta', topc: 1, top2c: 6, bottom: 'calca', botc: 5, acc: 'nenhum', accc: 3, bg: 1 };
+function darken(hex, f = .78) { const n = parseInt(hex.slice(1), 16); const c = [n >> 16, n >> 8 & 255, n & 255].map(v => Math.round(v * f)); return '#' + c.map(v => v.toString(16).padStart(2, '0')).join(''); }
+function lighten(hex, f = .2) { const n = parseInt(hex.slice(1), 16); const c = [n >> 16, n >> 8 & 255, n & 255].map(v => Math.round(v + (255 - v) * f)); return '#' + c.map(v => v.toString(16).padStart(2, '0')).join(''); }
+let AV_SEQ = 0;
+function avatarSvg(a0, h = 64, label = 'Seu avatar') {
+  const a = { ...AV_DEF, ...(a0 || {}) }, W = 32, H = 44, G = Array.from({ length: H }, () => Array(W).fill(null));
+  const P = (x, y, c, r = c, s = true) => { if (x >= 0 && x < W && y >= 0 && y < H) G[y][x] = { c, r, s }; };
+  const R = (x0, y0, x1, y1, c, r = c, s = true) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) P(x, y, c, r, s); };
+  const F = (x0, y0, x1, y1, c) => R(x0, y0, x1, y1, c, 'f', false); // detalhe sem volume
+  const X = (...pts) => pts.forEach(([x, y]) => { if (G[y]) G[y][x] = null; });
+  const skin = AV_SKIN[a.skin] || AV_SKIN[1], hc = AV_HAIR[a.hc] || AV_HAIR[0], top = AV_CLOTH[a.topc] || AV_CLOTH[1], top2 = AV_CLOTH[a.top2c] || AV_CLOTH[6], bot = AV_CLOTH[a.botc] || AV_CLOTH[5], hatc = AV_CLOTH[a.hatc] || AV_CLOTH[0], accc = AV_CLOTH[a.accc] || AV_CLOTH[3];
+  const INK = '#2B1D1A', EYE = '#1E1416', MOUTH = '#6E2A26', shoe = '#4A3026', belt = '#4A3328';
+  // cabelo de trás
+  if (a.hair === 'longo') { R(5, 9, 26, 31, hc, 'hairb'); X([5, 31], [26, 31]); }
+  if (a.hair === 'rabo') { R(25, 11, 28, 24, hc, 'hairb'); X([28, 11], [28, 24]); F(25, 13, 27, 13, accc); }
+  if (a.hair === 'coque') { R(11, 1, 20, 6, hc, 'hairb'); X([11, 1], [20, 1], [11, 2], [20, 2]); }
+  if (a.hair === 'trancas') { for (let y = 15; y <= 32; y++) { const c = y % 3 === 0 ? darken(hc, .82) : hc; R(4, y, 6, y, c, 'brL'); R(25, y, 27, y, c, 'brR'); } F(4, 33, 6, 33, accc); F(25, 33, 27, 33, accc); }
+  // pernas e roupa de baixo
+  R(9, 40, 14, 41, shoe, 'shoeL'); R(17, 40, 22, 41, shoe, 'shoeR');
+  if (a.bottom === 'calca') { R(10, 34, 21, 35, bot, 'bot'); R(10, 36, 14, 39, bot, 'legL'); R(17, 36, 21, 39, bot, 'legR'); }
+  if (a.bottom === 'shorts') { R(10, 34, 21, 36, bot, 'bot'); X([15, 36], [16, 36]); R(10, 37, 14, 39, skin, 'legL'); R(17, 37, 21, 39, skin, 'legR'); }
+  if (a.bottom === 'saia') { R(9, 33, 22, 33, bot, 'bot'); R(8, 34, 23, 35, bot, 'bot'); R(7, 36, 24, 37, bot, 'bot'); R(10, 38, 14, 39, skin, 'legL'); R(17, 38, 21, 39, skin, 'legR'); }
+  // tronco
+  const body = a.top === 'colete' ? top2 : top;
+  R(9, 24, 22, 33, body, 'torso');
+  if (a.top === 'colete') { R(9, 24, 13, 33, top, 'vestL'); R(18, 24, 22, 33, top, 'vestR'); }
+  if (a.top === 'jaqueta') { F(15, 25, 16, 33, darken(top2, .9)); R(9, 32, 22, 33, darken(top, .85), 'torso'); }
+  if (a.top === 'camiseta' || a.top === 'regata') { F(14, 24, 17, 24, skin); F(15, 25, 16, 25, skin); }
+  if (a.top === 'regata') { F(11, 24, 12, 25, darken(top, .85)); F(19, 24, 20, 25, darken(top, .85)); }
+  if (a.body === 'curvo') { X([9, 29], [9, 30], [9, 31], [22, 29], [22, 30], [22, 31]); }
+  if (a.bottom !== 'saia') { R(9, 33, 22, 33, belt, 'belt'); F(15, 33, 16, 33, '#E2B24C'); }
+  // braços (um pixel de folga do tronco vira contorno)
+  const sl = a.top === 'jaqueta' ? 31 : a.top === 'colete' ? 29 : a.top === 'regata' ? 23 : 27, arm = a.top === 'colete' ? top2 : top;
+  for (const [x0, k] of [[5, 'armL'], [24, 'armR']]) { if (sl >= 24) R(x0, 24, x0 + 2, sl, arm, k); R(x0, sl + 1, x0 + 2, 31, skin, k + 's'); R(x0, 32, x0 + 2, 34, skin, k + 'h'); }
+  X([5, 24], [26, 24]);
+  // cabeça e orelhas
+  R(7, 8, 24, 23, skin, 'head'); X([7, 8], [8, 8], [7, 9], [24, 8], [23, 8], [24, 9], [7, 23], [24, 23]);
+  R(5, 14, 6, 18, skin, 'earL'); R(25, 14, 26, 18, skin, 'earR'); X([5, 14], [5, 18], [26, 14], [26, 18]);
+  F(6, 15, 6, 17, darken(skin, .85)); F(25, 15, 25, 17, darken(skin, .85));
+  // barba
+  if (a.beard === 'curta') { R(7, 16, 8, 22, hc, 'beard'); R(23, 16, 24, 22, hc, 'beard'); R(8, 21, 23, 24, hc, 'beard'); R(10, 25, 21, 25, hc, 'beard'); X([7, 22], [24, 22]); }
+  if (a.beard === 'cheia') { R(7, 16, 24, 26, hc, 'beard'); R(9, 27, 22, 27, hc, 'beard'); R(11, 28, 20, 28, hc, 'beard'); X([7, 26], [24, 26]); F(12, 18, 19, 19, skin); }
+  if (a.beard === 'cavanhaque') { R(13, 22, 18, 25, hc, 'beard'); X([13, 25], [18, 25]); }
+  // rosto
+  const brow = a.hair === 'careca' ? darken(skin, .55) : darken(hc, .75);
+  const eyes = (x) => { F(x, 13, x + 1, 15, EYE); F(x, 13, x, 13, '#FFFFFF'); };
+  if (a.eyes === 'feliz') { [[0, 15], [1, 14], [2, 14], [3, 15]].forEach(([dx, y]) => { F(9 + dx, y, 9 + dx, y, EYE); F(19 + dx, y, 19 + dx, y, EYE); }); }
+  else { eyes(10); eyes(20); }
+  if (a.eyes === 'cilios') { F(9, 12, 9, 12, EYE); F(22, 12, 22, 12, EYE); F(12, 13, 12, 13, EYE); F(19, 13, 19, 13, EYE); }
+  if (a.eyes === 'bravo') { F(9, 10, 10, 10, brow); F(11, 11, 12, 11, brow); F(21, 10, 22, 10, brow); F(19, 11, 20, 11, brow); }
+  else { F(9, 11, 12, 11, brow); F(19, 11, 22, 11, brow); }
+  F(15, 16, 16, 17, darken(skin, .8)); F(15, 16, 15, 16, lighten(skin, .25));
+  if (a.beard !== 'cheia') { F(9, 18, 10, 18, '#F0928E'); F(21, 18, 22, 18, '#F0928E'); }
+  if (a.beard === 'bigode' || a.beard === 'cavanhaque' || a.beard === 'curta' || a.beard === 'cheia') { R(11, 18, 20, 19, darken(hc, .9), 'stache'); X([11, 19], [20, 19]); }
+  const mc = ['curta', 'cheia'].includes(a.beard) ? '#3A2420' : MOUTH;
+  if (a.mouth === 'sorriso') { F(13, 20, 13, 20, mc); F(18, 20, 18, 20, mc); F(14, 21, 17, 21, mc); }
+  if (a.mouth === 'neutro') { F(14, 21, 17, 21, mc); }
+  if (a.mouth === 'aberto') { F(13, 20, 18, 21, '#5A1E1C'); F(14, 21, 17, 21, '#E06A7A'); F(14, 20, 17, 20, '#FFFFFF'); }
+  // cabelo da frente
+  const cap = () => { R(8, 5, 23, 5, hc, 'hair'); R(7, 6, 24, 10, hc, 'hair'); R(7, 11, 8, 15, hc, 'hair'); R(23, 11, 24, 15, hc, 'hair'); };
+  if (['curto', 'espetado', 'lateral', 'longo', 'rabo', 'coque', 'trancas'].includes(a.hair)) cap();
+  if (a.hair === 'espetado') { [[8, 3], [10, 2], [13, 3], [15, 1], [18, 2], [20, 3], [22, 3]].forEach(([x, y]) => R(x, y, x + 1, 5, hc, 'hair')); }
+  if (a.hair === 'lateral') { R(9, 11, 17, 11, hc, 'hair'); R(9, 12, 13, 12, hc, 'hair'); }
+  if (a.hair === 'longo') { R(7, 11, 9, 24, hc, 'hair'); R(22, 11, 24, 24, hc, 'hair'); R(10, 11, 13, 11, hc, 'hair'); }
+  if (a.hair === 'chanel') { R(8, 4, 23, 4, hc, 'hair'); R(6, 5, 25, 10, hc, 'hair'); R(5, 9, 9, 21, hc, 'hair'); R(22, 9, 26, 21, hc, 'hair'); R(10, 11, 21, 11, hc, 'hair'); X([5, 21], [26, 21]); }
+  if (a.hair === 'afro') { R(7, 0, 24, 0, hc, 'hair'); R(5, 1, 26, 2, hc, 'hair'); R(4, 3, 27, 10, hc, 'hair'); R(4, 11, 7, 17, hc, 'hair'); R(24, 11, 27, 17, hc, 'hair'); X([4, 3], [27, 3], [4, 17], [27, 17]); }
+  if (a.hair === 'careca') { F(11, 9, 14, 9, lighten(skin, .3)); F(10, 10, 11, 10, lighten(skin, .3)); }
+  // chapéus
+  if (a.hat === 'bone') { R(8, 3, 23, 3, hatc, 'hat'); R(7, 4, 24, 9, hatc, 'hat'); R(5, 10, 26, 11, darken(hatc, .8), 'brim'); X([5, 11], [26, 11]); F(15, 2, 16, 2, darken(hatc, .7)); F(14, 6, 17, 7, lighten(hatc, .55)); }
+  if (a.hat === 'gorro' || a.hat === 'touca') { R(8, 2, 23, 2, hatc, 'hat'); R(6, 3, 25, 8, hatc, 'hat'); R(6, 9, 25, 11, darken(hatc, .85), 'brim'); for (let x = 7; x <= 24; x += 2) F(x, 10, x, 10, darken(hatc, .7)); if (a.hat === 'touca') R(13, 0, 18, 2, '#F3F1EC', 'pom'); else F(14, 4, 17, 6, lighten(hatc, .6)); }
+  if (a.hat === 'boina') { R(9, 2, 22, 2, hatc, 'hat'); R(6, 3, 27, 8, hatc, 'hat'); R(6, 9, 23, 10, hatc, 'hat'); X([27, 3], [27, 8], [6, 3]); R(21, 0, 23, 1, darken(hatc, .8), 'nub'); F(10, 4, 13, 5, lighten(hatc, .35)); }
+  if (a.hat === 'chapeu') { R(10, 1, 21, 7, hatc, 'hat'); X([10, 1], [21, 1]); R(10, 6, 21, 7, darken(hatc, .7), 'band'); R(2, 8, 29, 10, hatc, 'brim'); X([2, 10], [29, 10], [2, 8], [29, 8]); }
+  if (a.hat === 'bandana') { R(7, 5, 24, 10, hatc, 'hat'); X([7, 5], [24, 5]); [[10, 7], [15, 6], [20, 8], [12, 9], [18, 9]].forEach(([x, y]) => F(x, y, x, y, '#FFFFFF')); R(25, 9, 27, 12, hatc, 'knot'); X([27, 9]); }
+  // acessórios
+  if (a.acc === 'oculos' || a.acc === 'escuros') { const dk = a.acc === 'escuros'; for (const x0 of [8, 18]) { F(x0, 12, x0 + 5, 12, INK); F(x0, 16, x0 + 5, 16, INK); F(x0, 12, x0, 16, INK); F(x0 + 5, 12, x0 + 5, 16, INK); if (dk) { F(x0 + 1, 13, x0 + 4, 15, '#1D1B24'); F(x0 + 1, 13, x0 + 2, 13, '#7A7E92'); } } F(14, 13, 17, 13, INK); F(7, 13, 7, 13, INK); F(24, 13, 24, 13, INK); }
+  if (a.acc === 'fone') { R(9, 1, 22, 2, '#3A3542', 'band'); R(6, 3, 8, 4, '#3A3542', 'band'); R(23, 3, 25, 4, '#3A3542', 'band'); R(4, 5, 6, 12, '#3A3542', 'band'); R(25, 5, 27, 12, '#3A3542', 'band'); R(3, 13, 7, 19, accc, 'cupL'); R(24, 13, 28, 19, accc, 'cupR'); }
+  if (a.acc === 'brinco') { F(5, 19, 5, 20, '#E2B24C'); F(26, 19, 26, 20, '#E2B24C'); }
+  if (a.acc === 'cachecol') { R(8, 23, 23, 26, accc, 'scarf'); X([8, 23], [23, 23]); R(18, 27, 21, 32, darken(accc, .9), 'scarfT'); for (let y = 24; y <= 25; y++) F(10, y, 10, y, darken(accc, .8)); }
+  // luz de cima à esquerda: brilho nas bordas expostas, sombra à direita e embaixo, sombra projetada sob cabelo e cabeça
+  const out = [], at = (x, y) => (G[y] && G[y][x]) || null, diff = (p, n) => !n || (n.r !== p.r && n.r !== 'f');
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const p = G[y][x];
+    if (!p) { if (at(x - 1, y) || at(x + 1, y) || at(x, y - 1) || at(x, y + 1)) out.push([x, y, INK]); continue; }
+    if (!p.s) { out.push([x, y, p.c]); continue; }
+    const r = at(x + 1, y), b = at(x, y + 1), t = at(x, y - 1), l = at(x - 1, y);
+    let c = p.c;
+    if (diff(p, r) || diff(p, b)) c = darken(p.c, .74);
+    else if (t && diff(p, t)) c = darken(p.c, .84);
+    else if (diff(p, at(x + 2, y)) || diff(p, at(x, y + 2))) c = darken(p.c, .88);
+    else if (!t || !l || diff(p, l)) c = lighten(p.c, .2);
+    else if (diff(p, at(x - 2, y)) || diff(p, at(x, y - 2))) c = lighten(p.c, .1);
+    out.push([x, y, c]);
+  }
+  let rects = '';
+  for (let i = 0; i < out.length;) { const [x, y, c] = out[i]; let j = i + 1; while (j < out.length && out[j][1] === y && out[j][0] === out[j - 1][0] + 1 && out[j][2] === c) j++; rects += `<rect x="${x}" y="${y}" width="${j - i}" height="1" fill="${c}"/>`; i = j; }
+  return `<svg class="pxav" viewBox="0 0 ${W} ${H + 2}" height="${h}" width="${Math.round(h * W / (H + 2))}" shape-rendering="crispEdges" role="img" aria-label="${esc(label)}"><ellipse cx="16" cy="43.4" rx="10" ry="1.6" fill="#000" opacity=".18"/>${rects}</svg>`;
+}
+const avatarBox = (h = 64, cls = '') => `<span class="avbox ${cls}" style="--av:${AV_BG[(S.meta.avatar || AV_DEF).bg ?? 1]}">${avatarSvg(S.meta.avatar, h)}</span>`;
+function hxHoje(d, ovHtml) {
+  const st = GAME || gameStats(), av = { ...AV_DEF, ...(S.meta.avatar || {}) }, w = weekChallenge(), g = S.meta.game || {}, got = ACHIEVEMENTS.filter(([id]) => (g.ach || {})[id]).length;
+  return `<div class="top hh-top"><div style="min-width:0"><div class="eyebrow">${WDL[d.getDay()]}, ${d.getDate()} de ${MES[d.getMonth()]}</div><h1>${greet()}${S.meta.name ? ', ' + esc(S.meta.name) : ''}</h1></div>
+    <div style="display:flex;gap:6px"><button class="icon-btn" data-act="search" aria-label="Buscar">${I.search}</button><button class="icon-btn" data-act="sub" data-k="ajustes" aria-label="Ajustes e backup">${I.ajustes}</button></div></div>
+  <button class="hh-player" data-act="sub" data-k="perfil" aria-label="Abrir perfil: nível ${st.level}, ${st.into} de ${st.need} XP">
+    <span class="hh-av" style="--av:${AV_BG[av.bg ?? 1]}">${avatarSvg(av, 118)}</span>
+    <span class="hh-info">
+      <span class="hh-lv"><b>Nível ${st.level}</b><span>${LEVEL_TITLE(st.level)}</span></span>
+      <span class="xpbar"><i style="width:${Math.round(st.into / st.need * 100)}%"></i></span>
+      <span class="hh-xp num">${st.into}/${st.need} XP · faltam ${st.need - st.into} para o nível ${st.level + 1}</span>
+      <span class="hh-chips">${w ? `<span class="hh-chip">🎯 ${w.done ? 'Desafio cumprido' : `${Math.min(w.prog, w.target)}/${w.target} ${CH_UNIT[w.type]}`}</span>` : ''}<span class="hh-chip">🏅 ${got}/${ACHIEVEMENTS.length}</span></span>
+    </span>
+  </button>
+  ${ovHtml}`;
+}
+function hxTop({ eyebrow = '', title = '', right = '', date = '', extra = '', big = false }) {
+  const st = GAME || gameStats(), av = { ...AV_DEF, ...(S.meta.avatar || {}) }, w = big ? weekChallenge() : null;
+  const back = UI.sub ? `<button class="back" data-act="tab" data-k="hoje">${I.left}Hoje</button>` : '';
+  return `<div class="top hx${big ? ' big' : ''}">
+    <div class="hx-av">${date ? `<span class="hx-date">${date}</span>` : ''}<button class="hx-card" data-act="sub" data-k="perfil" style="--av:${AV_BG[av.bg ?? 1]}" aria-label="Abrir perfil e avatar">${big ? `<span class="hx-lv">NV ${st.level}</span>` : ''}${avatarSvg(av, big ? 172 : 92)}</button></div>
+    <div class="hx-main">
+      <div class="hx-row"><div style="min-width:0">${back}${eyebrow ? `<div class="eyebrow">${eyebrow}</div>` : ''}<h1>${title}</h1></div>${right}</div>
+      <button class="hx-xpwrap" data-act="sub" data-k="perfil" aria-label="Nível ${st.level}, ${st.into} de ${st.need} XP"><span class="hx-xp"><span>Nível ${st.level} · ${LEVEL_TITLE(st.level)}</span><span class="num">${st.into}/${st.need} XP</span></span>
+      <span class="xpbar"><i style="width:${Math.round(st.into / st.need * 100)}%"></i></span>
+      ${w ? `<span class="hx-ch">🎯 ${w.done ? 'Desafio da semana cumprido' : `Desafio: ${Math.min(w.prog, w.target)}/${w.target} ${CH_UNIT[w.type]}`}</span>` : ''}</button>
+      ${extra}
+    </div></div>`;
+}
+function playerCard() {
+  const st = GAME || gameStats(), w = weekChallenge();
+  return `<button class="player" data-act="sub" data-k="perfil" aria-label="Abrir seu perfil: nível ${st.level}">
+    ${avatarBox(50)}
+    <span class="pl-main"><span class="pl-top"><b>Nível ${st.level}</b><span>${LEVEL_TITLE(st.level)}</span></span>
+      <span class="xpbar"><i style="width:${Math.round(st.into / st.need * 100)}%"></i></span>
+      <span class="pl-sub"><span class="num">${st.into}/${st.need} XP</span>${w ? `<span>🎯 ${w.done ? 'Desafio cumprido' : `${Math.min(w.prog, w.target)}/${w.target} ${CH_UNIT[w.type]}`}</span>` : ''}</span></span>
+  </button>`;
+}
+VIEWS.perfil = () => {
+  const st = GAME || gameStats(), w = weekChallenge(), g = S.meta.game || {}, got = ACHIEVEMENTS.filter(([id]) => (g.ach || {})[id]).length;
+  const areas = Object.entries(st.area), mx = Math.max(1, ...areas.map(([, v]) => v));
+  return `${header('', 'Perfil')}
+  <section class="blk in-band"><div class="prof">
+    ${avatarBox(150, 'big')}
+    <div class="prof-main"><div class="prof-name">${esc(S.meta.name || 'Você')}</div><div class="prof-t">Nível ${st.level} · ${LEVEL_TITLE(st.level)}</div>
+      <span class="xpbar lg"><i style="width:${Math.round(st.into / st.need * 100)}%"></i></span>
+      <div class="prof-xp num">${st.into} de ${st.need} XP para o nível ${st.level + 1}</div>
+      <div class="prof-xp num">${st.xp.toLocaleString('pt-BR')} XP no total</div>
+      <button class="btn sm" data-act="av-edit" style="margin-top:10px">Editar avatar</button></div>
+  </div></section>
+  <section class="blk"><div class="blk-h"><h2>Desafio da semana</h2><span style="color:var(--muted);font-size:13px">+150 XP</span></div><div class="group" style="padding:14px">
+    ${w ? `<div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline"><b>${w.done ? '✅ ' : '🎯 '}${CH_LABEL[w.type](w.target)}</b><span class="num" style="color:var(--muted);font-size:14px">${Math.min(w.prog, w.target)}/${w.target}</span></div>
+      <div class="bar" style="--c:var(--brand);margin-top:10px"><i style="width:${Math.min(100, Math.round(w.prog / w.target * 100))}%"></i></div>
+      <p class="note" style="padding:8px 0 0">${w.done ? 'Cumprido! Um desafio novo chega na segunda-feira.' : 'A meta é calculada pelo seu ritmo das últimas 4 semanas, um pouco acima do normal. Muda toda segunda.'}</p>`
+    : '<div class="empty" style="padding:6px"><b>Sem desafio ainda</b>Crie hábitos, fichas de treino, matérias ou livros em leitura para receber desafios.</div>'}
+  </div></section>
+  <section class="blk"><div class="blk-h"><h2>Conquistas</h2><span class="num" style="color:var(--muted);font-size:13px">${got} de ${ACHIEVEMENTS.length}</span></div>
+    <div class="achs">${ACHIEVEMENTS.map(([id, ic, name, desc]) => { const d = (g.ach || {})[id]; return `<div class="ach${d ? ' on' : ''}" title="${esc(desc)}"><span class="ach-i">${d ? ic : '🔒'}</span><b>${esc(name)}</b><small>${d ? `${pad(parse(d).getDate())}/${pad(parse(d).getMonth() + 1)}/${parse(d).getFullYear()}` : esc(desc)}</small></div>`; }).join('')}</div></section>
+  <section class="blk"><div class="blk-h"><h2>XP por área</h2></div><div class="group">${areas.map(([k, v]) => { const r = XP_RULES.find(x => x[0] === k); return `<div class="row" style="flex-direction:column;align-items:stretch;gap:6px"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-weight:600">${k}</b><span class="num" style="color:var(--muted);font-size:14px">${v.toLocaleString('pt-BR')} XP</span></div><div class="bar" style="--c:${r[1]}"><i style="width:${Math.round(v / mx * 100)}%"></i></div><div style="font-size:12px;color:var(--muted)">${r[2]}</div></div>`; }).join('')}</div>
+    <p class="note">Os pontos vêm do que você já registra no app: nada para preencher a mais. Nas sequências de hábitos, uma falta por semana não quebra a sequência (🛡️).</p></section>`;
+};
+function avEditorBody(d) {
+  const sw = (k, list) => `<div class="avsw-row">${list.map((c, i) => `<button class="avsw${+d[k] === i ? ' on' : ''}" data-act="av-opt" data-k="${k}" data-v="${i}" style="--a:${c}" aria-label="Cor ${i + 1}" aria-pressed="${+d[k] === i}"></button>`).join('')}</div>`;
+  const thumbs = k => `<div class="avthumbs">${AV_OPTS[k].map(([v, l]) => `<button class="avth${d[k] === v ? ' on' : ''}" data-act="av-opt" data-k="${k}" data-v="${v}" aria-pressed="${d[k] === v}">${avatarSvg({ ...d, [k]: v }, 58, l)}<span>${l}</span></button>`).join('')}</div>`;
+  const chips = k => `<div class="radios">${AV_OPTS[k].map(([v, l]) => `<button class="avchip${d[k] === v ? ' on' : ''}" data-act="av-opt" data-k="${k}" data-v="${v}" aria-pressed="${d[k] === v}">${l}</button>`).join('')}</div>`;
+  const sec = (t, h) => `<div class="fld"><span class="lbl">${t}</span>${h}</div>`;
+  return `<div class="avprev" style="--av:${AV_BG[d.bg]}">${avatarSvg(d, 168)}</div>
+  <div class="btns" style="margin:0 0 6px"><button class="btn sm" data-act="av-rand">🎲 Sortear</button></div>
+  <div class="form">
+    ${sec('Estilo base', chips('base'))}${sec('Corpo', chips('body'))}${sec('Pele', sw('skin', AV_SKIN))}
+    ${sec('Cabelo', thumbs('hair'))}${sec('Cor do cabelo', sw('hc', AV_HAIR))}
+    ${sec('Olhos', chips('eyes'))}${sec('Boca', chips('mouth'))}${sec('Barba', thumbs('beard'))}
+    ${sec('Chapéu', thumbs('hat'))}${d.hat !== 'nenhum' ? sec('Cor do chapéu', sw('hatc', AV_CLOTH)) : ''}
+    ${sec('Parte de cima', thumbs('top'))}${sec('Cor principal', sw('topc', AV_CLOTH))}${d.top === 'colete' || d.top === 'jaqueta' ? sec('Cor de baixo do colete / detalhe', sw('top2c', AV_CLOTH)) : ''}
+    ${sec('Parte de baixo', chips('bottom'))}${sec('Cor da parte de baixo', sw('botc', AV_CLOTH))}
+    ${sec('Acessório', thumbs('acc'))}${['fone', 'cachecol'].includes(d.acc) ? sec('Cor do acessório', sw('accc', AV_CLOTH)) : ''}
+    ${sec('Fundo', sw('bg', AV_BG))}
+  </div>`;
+}
+function openAvatarEditor() {
+  const d = { ...AV_DEF, ...(S.meta.avatar || {}) };
+  openSheet('Seu avatar', `<div id="av-body">${avEditorBody(d)}</div>`, { right: '<button data-act="av-save" style="text-align:right">Salvar</button>' });
+  $('#sheet')._av = d;
+}
+function avRefresh() { const d = $('#sheet')._av; const b = $('#av-body'); if (b) b.innerHTML = avEditorBody(d); }
+
 const CAT_SLOT = { Moradia: 1, Mercado: 2, Transporte: 3, 'Saúde': 4, 'Educação': 5, Lazer: 6, Contas: 7, 'Cartão': 8 };
 function yearSpend(y) {
   const months = Array.from({ length: 12 }, () => ({})), add = (ym, cat, v) => { if (!ym || +ym.slice(0, 4) !== y) return; const m = months[+ym.slice(5, 7) - 1]; const c = CAT_SLOT[cat] ? cat : 'Outros'; m[c] = (m[c] || 0) + v; };
@@ -940,7 +1385,7 @@ function yearChart() {
 }
 function debtChart() {
   const pts = debtSeries(); if (pts.length < 2 || pts[0].d <= 0) return '';
-  const W = 340, H = 190, x0 = 8, x1 = W - 8, y0 = 34, yb = H - 26, n = pts.length;
+  const W = 340, H = 95, x0 = 8, x1 = W - 8, y0 = 22, yb = H - 20, n = pts.length;
   const mx = Math.max(...pts.map(p => Math.max(p.d, p.s || 0)), 1);
   const x = i => x0 + i * (x1 - x0) / (n - 1), y = v => yb - Math.max(0, v) / mx * (yb - y0);
   const lab = ym => `${MES[+ym.slice(5) - 1].slice(0, 3)}/${ym.slice(2, 4)}`;
@@ -949,7 +1394,8 @@ function debtChart() {
   const sp = pts.filter(p => p.s !== null); const sPath = pts.map((p, i) => p.s === null ? '' : `${sp.indexOf(p) ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.s).toFixed(1)}`).join(' ');
   const end = pts.at(-1), half = pts.find(p => p.d <= pts[0].d / 2);
   const ticks = [0, Math.round((n - 1) / 3), Math.round(2 * (n - 1) / 3), n - 1];
-  return `<section class="blk"><div class="blk-h"><h2>Dívidas</h2><button class="link" data-act="tab" data-k="financas">Ver finanças</button></div><div class="group" style="padding:14px 12px 10px">
+  return `<section class="blk"><div class="blk-h"><h2>Dívidas</h2></div><div class="group" style="padding:14px 12px 10px">
+    ${(() => { const hp = debtHP(); return hp.total ? `<div class="boss"><div class="boss-h"><span>👾 Chefão das dívidas</span><b class="num">${hp.pct}% derrotado</b></div><div class="hp" role="img" aria-label="Vida restante do chefão: ${100 - hp.pct}%"><i style="width:${100 - hp.pct}%"></i>${[25, 50, 75].map(m => `<s style="left:${100 - m}%"></s>`).join('')}</div></div>` : ''; })()}
     <div style="font-size:15px;font-weight:600">${money(pts[0].d)} hoje · quitado em ${lab(end.m)}</div>
     <div style="font-size:13px;color:var(--muted);margin-top:2px">${half ? `Metade paga em ${lab(half.m)}. ` : ''}Cartões e parcelas, mês a mês.</div>
     <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Dívida restante até ${lab(end.m)}" style="width:100%;height:auto;display:block;margin-top:6px">
@@ -959,7 +1405,7 @@ function debtChart() {
       ${sp.length > 1 ? `<path d="${sPath}" fill="none" stroke="var(--c-fin)" stroke-width="2.2" stroke-linejoin="round"/>` : ''}
       ${pts.map((p, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(p.d).toFixed(1)}" r="9" fill="transparent"><title>${lab(p.m)}: falta ${money(p.d)}${p.s !== null ? ` · guardado ${money(p.s)}` : ''}</title></circle>`).join('')}
       <circle cx="${x(0)}" cy="${y(pts[0].d)}" r="3.5" fill="var(--danger)"/><circle cx="${x(n - 1)}" cy="${y(0)}" r="3.5" fill="var(--danger)"/>
-      ${ticks.map(i => `<text x="${x(i)}" y="${H - 8}" font-size="11" fill="var(--muted)" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}">${lab(pts[i].m)}</text>`).join('')}
+      ${ticks.map(i => `<text x="${x(i)}" y="${H - 5}" font-size="11" fill="var(--muted)" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}">${lab(pts[i].m)}</text>`).join('')}
       <g font-size="11"><rect x="${x0}" y="6" width="10" height="3" rx="1.5" fill="var(--danger)"/><text x="${x0 + 14}" y="11" fill="var(--muted)">Dívida restante</text>${sp.length > 1 ? `<rect x="${x0 + 112}" y="6" width="10" height="3" rx="1.5" fill="var(--c-fin)"/><text x="${x0 + 126}" y="11" fill="var(--muted)">Dinheiro guardado previsto</text>` : ''}</g>
     </svg>
     <p class="note" style="padding:4px 2px 0">Previsão com os lançamentos do app, já descontando o teto de gastos de cada fase do plano. Toque no gráfico para ver cada mês.</p></div></section>`;
@@ -972,17 +1418,16 @@ VIEWS.hoje = () => {
   const checks = S.habits.checks[t] || [];
   const next = S.meetings.filter(m => m.status === 'proxima' && m.date >= t).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))[0];
   const sw = studyWeek();
-  return `<div class="hero">${header(`${WDL[d.getDay()]}, ${d.getDate()} de ${MES[d.getMonth()]}`, `${greet()}${S.meta.name ? ', ' + esc(S.meta.name) : ''}`, `<div style="display:flex;gap:2px"><button class="icon-btn" data-act="search" aria-label="Buscar" style="color:var(--muted)">${I.search}</button><button class="icon-btn" data-act="sub" data-k="ajustes" aria-label="Ajustes e backup" style="color:var(--muted)">${I.ajustes}</button></div>`)}
-  <div class="ov"><div class="ov-h">Visão geral <span>hoje</span></div><div class="tiles">
+  const ovHtml = `<div class="ov"><div class="ov-h">Visão geral <span>hoje</span></div><div class="tiles">
     <button class="tile" data-act="tab" data-k="agenda" style="--c:var(--c-agenda)"><div class="k">Hoje</div><div class="v">${items.length}</div></button>
     <button class="tile" data-act="sub" data-k="tarefas" style="--c:var(--c-tarefa)"><div class="k">A fazer</div><div class="v">${open.length}</div></button>
     ${(() => { const inv = (S.finance.plan || {}).investAccountId, accs = S.finance.accounts.filter(a => a.id !== inv), v = accs.length ? accs.reduce((a, c) => a + accBalance(c), 0) : mt.bal; return `<button class="tile" data-act="tab" data-k="financas" style="--c:${v >= 0 ? 'var(--c-fin)' : 'var(--danger)'}"><div class="k">${accs.length ? 'Em conta' : 'Saldo'}</div><div class="v sm">${moneyS(v)}</div></button>`; })()}
-  </div></div></div>
+  </div></div>`;
+  return `<div class="hero hx-hoje">${hxHoje(d, ovHtml)}</div>
   ${demoBanner()}
   ${alertsCard()}
   <section class="blk"><div class="blk-h"><h2>Seu dia</h2><button class="link" data-act="new" data-k="evento" data-date="${t}">Adicionar</button></div>
     <div class="group">${items.length ? items.map(itemRow).join('') : '<div class="empty"><b>Dia livre</b>Nada marcado para hoje.</div>'}</div></section>
-  ${debtChart()}
   ${careerToday()}
   ${next ? `<section class="blk"><div class="blk-h"><h2>Próxima reunião</h2><button class="link" data-act="go-meetings" style="color:var(--c-reun)">Ver todas</button></div>${meetingCard(next)}</section>` : ''}
   <section class="blk"><div class="blk-h"><h2>Hábitos de hoje</h2><button class="link" data-act="sub" data-k="habitos" style="color:var(--c-habito)">Editar</button></div>
@@ -1027,7 +1472,7 @@ VIEWS.agenda = () => {
   for (let i = 1; i <= 7 && upcoming.length < 6; i++) { const k = iso(addDays(parse(UI.agDay), i)); itemsOn(k).filter(x => x.kind === 'evento' || x.kind === 'reuniao').forEach(x => upcoming.push({ ...x, day: k })); }
   if (UI.agMode === 'reunioes') return `${header('', 'Agenda')}${agSeg()}${meetingsBody()}`;
   if (UI.agMode === 'tarefas') return `${header('', 'Agenda')}${agSeg()}${VIEWS.tarefas()}`;
-  if (UI.agMode === 'habitos') return `${header('', 'Agenda')}${agSeg()}${VIEWS.habitos()}`;
+  if (UI.agMode === 'habitos') return `${header('', 'Agenda')}${agSeg()}${VIEWS.habitos()}${journalCal(true)}${journalDay()}`;
   return `<div class="hero ag">${header('', 'Agenda', `<button class="pill-btn" data-act="ag-today">Hoje</button>`)}
   ${agSeg()}
   <div class="cal"><div class="cal-h"><b>${MES[m - 1]} ${y}</b><div>
@@ -1116,7 +1561,8 @@ VIEWS.financas = () => {
     const alvo = resV >= P.reserva.marco ? P.reserva.alvo : P.reserva.marco, pr = Math.max(0, Math.min(100, resV / alvo * 100));
     const invAcc = f.accounts.find(a => a.id === P.investAccountId), invV = invAcc ? accBalance(invAcc) : 0;
     const stepsDone = P.steps.filter(x => x.done).length;
-    return `${header('', 'Finanças')}${seg}
+    if (!ph) return `${header('', 'Finanças')}${seg}${debtChart()}<section class="blk"><div class="group"><div class="empty"><b>Nenhum plano ainda</b>As dívidas parceladas aparecem acima; o plano de fases e metas aparece aqui quando for criado.</div></div></section>`;
+    return `${header('', 'Finanças')}${seg}${debtChart()}
     <section class="blk"><div class="blk-h"><h2>Meta de gastos</h2><span class="num" style="color:var(--muted);font-size:14px">${MES[m - 1]} ${y}</span></div><div class="group" style="padding:14px">
       <div style="font-size:13px;color:var(--muted);font-weight:600">Fase ${esc(ph.name)}</div>
       <div class="num" style="font-family:var(--f-display);font-size:30px;font-weight:800;color:var(--c-fin)">${money(ph.teto)}<span style="font-size:15px;color:var(--muted);font-weight:600"> por mês</span></div>
@@ -1211,7 +1657,7 @@ VIEWS.treinos = () => {
   ${S.workouts.plans.length ? S.workouts.plans.map(p => {
     const doneToday = S.workouts.log.some(l => l.planId === p.id && l.date === t);
     return `<div class="group"><button class="row" data-act="open" data-k="ficha" data-id="${p.id}"><div class="main"><div class="t">${esc(p.name)}</div><div class="s">${(p.days || []).length ? p.days.map(d => WD[d]).join(' · ') : 'Sem dia fixo'}${p.notes ? ' · ' + esc(p.notes) : ''}</div></div>${I.chev}</button>
-    <div style="padding:0 14px 6px"><table class="ex-table">${p.exercises.map(e => `<tr><td>${esc(e.name)}</td><td>${esc(e.sets)} × ${esc(e.reps)}</td><td>${esc(e.load || '')}</td></tr>`).join('')}</table></div>
+    <div style="padding:0 14px 6px"><table class="ex-table">${p.exercises.map(e => `<tr><td><a class="exlink" href="${esc(exVideo(e))}" target="_blank" rel="noopener" aria-label="Vídeo de como fazer ${esc(e.name)}">${I.play}<span>${esc(e.name)}</span></a></td><td>${esc(e.sets)} × ${esc(e.reps)}</td><td>${e.prAt && e.prAt >= iso(addDays(new Date(), -14)) ? '<span title="Recorde recente">🏆 </span>' : ''}${esc(e.load || '')}</td></tr>`).join('')}</table></div>
     <div style="padding:6px 14px 14px"><button class="btn sm ${doneToday ? '' : 'primary'}" data-act="log-workout" data-id="${p.id}" style="width:100%">${doneToday ? '✓ Feito hoje · desfazer' : 'Registrar treino de hoje'}</button></div></div>`;
   }).join('') : '<div class="group"><div class="empty"><b>Nenhuma ficha</b>Toque em + para montar seu treino com exercícios, séries e carga.</div></div>'}</div></section>
   ${log.length ? `<section class="blk"><div class="blk-h"><h2>Histórico</h2></div><div class="group">${log.map(l => `<div class="row"><span class="dot" style="--c:var(--c-treino)"></span><div class="main"><div class="t">${esc(plan(l.planId)?.name || 'Treino')}</div><div class="s">${fmtDay(l.date)}${l.min ? ' · ' + l.min + ' min' : ''}</div></div><button class="x" data-act="del-log" data-id="${l.id}" aria-label="Apagar registro">${I.x}</button></div>`).join('')}</div></section>` : ''}`;
@@ -1275,14 +1721,14 @@ VIEWS.tarefas = () => {
 
 VIEWS.habitos = () => {
   const days = Array.from({ length: 7 }, (_, i) => iso(addDays(new Date(), i - 6)));
-  return `  <section class="blk" style="display:flex;flex-direction:column;gap:10px">${S.habits.list.length ? S.habits.list.map(h => {
+  return `<section class="blk in-band" style="display:flex;flex-direction:column;gap:10px"><div class="blk-h" style="margin-bottom:-2px"><h2>Hábitos da semana</h2></div>${S.habits.list.length ? S.habits.list.map(h => {
     const n = days.filter(d => (S.habits.checks[d] || []).includes(h.id)).length;
-    let streak = 0; for (let i = 0; i < 365; i++) { const k = iso(addDays(new Date(), -i)); if ((S.habits.checks[k] || []).includes(h.id)) streak++; else if (i > 0) break; }
-    return `<div class="group" style="padding:12px 14px"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><button style="text-align:left;flex:1;min-width:0" data-act="open" data-k="habito" data-id="${h.id}"><div class="t" style="font-weight:600">${esc(h.name)}</div><div class="s" style="font-size:13px;color:var(--muted)">${n}/7 dias${streak > 1 ? ` · sequência de ${streak}` : ''}</div></button></div>
+    const hs = habitStreak(h), streak = hs.n;
+    return `<div class="group" style="padding:12px 14px"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><button style="text-align:left;flex:1;min-width:0" data-act="open" data-k="habito" data-id="${h.id}"><div class="t" style="font-weight:600">${esc(h.name)}</div><div class="s" style="font-size:13px;color:var(--muted)">${n}/7 dias · <span class="xpb">+${XP_HAB[h.prio || 'media']} XP/dia</span></div></button>${streak > 1 ? `<span class="flame${streak >= 7 ? ' hot' : ''}" title="Sequência de ${streak} dias${hs.shield ? ' (escudo usado nesta semana)' : ''}">🔥 ${streak}${hs.shield ? ' 🛡️' : ''}</span>` : ''}</div>
     <div class="hgrid">${days.map(d => { const on = (S.habits.checks[d] || []).includes(h.id); return `<button class="${on ? 'on' : ''}" data-act="toggle-habit" data-id="${h.id}" data-date="${d}" aria-pressed="${on}" aria-label="${fmtDay(d)}">${WD[parse(d).getDay()].slice(0, 1)}</button>`; }).join('')}</div></div>`;
-  }).join('') : '<div class="group"><div class="empty"><b>Nenhum hábito</b>Toque em + para criar um hábito e marcar todo dia.</div></div>'}</section>${journalBlock()}`;
+  }).join('') : '<div class="group"><div class="empty"><b>Nenhum hábito</b>Toque em + para criar um hábito e marcar todo dia.</div></div>'}</section>`;
 };
-function journalBlock() {
+function journalData() {
   if (!UI.jrDay) UI.jrDay = today(); if (!UI.jrMonth) UI.jrMonth = UI.jrDay.slice(0, 7);
   const [y, m] = UI.jrMonth.split('-').map(Number), first = new Date(y, m - 1, 1), start = addDays(first, -((first.getDay() + 6) % 7)), t = today();
   const byDay = {}; S.habits.journal.forEach(j => { (byDay[j.date] = byDay[j.date] || []).push(j); });
@@ -1295,11 +1741,18 @@ function journalBlock() {
   const mc = Object.keys(byDay).filter(k => k.startsWith(UI.jrMonth)).reduce((a, k) => a + byDay[k].length, 0);
   const list = (byDay[UI.jrDay] || []).sort((a, b) => (a.at || 0) - (b.at || 0));
   const dl = UI.jrDay === t ? 'hoje' : fmtDay(UI.jrDay);
+  return { y, m, cells, mc, list, dl, t };
+}
+function journalCal() {
+  const { y, m, cells, mc } = journalData();
   return `<section class="blk"><div class="blk-h"><h2>Diário</h2><span style="font-size:13px;color:var(--muted)">${mc ? `${mc} ${mc > 1 ? 'páginas' : 'página'} no mês` : ''}</span></div>
   <div class="cal"><div class="cal-h"><b>${MES[m - 1]} ${y}</b><div>
     <button class="icon-btn" data-act="jr-month" data-n="-1" aria-label="Mês anterior">${I.left}</button><button class="icon-btn" data-act="jr-month" data-n="1" aria-label="Próximo mês">${I.right}</button></div></div>
-    <div class="cal-g">${['S', 'T', 'Q', 'Q', 'S', 'S', 'D'].map(w => `<div class="wd">${w}</div>`).join('')}${cells}</div></div></section>
-  <section class="blk"><div class="blk-h"><h2>${esc(fmtDay(UI.jrDay))}</h2><label class="link" for="journal-file" style="color:var(--tint);font-weight:550;font-size:14px;cursor:pointer">Anexar páginas</label></div>
+    <div class="cal-g">${['S', 'T', 'Q', 'Q', 'S', 'S', 'D'].map(w => `<div class="wd">${w}</div>`).join('')}${cells}</div></div></section>`;
+}
+function journalDay() {
+  const { list, dl } = journalData();
+  return `<section class="blk"><div class="blk-h"><h2>${esc(fmtDay(UI.jrDay))}</h2><label class="link" for="journal-file" style="color:var(--tint);font-weight:550;font-size:14px;cursor:pointer">Anexar páginas</label></div>
   <input type="file" id="journal-file" accept="image/*" multiple hidden>
   ${list.length ? `<div class="jgrid">${list.map((j, i) => `<button data-act="open" data-k="diario" data-id="${j.id}" aria-label="Página ${i + 1} de ${esc(dl)}"><span class="jimg" style="background-image:url('${esc(imgUrl(j.url))}')"></span><span class="jd">${j.note ? esc(j.note) : `Página ${i + 1}`}</span></button>`).join('')}</div>`
     : `<label class="group empty" for="journal-file" style="display:block;cursor:pointer"><b>Nenhuma página em ${esc(dl)}</b>Toque para fotografar ou escolher as páginas deste dia.</label>`}</section>`;
@@ -1651,9 +2104,10 @@ function openForm({ title, fields, data = {}, onSave, onDelete, color, extra = '
 /* ---------- editores por tipo ---------- */
 EDIT.evento = (id, preset = {}) => {
   const e = S.events.find(x => x.id === id);
-  const data = e ? { ...e } : { date: preset.date || UI.agDay || today(), cat: preset.cat || 'pessoal', dur: 30 };
+  const data = e ? { prio: 'media', ...e } : { date: preset.date || UI.agDay || today(), cat: preset.cat || 'pessoal', dur: 30, prio: 'media' };
   const fields = [{ k: 'title', l: 'Título', req: 1, ph: 'Ex.: Consulta, aula, alinhamento' }, { k: 'date', l: 'Data', t: 'date', req: 1, half: 1 }, { k: 'time', l: 'Hora', t: 'time', half: 1 },
     { k: 'cat', l: 'Categoria', t: 'radio', o: Object.entries(EV_CATS).map(([k, v]) => [k, v[0]]) },
+    { k: 'prio', l: 'Urgência (experiência ao concluir)', t: 'radio', o: URG_OPTS() },
     { k: 'dur', l: 'Duração (min)', t: 'number', half: 1 }, { k: 'place', l: 'Local ou link', half: 1, ph: 'Meet, sala…' }, { k: 'people', l: 'Participantes', ph: 'Nomes ou equipes' },
     { k: 'notes', l: 'Descrição e texto anexado', t: 'textarea', ph: 'Cole aqui o texto completo: pauta, e-mail, endereço, material de estudo…' }];
   if (!e) fields.splice(3, 0, { k: 'rep', l: 'Repetir', t: 'radio', o: [['nao', 'Não repete'], ['semanal', 'Toda semana'], ['mensal', 'Todo mês']] }, { k: 'times', l: 'Quantas vezes no total', t: 'number' });
@@ -1684,9 +2138,9 @@ EDIT.eventoView = id => {
   const e = S.events.find(x => x.id === id); if (!e) return;
   const c = EV_CATS[e.cat] || EV_CATS.pessoal; const d = parse(e.date);
   pageView({ label: 'Compromisso', title: e.title, color: c[1],
-    props: [['date', 'Data', `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`], ['clock', 'Hora', e.time ? esc(e.time) : ''], ['tag', 'Categoria', `<span class="tag" style="--c:${c[1]}">${c[0]}</span>`], ['date', 'Dia da semana', WDL[d.getDay()]], ['text', 'Texto anexado', e.notes ? `${e.notes.length.toLocaleString('pt-BR')} caracteres` : ''], e.rid ? ['layers', 'Repetição', `${e.part} de ${e.parts}`] : null],
+    props: [['date', 'Data', `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`], ['clock', 'Hora', e.time ? esc(e.time) : ''], ['tag', 'Categoria', `<span class="tag" style="--c:${c[1]}">${c[0]}</span>`], ['flag', 'Urgência', `<span class="tag" style="--c:${(PRIO[e.prio || 'media'] || PRIO.media)[1]}">${(PRIO[e.prio || 'media'] || PRIO.media)[0]}</span> ${xpBadge(XP_PRIO[e.prio || 'media'])}`], ['check', 'Concluído', e.done ? 'Sim' : 'Ainda não'], ['date', 'Dia da semana', WDL[d.getDay()]], ['text', 'Texto anexado', e.notes ? `${e.notes.length.toLocaleString('pt-BR')} caracteres` : ''], e.rid ? ['layers', 'Repetição', `${e.part} de ${e.parts}`] : null],
     sections: [['', e.notes ? `<div class="md">${md(e.notes)}</div>` : '<p class="note" style="padding:0">Sem descrição. Toque em Editar para colar ou anexar um texto.</p>']],
-    actions: `<div class="btns">${e.notes ? '<button class="btn" data-act="ev-copy">Copiar texto</button>' : ''}<button class="btn primary" data-act="ev-edit">Editar</button></div><div class="btns" style="margin:0"><button class="btn danger" data-act="arm-delete">Excluir${e.rid ? ' só este' : ''}</button>${e.rid ? `<button class="btn danger" data-act="ev-del-next" data-id="${e.id}">Excluir este e os próximos</button>` : ''}</div>`,
+    actions: `<div class="btns"><button class="btn${e.done ? '' : ' primary'}" data-act="ev-done" style="flex-basis:100%">${e.done ? '✓ Concluído · desfazer' : `Concluir · +${XP_PRIO[e.prio || 'media']} XP`}</button></div><div class="btns">${e.notes ? '<button class="btn" data-act="ev-copy">Copiar texto</button>' : ''}<button class="btn" data-act="ev-edit">Editar</button></div><div class="btns" style="margin:0"><button class="btn danger" data-act="arm-delete">Excluir${e.rid ? ' só este' : ''}</button>${e.rid ? `<button class="btn danger" data-act="ev-del-next" data-id="${e.id}">Excluir este e os próximos</button>` : ''}</div>`,
     onDelete: () => { S.events = S.events.filter(x => x !== e); persist('events'); toast('Compromisso excluído'); } });
   $('#sheet')._event = e;
 };
@@ -1764,7 +2218,7 @@ EDIT.tarefaView = id => {
   const t = S.tasks.find(x => x.id === id); if (!t) return;
   const p = PRIO[t.prio] || PRIO.media; const late = t.due && t.due < today() && !t.done;
   pageView({ label: 'Tarefa', title: t.title, color: 'var(--c-tarefa)',
-    props: [['check', 'Concluída', pBox(t.done, 'var(--c-tarefa)', 'tv-toggle', t.id)], ['date', 'Prazo', t.due ? `<span style="${late ? 'color:var(--danger)' : ''}">${late ? 'Atrasada · ' : ''}${fmtDay(t.due)}</span>` : ''], ['flag', 'Prioridade', `<span class="tag" style="--c:${p[1]}">${p[0]}</span>`], ['tag', 'Lista', tList(t.listId) ? `<span class="tag" style="--c:${tList(t.listId).color}">${esc(tList(t.listId).name)}</span>` : ''], ['tag', 'Área', esc(t.area || '')]],
+    props: [['check', 'Concluída', pBox(t.done, 'var(--c-tarefa)', 'tv-toggle', t.id)], ['date', 'Prazo', t.due ? `<span style="${late ? 'color:var(--danger)' : ''}">${late ? 'Atrasada · ' : ''}${fmtDay(t.due)}</span>` : ''], ['flag', 'Urgência', `${xpBadge(XP_PRIO[t.prio || 'media'])} <span class="tag" style="--c:${p[1]}">${p[0]}</span>`], ['tag', 'Lista', tList(t.listId) ? `<span class="tag" style="--c:${tList(t.listId).color}">${esc(tList(t.listId).name)}</span>` : ''], ['tag', 'Área', esc(t.area || '')]],
     sections: [['', t.notes ? `<div class="md">${md(t.notes)}</div>` : '<p class="note" style="padding:0">Sem descrição.</p>']],
     actions: `<div class="btns"><button class="btn primary" data-act="tv-edit" data-id="${t.id}">Editar</button></div><div class="btns" style="margin:0"><button class="btn danger" data-act="arm-delete">Excluir</button></div>`,
     onDelete: () => { S.tasks = S.tasks.filter(x => x !== t); persist('tasks'); toast('Tarefa excluída'); } });
@@ -1788,7 +2242,7 @@ EDIT.tarefa = (id, preset = {}) => {
   const t = S.tasks.find(x => x.id === id);
   openForm({
     title: t ? 'Tarefa' : 'Nova tarefa', color: 'var(--c-tarefa)', data: t || { prio: 'media', area: 'Pessoal', due: preset.date || '', listId: preset.listId ?? UI.taskList ?? '' },
-    fields: [{ k: 'title', l: 'O que fazer', req: 1 }, { k: 'listId', l: 'Lista', t: 'select', o: [['', 'Sem lista'], ...tLists().map(l => [l.id, l.name])] }, { k: 'due', l: 'Prazo', t: 'date' }, { k: 'prio', l: 'Prioridade', t: 'radio', o: Object.entries(PRIO).map(([k, v]) => [k, v[0]]) },
+    fields: [{ k: 'title', l: 'O que fazer', req: 1 }, { k: 'listId', l: 'Lista', t: 'select', o: [['', 'Sem lista'], ...tLists().map(l => [l.id, l.name])] }, { k: 'due', l: 'Prazo', t: 'date' }, { k: 'prio', l: 'Urgência (experiência ao concluir)', t: 'radio', o: URG_OPTS() },
       { k: 'area', l: 'Área', t: 'radio', o: AREAS.map(a => [a, a]) }, { k: 'notes', l: 'Descrição', t: 'textarea', ph: 'Detalhes, links, passo a passo…' }],
     onSave: o => { if (t) Object.assign(t, o); else S.tasks.push({ id: newId(), done: false, ...o }); persist('tasks'); toast(t ? 'Tarefa salva' : 'Tarefa criada'); },
     onDelete: t && (() => { S.tasks = S.tasks.filter(x => x !== t); persist('tasks'); toast('Tarefa excluída'); }),
@@ -1915,8 +2369,8 @@ EDIT.sessao = (id, preset = {}) => {
 EDIT.habito = id => {
   const h = S.habits.list.find(x => x.id === id);
   openForm({
-    title: h ? 'Hábito' : 'Novo hábito', color: 'var(--c-habito)', data: h || {},
-    fields: [{ k: 'name', l: 'Hábito', req: 1, ph: 'Ex.: Meditar 10 min, caminhar' }],
+    title: h ? 'Hábito' : 'Novo hábito', color: 'var(--c-habito)', data: h ? { prio: 'media', ...h } : { prio: 'media' },
+    fields: [{ k: 'name', l: 'Hábito', req: 1, ph: 'Ex.: Meditar 10 min, caminhar' }, { k: 'prio', l: 'Importância (experiência por dia marcado)', t: 'radio', o: URG_OPTS(XP_HAB) }],
     onSave: o => { if (h) Object.assign(h, o); else S.habits.list.push({ id: newId(), ...o }); persist('habits'); toast('Hábito salvo'); },
     onDelete: h && (() => { S.habits.list = S.habits.list.filter(x => x !== h); Object.keys(S.habits.checks).forEach(k => S.habits.checks[k] = S.habits.checks[k].filter(i => i !== h.id)); persist('habits'); toast('Hábito excluído'); }),
   });
@@ -1968,7 +2422,7 @@ EDIT.reuniao = id => {
 EDIT.ficha = id => {
   const p = S.workouts.plans.find(x => x.id === id);
   const ex = p ? p.exercises.map(e => ({ ...e })) : [{ id: newId(), name: '', sets: 3, reps: '12', load: '' }];
-  const exRow = e => `<div class="ex-row" data-ex="${e.id}"><input class="inp" placeholder="Exercício" value="${esc(e.name)}" aria-label="Exercício" id="ex-n-${e.id}"><input class="inp num" inputmode="numeric" value="${esc(e.sets)}" aria-label="Séries" id="ex-s-${e.id}"><input class="inp num" value="${esc(e.reps)}" aria-label="Repetições" id="ex-r-${e.id}"><input class="inp num" value="${esc(e.load)}" placeholder="kg" aria-label="Carga" id="ex-l-${e.id}"><button type="button" class="x" data-act="ex-del" aria-label="Remover exercício">${I.x}</button></div>`;
+  const exRow = e => `<div class="ex-row" data-ex="${e.id}"><input class="inp" placeholder="Exercício" value="${esc(e.name)}" aria-label="Exercício" id="ex-n-${e.id}"><input class="inp num" inputmode="numeric" value="${esc(e.sets)}" aria-label="Séries" id="ex-s-${e.id}"><input class="inp num" value="${esc(e.reps)}" aria-label="Repetições" id="ex-r-${e.id}"><input class="inp num" value="${esc(e.load)}" placeholder="kg" aria-label="Carga" id="ex-l-${e.id}"><button type="button" class="x" data-act="ex-del" aria-label="Remover exercício">${I.x}</button><input class="inp ex-vid" type="url" value="${esc(e.video || '')}" placeholder="Link do vídeo no YouTube (opcional)" aria-label="Vídeo de instrução" id="ex-v-${e.id}"></div>`;
   const extra = `<div class="fld"><span class="lbl">Exercícios</span><div class="ex-row ex-head"><span>Nome</span><span>Séries</span><span>Reps</span><span>Carga</span><span></span></div>
     <div id="ex-list" style="display:flex;flex-direction:column;gap:6px">${ex.map(exRow).join('')}</div>
     <button type="button" class="btn sm" data-act="ex-add" style="align-self:flex-start;margin-top:4px">+ Exercício</button></div>`;
@@ -1976,9 +2430,12 @@ EDIT.ficha = id => {
     title: p ? 'Ficha de treino' : 'Nova ficha', color: 'var(--c-treino)', data: p || { days: [] }, extra,
     fields: [{ k: 'name', l: 'Nome da ficha', req: 1, ph: 'Ex.: Treino A — Peito e costas' }, { k: 'days', l: 'Dias da semana', t: 'days' }, { k: 'notes', l: 'Observação', ph: 'Descanso, aquecimento…' }],
     onSave: o => {
-      const exercises = $$('#ex-list .ex-row').map(r => { const ins = $$('input', r); return { id: r.dataset.ex, name: ins[0].value.trim(), sets: parseInt(ins[1].value) || ins[1].value.trim(), reps: ins[2].value.trim(), load: ins[3].value.trim() }; }).filter(e => e.name);
+      const exercises = $$('#ex-list .ex-row').map(r => { const ins = $$('input', r); return { id: r.dataset.ex, name: ins[0].value.trim(), sets: parseInt(ins[1].value) || ins[1].value.trim(), reps: ins[2].value.trim(), load: ins[3].value.trim(), video: (ins[4] ? ins[4].value.trim() : '') }; }).filter(e => e.name);
+      const kg = v => parseFloat(String(v || '').replace(',', '.')) || 0, recs = [];
+      exercises.forEach(e => { const old = p && p.exercises.find(x => x.id === e.id); const base = old ? (old.pr ?? kg(old.load)) : 0; e.pr = Math.max(base, kg(e.load)); e.prs = old ? old.prs || 0 : 0; e.prAt = old ? old.prAt || '' : '';
+        if (old && base > 0 && kg(e.load) > base) { e.prs++; e.prAt = today(); recs.push(`${e.name} ${e.load}`); } });
       if (p) Object.assign(p, o, { exercises }); else S.workouts.plans.push({ id: newId(), ...o, exercises });
-      persist('workouts'); toast('Ficha salva');
+      persist('workouts'); toast(recs.length ? `🏆 Novo recorde: ${recs.join(', ')} · +${recs.length * 50} XP` : 'Ficha salva');
     },
     onDelete: p && (() => { S.workouts.plans = S.workouts.plans.filter(x => x !== p); persist('workouts'); toast('Ficha excluída'); }),
   });
@@ -2004,12 +2461,17 @@ async function copyText(txt) {
 
 const ACT = {
   'tab': el => go(el.dataset.k),
-  'sub': el => { const k = el.dataset.k; if (k === 'tarefas' || k === 'habitos') { UI.agMode = k; go('agenda'); } else if (k === 'ajustes') go('hoje', 'ajustes'); else if (k === 'carreira') { UI.estMode = 'carreira'; go('estudos'); } else go(k); },
+  'sub': el => { const k = el.dataset.k; if (k === 'tarefas' || k === 'habitos') { UI.agMode = k; go('agenda'); } else if (k === 'ajustes' || k === 'perfil') go('hoje', k); else if (k === 'carreira') { UI.estMode = 'carreira'; go('estudos'); } else go(k); },
   'col-mode': el => { UI.colMode = el.dataset.k; saveUI(); render(); window.scrollTo(0, 0); },
   'est-mode': el => { UI.estMode = el.dataset.k; saveUI(); render(); window.scrollTo(0, 0); },
   'new': el => { const f = NEW[el.dataset.k]; if (f) f(el.dataset.date); },
   'open': el => { const k = el.dataset.k, id = el.dataset.id; if (k === 'reuniao') EDIT.reuniao(id); else if (k === 'evento') EDIT.eventoView(id); else if (k === 'tarefa') EDIT.tarefaView(id); else if (k === 'livro') EDIT.livroView(id); else if (k === 'conta') EDIT.contaView(id); else if (k === 'capitulo') EDIT.capitulo(id); else if (k === 'jogo') EDIT.jogoView(id); else if (k === 'cartao') EDIT.cartaoView(id); else if (EDIT[k]) EDIT[k](id); },
   'close-sheet': () => closeSheet(),
+  'av-edit': () => openAvatarEditor(),
+  'ev-done': () => { const e = $('#sheet')._event; if (!e) return; e.done = !e.done; e.doneAt = e.done ? today() : null; persist('events'); toast(e.done ? `Compromisso concluído · +${XP_PRIO[e.prio || 'media']} XP` : 'Conclusão desfeita'); EDIT.eventoView(e.id); },
+  'av-opt': el => { const d = $('#sheet')._av; if (!d) return; const k = el.dataset.k, v = el.dataset.v; if (k === 'base') Object.assign(d, AV_PRESET[v] || {}, { base: v }); else d[k] = ['skin', 'hc', 'hatc', 'topc', 'top2c', 'botc', 'accc', 'bg'].includes(k) ? +v : v; avRefresh(); },
+  'av-rand': () => { const d = $('#sheet')._av; if (!d) return; const r = n => Math.floor(Math.random() * n), o = k => AV_OPTS[k][r(AV_OPTS[k].length)][0]; d.base = o('base'); Object.assign(d, AV_PRESET[d.base]); Object.assign(d, { skin: r(AV_SKIN.length), hc: r(AV_HAIR.length), hair: Math.random() < .7 ? d.hair : o('hair'), mouth: o('mouth'), hat: Math.random() < .45 ? o('hat') : 'nenhum', hatc: r(AV_CLOTH.length), top: o('top'), topc: r(AV_CLOTH.length), top2c: r(AV_CLOTH.length), botc: r(AV_CLOTH.length), acc: Math.random() < .4 ? o('acc') : 'nenhum', accc: r(AV_CLOTH.length), bg: r(AV_BG.length) }); avRefresh(); },
+  'av-save': () => { const d = $('#sheet')._av; if (!d) return; S.meta.avatar = { ...d }; persist('meta'); closeSheet(); toast('Avatar salvo'); },
   'clear-demo': () => { S = blankState(S.meta.name); normalize(); persist(...MODULES); toast('Tudo em branco. Bom começo!'); render(); },
   'ag-day': el => { UI.agDay = el.dataset.d; UI.agMonth = el.dataset.d.slice(0, 7); render(); },
   'ag-month': el => { UI.agMonth = shiftMonth(UI.agMonth, +el.dataset.n); render(); },
@@ -2039,7 +2501,7 @@ const ACT = {
   'cd-edit': el => { sheetClose = null; EDIT.cartao(el.dataset.id); },
   'cd-buy': el => { sheetClose = null; EDIT.compra(null, { cardId: el.dataset.id }); },
   'tx-del-next': el => { const t = S.finance.tx.find(x => x.id === el.dataset.id); if (!t) return; if (!el.classList.contains('arm')) { el.classList.add('arm'); el.textContent = 'Toque de novo para excluir'; return; } const n = S.finance.tx.filter(x => x.rid === t.rid && x.date >= t.date).length; S.finance.tx = S.finance.tx.filter(x => !(x.rid === t.rid && x.date >= t.date)); persist('finance'); toast(`${n} lançamentos excluídos`); closeSheet(); },
-  'tv-toggle': el => { const t = S.tasks.find(x => x.id === el.dataset.id); t.done = !t.done; persist('tasks'); EDIT.tarefaView(t.id); },
+  'tv-toggle': el => { const t = S.tasks.find(x => x.id === el.dataset.id); t.done = !t.done; t.doneAt = t.done ? today() : null; persist('tasks'); EDIT.tarefaView(t.id); },
   'tv-edit': el => { sheetClose = null; EDIT.tarefa(el.dataset.id); },
   'lv-edit': el => { sheetClose = null; EDIT.livro(el.dataset.id); },
   'ag-mode': el => { UI.agMode = el.dataset.k; saveUI(); render(); },
@@ -2058,7 +2520,7 @@ Tempo: ${t.tempo} · Semana ${t.w} — ${S.career.foco[t.w] || ''}` }); persist(
   'tl-edit': el => EDIT.lista(el.dataset.id),
   'tl-clear': el => { const n = S.tasks.filter(t => t.listId === el.dataset.id && t.done).length; S.tasks = S.tasks.filter(t => !(t.listId === el.dataset.id && t.done)); persist('tasks'); toast(`${n} ${n === 1 ? 'item removido' : 'itens removidos'}`); render(); },
   'task-filter': el => { UI.taskFilter = el.dataset.k; saveUI(); render(); },
-  'toggle-task': el => { const t = S.tasks.find(x => x.id === el.dataset.id); if (!t) return; t.done = !t.done; persist('tasks'); if (t.done) toast('Tarefa concluída'); render(); },
+  'toggle-task': el => { const t = S.tasks.find(x => x.id === el.dataset.id); if (!t) return; t.done = !t.done; t.doneAt = t.done ? today() : null; persist('tasks'); if (t.done) toast('Tarefa concluída'); render(); },
   'jr-day': el => { UI.jrDay = el.dataset.d; UI.jrMonth = el.dataset.d.slice(0, 7); render(); },
   'jr-month': el => { UI.jrMonth = shiftMonth(UI.jrMonth || today().slice(0, 7), +el.dataset.n); render(); },
   'jr-save': el => { const j = S.habits.journal.find(x => x.id === el.dataset.id); if (!j) return; const d = $('#jr-date').value; if (d) { j.date = d; UI.jrDay = d; UI.jrMonth = d.slice(0, 7); } j.note = $('#jr-note').value.trim(); persist('habits'); closeSheet(); render(); toast('Página salva'); },
