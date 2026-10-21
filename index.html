@@ -723,6 +723,12 @@ body{background:var(--bg)}
 .restbar button{position:relative;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.14);color:#fff;font-weight:700;font-size:14px}
 .restbar .rb-skip{background:#fff;color:#1B1D2A}
 @media (min-width:900px){.restbar{bottom:24px;left:calc(220px + (100vw - 220px)/2)}.wk-top{margin:-12px 0 0}}
+.avbox,.hx-card,.hh-av{position:relative}
+.petx{position:absolute;right:-10px;bottom:-4px;line-height:0;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.18))}
+.hx.big .petx{right:-14px;bottom:2px}
+.pack.pet small{min-height:28px}
+.pack.pet.on{outline:2px solid var(--brand);outline-offset:-2px}
+.pf-seg{margin:14px 0 0}
 </style>
 
 <div id="app" aria-live="polite"></div>
@@ -898,7 +904,7 @@ function demoState() { return blankState(''); }
 let S = null;
 const UI = { tab: 'hoje', sub: null, agMonth: today().slice(0, 7), agDay: today(), finMonth: today().slice(0, 7), meetFilter: 'proxima', taskFilter: 'abertas', agMode: 'calendario', carPhase: 0 };
 try { Object.assign(UI, JSON.parse(localStorage.getItem('rotina.ui') || '{}'), { agDay: today(), agMonth: today().slice(0, 7), finMonth: today().slice(0, 7) }); } catch (e) {}
-const saveUI = () => { try { localStorage.setItem('rotina.ui', JSON.stringify({ tab: UI.tab, sub: UI.sub, meetFilter: UI.meetFilter, taskFilter: UI.taskFilter, taskList: UI.taskList, bookView: UI.bookView, agMode: UI.agMode, estMode: UI.estMode, colMode: UI.colMode, finMode: UI.finMode, wProj: UI.wProj })); } catch (e) {} };
+const saveUI = () => { try { localStorage.setItem('rotina.ui', JSON.stringify({ tab: UI.tab, sub: UI.sub, meetFilter: UI.meetFilter, taskFilter: UI.taskFilter, taskList: UI.taskList, bookView: UI.bookView, agMode: UI.agMode, estMode: UI.estMode, colMode: UI.colMode, finMode: UI.finMode, wProj: UI.wProj, pfTab: UI.pfTab })); } catch (e) {} };
 
 /* ---------- persistência: conta Claude (db) com cópia local ---------- */
 const store = { db: null, uid: null, mode: 'local', timers: {}, writing: {}, again: {}, lastLocal: {} };
@@ -1324,11 +1330,14 @@ const MISSIONS = [
   ['financa', '💰', 'Registre 1 lançamento', 'txs', 1, 10, () => true],
 ];
 const MISSION_KEYS = ['checks', 'doneAny', 'records', 'pages', 'workouts', 'studyMin', 'txs'];
+const WEEKLY = [['w-dias', '🗓️', 'Complete as missões do dia em 5 dias', 'full', 5, 60], ['w-10', '🎯', 'Cumpra 10 missões diárias', 'cnt', 10, 30]];
+function weeklyProg() { const g = S.meta.game || {}, mis = g.mis || {}, ws = weekStart(), days = Array.from({ length: 7 }, (_, i) => iso(addDays(ws, i)));
+  return { k: 'w' + iso(ws), full: days.filter(d => (mis[d] || {}).bonus).length, cnt: days.reduce((a, d) => a + Object.keys(mis[d] || {}).filter(x => x !== 'bonus').length, 0) }; }
 const dailyMissions = () => { const g = S.meta.game || {}; return g.day && g.day.d === today() ? g.day.ids.map(id => MISSIONS.find(m => m[0] === id)).filter(Boolean) : []; };
 const missionProg = (m, st) => { const g = S.meta.game || {}; return Math.max(0, (st[m[3]] || 0) - ((g.day && g.day.snap || {})[m[3]] || 0)); };
 function coinsInfo(st) { const g = S.meta.game || {}; let earned = 0; Object.values(g.mis || {}).forEach(o => Object.values(o).forEach(v => earned += +v || 0));
   earned += Object.keys(g.ach || {}).length * 20 + Object.keys(g.tit || {}).length * 30 + Object.keys(g.ch || {}).length * 50 + 10 * Math.max(0, st.level - 1);
-  const spent = Object.values(g.packs || {}).reduce((a, x) => a + (+x.price || 0), 0); return { earned, spent, coins: earned - spent }; }
+  const spent = [...Object.values(g.packs || {}), ...Object.values(g.pets || {})].reduce((a, x) => a + (+x.price || 0), 0); return { earned, spent, coins: earned - spent }; }
 let GAME = null;
 function gameSync() {
   if (!S || !S.meta) return;
@@ -1344,6 +1353,7 @@ function gameSync() {
     g.mis = g.mis || {}; const done = g.mis[d] = g.mis[d] || {};
     g.day.ids.forEach(id => { const m = MISSIONS.find(x => x[0] === id); if (m && !done[id] && missionProg(m, st) >= m[4]) { done[id] = m[5]; ch = true; msgs.push(`🪙 Missão cumprida: ${m[2]} (+${m[5]})`); } });
     if (g.day.ids.length && g.day.ids.every(id => done[id]) && !done.bonus) { done.bonus = 15; ch = true; msgs.push('🪙 Todas as missões do dia! +15 de bônus'); } }
+  { const wp = weeklyProg(); WEEKLY.forEach(([id, ic, name, key, need, coins]) => { const wd = g.mis[wp.k] || {}; if (!wd[id] && wp[key] >= need) { g.mis[wp.k] = { ...wd, [id]: coins }; ch = true; msgs.push(`${ic} Missão semanal: ${name} (+${coins} 🪙)`); } }); }
   if (g.seeded && g.lvl && st.level > g.lvl) msgs.unshift(`⬆️ Você subiu para o nível ${st.level}!`);
   if (g.lvl !== st.level) { g.lvl = st.level; ch = true; }
   if (!g.seeded) { g.seeded = true; ch = true; }
@@ -1504,13 +1514,56 @@ function avatarSvg(a0, h = 64, label = 'Seu avatar') {
   for (let i = 0; i < out.length;) { const [x, y, c] = out[i]; let j = i + 1; while (j < out.length && out[j][1] === y && out[j][0] === out[j - 1][0] + 1 && out[j][2] === c) j++; rects += `<rect x="${x}" y="${y}" width="${j - i}" height="1" fill="${c}"/>`; i = j; }
   return `<svg class="pxav" viewBox="0 0 ${W} ${H + 2}" height="${h}" width="${Math.round(h * W / (H + 2))}" shape-rendering="crispEdges" role="img" aria-label="${esc(label)}"><ellipse cx="16" cy="43.4" rx="10" ry="1.6" fill="#000" opacity=".18"/>${rects}</svg>`;
 }
-const avatarBox = (h = 64, cls = '') => `<span class="avbox ${cls}" style="--av:${AV_BG[(S.meta.avatar || AV_DEF).bg ?? 1]}">${avatarSvg(S.meta.avatar, h)}</span>`;
+/* mascotes em pixel art: cada letra é uma região; as da lista flat não ganham volume */
+const PET_FLAT = { k: '#1E1416', m: '#6E2A26', h: '#F4A3B8', n: '#E86A8A', v: '#B28A5E' };
+const MASCOTS = [
+  ['gato', 'Gato laranja', '🐱', 90, 'Fiel companheiro das tardes de leitura.', { o: '#F0953A', l: '#FCE3C4', p: '#F7B6C4' }, [
+    '..o.........o...', '..oo.......oo...', '..opo.....opo...', '..ooooooooooo...', '..ooooooooooo...', '..ookooooookoo..', '..ookooooookoo..', '..oooooonooooo..', '...oooolllooo...', '...oolllllooo...', '...oolllllooo.o.', '...oolllllooo.o.', '...ooooooooooooo', '...oo.oo..oo.oo.']],
+  ['cao', 'Vira-lata caramelo', '🐶', 90, 'Acompanha você em toda caminhada.', { c: '#D99A4E', d: '#9C6230', w: '#F6E3C6' }, [
+    '................', '...cccccccccc...', '.ddcccccccccdd..', '.ddcckcccckcdd..', '.ddcckcccckcdd..', '.dd.cccwwccc.dd.', '....ccwwkwwcc...', '....cccwwwccc...', '....ccccmcccc...', '...cccccccccc.c.', '...ccwwwwwwcc.c.', '...ccwwwwwwcccc.', '...cccccccccc...', '...cc.cc..cc.cc.']],
+  ['coruja', 'Coruja estudiosa', '🦉', 110, 'Fica acordada com você na véspera da prova.', { b: '#9A6B40', w: '#FFFFFF', y: '#E8A13A', l: '#E9D3B0' }, [
+    '..b..........b..', '..bb........bb..', '..bbbbbbbbbbbb..', '.bbwwwbbbbwwwbb.', '.bwwkwwbbwwkwwb.', '.bwwkwwbbwwkwwb.', '.bbwwwbyybwwwbb.', '.bbbbbbyybbbbbb.', '.bbblllllllbbbb.', '.bbbllvllvllbbb.', '.bbblllllllbbbb.', '..bbllvllvlbbb..', '...bbbbbbbbbb...', '....yy....yy....']],
+  ['sapo', 'Sapinho', '🐸', 80, 'Pula de alegria a cada tarefa concluída.', { g: '#4CAF50', w: '#FFFFFF', l: '#C8E6A0', m: '#2E6B30' }, [
+    '..ggg......ggg..', '.gwwkg....gwwkg.', '.gwwkgggggwwkgg.', '.gggggggggggggg.', 'gggggggggggggggg', 'gghmmmmmmmmmmhgg', 'gggggggggggggggg', '.gglllllllllggg.', '.gglllllllllggg.', '..gllllllllggg..', '.ggg..gggg..ggg.', 'gggg..gggg..gggg']],
+  ['raposa', 'Raposa', '🦊', 130, 'Esperta para achar atalhos na rotina.', { r: '#E2672E', w: '#FFF4E6' }, [
+    '.r............r.', '.rr..........rr.', '.rkr........rkr.', '.rrrrrrrrrrrrrr.', '..rrrrrrrrrrrr..', '..rrkrrrrrrkrr..', '..wrkrrrrrrkrw..', '...wwwrrrrwww...', '....wwwkkwww....', '......wwww......', '....rrrrrrr...rr', '...rrwwwwrr..rrw', '...rrwwwwrrrrrww', '...rr.rr.rr.....']],
+  ['polvo', 'Polvo', '🐙', 120, 'Oito braços para dar conta de tudo.', { p: '#8E5BD6', w: '#FFFFFF', m: '#4A2A7A' }, [
+    '....pppppppp....', '...pppppppppp...', '..pppppppppppp..', '..ppwkppppwkpp..', '..ppwkppppwkpp..', '..pppppppppppp..', '..pphpppppphpp..', '..pppppmmppppp..', '..pppppppppppp..', '.pp.pp.pp.pp.pp.', '.pp.pp.pp.pp.pp.', 'pp..pp.pp.pp..pp', 'p...p...p...p..p']],
+  ['fantasma', 'Fantasminha', '👻', 100, 'Assombra só as tarefas atrasadas.', { f: '#ECEAF7', k: '#3A3550', m: '#3A3550' }, [
+    '.....ffffff.....', '...ffffffffff...', '..ffffffffffff..', '..ffkkffffkkff..', '..ffkkffffkkff..', '..ffffffffffff..', '..ffhffffffhff..', '..fffffmmfffff..', '..ffffffffffff..', '..ffffffffffff..', '..ffffffffffff..', '..ff.fff.fff.f..', '..f...f...f.....']],
+  ['capivara', 'Capivara', '🌿', 150, 'Calma em qualquer semana corrida.', { c: '#A0703F', e: '#7A522C', o: '#F08A24', n: '#4A3020' }, [
+    '...oo...........', '..oooo..........', '..ee.ee.........', '.cccccccc.......', 'cccccccccc......', 'cckccccccccccc..', 'cccccccccccccccc', 'nncccccccccccccc', 'cccccccccccccccc', '.cccccccccccccc.', '.cccccccccccccc.', '..cc.cc...cc.cc.', '..cc.cc...cc.cc.']],
+  ['dragao', 'Dragãozinho', '🐉', 200, 'Raro: cospe faíscas quando você bate meta.', { d: '#2EA38A', y: '#F3D36B', w: '#FFFFFF', s: '#7A4FD6', l: '#BDEBD9', n: '#1D6B5A' }, [
+    '...y......y.....', '...dd....dd.....', '..dddddddddd....', '..ddwkddwkdd....', '..ddwkddwkdd..ss', '..dddddddddd.sss', '...ddnddndd.ssss', 'ss.dddddddd.sss.', 'sss.ddllllddd...', 'ssssdlllllldd...', '.ssddlllllldd.dd', '...ddlllllldddd.', '...dd.dd..dd....']],
+];
+function mascotSvg(id, h = 40) {
+  const m = MASCOTS.find(x => x[0] === id); if (!m) return '';
+  const map = m[6], pal = m[5], H = map.length, W = Math.max(...map.map(r => r.length)), INK = '#2B1D1A';
+  const at = (x, y) => { const ch = (map[y] || '')[x]; return ch && ch !== '.' ? ch : null; };
+  const col = ch => pal[ch] || PET_FLAT[ch] || '#888888', flat = ch => !pal[ch] || ch === 'k' || ch === 'm';
+  const out = [];
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const p = at(x, y);
+    if (!p) { if (at(x - 1, y) || at(x + 1, y) || at(x, y - 1) || at(x, y + 1)) out.push([x, y, INK]); continue; }
+    let c = col(p);
+    if (!flat(p)) { const d = n => !n || (n !== p && !flat(n)); const r = at(x + 1, y), b = at(x, y + 1), t = at(x, y - 1), l = at(x - 1, y);
+      if (d(r) || d(b)) c = darken(c, .76); else if (!t || !l || d(t) || d(l)) c = lighten(c, .2); }
+    out.push([x, y, c]);
+  }
+  let rects = ''; for (let i = 0; i < out.length;) { const [x, y, c] = out[i]; let j = i + 1; while (j < out.length && out[j][1] === y && out[j][0] === out[j - 1][0] + 1 && out[j][2] === c) j++; rects += `<rect x="${x + 1}" y="${y + 1}" width="${j - i}" height="1" fill="${c}"/>`; i = j; }
+  const VW = W + 2, VH = H + 3;
+  return `<svg class="pxpet" viewBox="0 0 ${VW} ${VH}" height="${h}" width="${Math.round(h * VW / VH)}" shape-rendering="crispEdges" role="img" aria-label="${esc(m[1])}"><ellipse cx="${VW / 2}" cy="${H + 2}" rx="${W / 2.6}" ry="1" fill="#000" opacity=".18"/>${rects}</svg>`;
+}
+const ownsPet = id => !!((S.meta.game || {}).pets || {})[id];
+const petOn = () => { const p = (S.meta.game || {}).pet; return p && ownsPet(p) ? p : null; };
+const petTag = (h = 30) => { const p = petOn(); return p ? `<span class="petx" aria-hidden="true">${mascotSvg(p, h)}</span>` : ''; };
+const avatarBox = (h = 64, cls = '') => `<span class="avbox ${cls}" style="--av:${AV_BG[(S.meta.avatar || AV_DEF).bg ?? 1]}">${avatarSvg(S.meta.avatar, h)}${cls === 'big' ? petTag(Math.round(h * .34)) : ''}</span>`;
 function hxHoje(d, ovHtml) {
   const st = GAME || gameStats(), av = { ...AV_DEF, ...(S.meta.avatar || {}) }, w = weekChallenge(), g = S.meta.game || {}, got = ACHIEVEMENTS.filter(([id]) => (g.ach || {})[id]).length;
   return `<div class="top hh-top"><div style="min-width:0"><div class="eyebrow">${WDL[d.getDay()]}, ${d.getDate()} de ${MES[d.getMonth()]}</div><h1>${greet()}${S.meta.name ? ', ' + esc(S.meta.name) : ''}</h1></div>
     <div style="display:flex;gap:6px"><button class="icon-btn" data-act="search" aria-label="Buscar">${I.search}</button><button class="icon-btn" data-act="sub" data-k="ajustes" aria-label="Ajustes e backup">${I.ajustes}</button></div></div>
   <button class="hh-player" data-act="sub" data-k="perfil" aria-label="Abrir perfil: nível ${st.level}, ${st.into} de ${st.need} XP">
-    <span class="hh-av" style="--av:${AV_BG[av.bg ?? 1]}">${avatarSvg(av, 118)}</span>
+    <span class="hh-av" style="--av:${AV_BG[av.bg ?? 1]}">${avatarSvg(av, 118)}${petTag(40)}</span>
     <span class="hh-info">
       <span class="hh-lv"><b>Nível ${st.level}</b><span>${curTitle(st)}</span></span>
       <span class="xpbar"><i style="width:${Math.round(st.into / st.need * 100)}%"></i></span>
@@ -1524,7 +1577,7 @@ function hxTop({ eyebrow = '', title = '', right = '', date = '', extra = '', bi
   const st = GAME || gameStats(), av = { ...AV_DEF, ...(S.meta.avatar || {}) }, w = big ? weekChallenge() : null;
   const back = backOv ?? (UI.sub ? `<button class="back" data-act="tab" data-k="hoje">${I.left}Hoje</button>` : '');
   return `<div class="top hx${big ? ' big' : ''}">
-    <div class="hx-av">${date ? `<span class="hx-date">${date}</span>` : ''}<button class="hx-card" data-act="sub" data-k="perfil" style="--av:${AV_BG[av.bg ?? 1]}" aria-label="Abrir perfil e avatar">${big ? `<span class="hx-lv">NV ${st.level}</span>` : ''}${avatarSvg(av, big ? 172 : 92)}</button></div>
+    <div class="hx-av">${date ? `<span class="hx-date">${date}</span>` : ''}<button class="hx-card" data-act="sub" data-k="perfil" style="--av:${AV_BG[av.bg ?? 1]}" aria-label="Abrir perfil e avatar">${big ? `<span class="hx-lv">NV ${st.level}</span>` : ''}${avatarSvg(av, big ? 172 : 92)}${petTag(big ? 56 : 30)}</button></div>
     <div class="hx-main">
       <div class="hx-row"><div style="min-width:0">${back}${eyebrow ? `<div class="eyebrow">${eyebrow}</div>` : ''}<h1>${title}</h1></div>${right}</div>
       <button class="hx-xpwrap" data-act="sub" data-k="perfil" aria-label="Nível ${st.level}, ${st.into} de ${st.need} XP"><span class="hx-xp"><span>Nível ${st.level} · ${curTitle(st)}</span><span class="num">${st.into}/${st.need} XP · 🪙 ${coinsInfo(st).coins}</span></span>
@@ -1542,42 +1595,54 @@ function playerCard() {
       <span class="pl-sub"><span class="num">${st.into}/${st.need} XP</span>${w ? `<span>🎯 ${w.done ? 'Desafio cumprido' : `${Math.min(w.prog, w.target)}/${w.target} ${CH_UNIT[w.type]}`}</span>` : ''}</span></span>
   </button>`;
 }
+const PF_TABS = [['missoes', 'Missões'], ['ranking', 'Ranking'], ['conquistas', 'Conquistas'], ['loja', 'Loja']];
 VIEWS.perfil = () => {
-  const st = GAME || gameStats(), w = weekChallenge(), g = S.meta.game || {}, got = ACHIEVEMENTS.filter(([id]) => (g.ach || {})[id]).length;
-  const areas = Object.entries(st.area), mx = Math.max(1, ...areas.map(([, v]) => v));
-  return `${header('', 'Perfil')}
+  const st = GAME || gameStats(), w = weekChallenge(), g = S.meta.game || {}, got = ACHIEVEMENTS.filter(([id]) => (g.ach || {})[id]).length, ci = coinsInfo(st);
+  const areas = Object.entries(st.area), mx = Math.max(1, ...areas.map(([, v]) => v)), tab = PF_TABS.some(([k]) => k === UI.pfTab) ? UI.pfTab : 'missoes';
+  const sub = t => `<span style="color:var(--muted);font-size:13px">${t}</span>`;
+  const top = `${header('', 'Perfil')}
   <section class="blk in-band"><div class="prof">
     ${avatarBox(150, 'big')}
     <div class="prof-main"><div class="prof-name">${esc(S.meta.name || 'Você')}</div><div class="prof-t">Nível ${st.level} · ${curTitle(st)}</div>
       <span class="xpbar lg"><i style="width:${Math.round(st.into / st.need * 100)}%"></i></span>
       <div class="prof-xp num">${st.into} de ${st.need} XP para o nível ${st.level + 1}</div>
-      <div class="prof-xp num">${st.xp.toLocaleString('pt-BR')} XP no total</div>
+      <div class="prof-xp num">${st.xp.toLocaleString('pt-BR')} XP no total · 🪙 ${ci.coins}</div>
       <button class="btn sm" data-act="av-edit" style="margin-top:10px">Editar avatar</button></div>
   </div></section>
-  ${(() => { const ci = coinsInfo(st), ms = dailyMissions(), done = ((g.mis || {})[today()]) || {}; return `<section class="blk"><div class="blk-h"><h2>Missões de hoje</h2><span class="coinpill">🪙 ${ci.coins} moedas</span></div>
-    <div class="group">${ms.length ? ms.map(m => { const pr = Math.min(missionProg(m, st), m[4]), ok = !!done[m[0]]; return `<div class="row mission${ok ? ' done' : ''}"><span class="rk-ic">${ok ? '✅' : m[1]}</span><div class="main"><div class="t">${esc(m[2])}</div><div class="bar" style="--c:#E8A13A;margin-top:6px"><i style="width:${Math.round(pr / m[4] * 100)}%"></i></div><div class="s num">${pr}/${m[4]}</div></div><span class="coinpill sm">+${m[5]} 🪙</span></div>`; }).join('') + `<div class="row"><span class="rk-ic">${done.bonus ? '🎉' : '🎁'}</span><div class="main"><div class="t">Bônus por cumprir as 3</div><div class="s">${done.bonus ? 'Recebido hoje' : 'Novas missões todo dia'}</div></div><span class="coinpill sm">+15 🪙</span></div>` : '<div class="empty">As missões do dia aparecem aqui.</div>'}</div>
-    <p class="note">Você também ganha 🪙 20 por conquista, 🪙 30 por título, 🪙 50 por desafio da semana e 🪙 10 por nível. Já ganhou ${ci.earned} e gastou ${ci.spent}.</p></section>
-  <section class="blk"><div class="blk-h"><h2>Loja de pacotes</h2><span style="color:var(--muted);font-size:13px">roupas e itens para o avatar</span></div>
-    <div class="shop">${PACKS.map(([id, name, ic, price, items, preset]) => { const own = ownsPack(id), base = { ...AV_DEF, ...(S.meta.avatar || {}) }; const look = { ...base, ...preset }; const can = ci.coins >= price; const cnt = Object.values(items).reduce((a, v) => a + v.length, 0); return `<div class="pack${own ? ' own' : ''}"><span class="pack-av" style="--av:${AV_BG[base.bg ?? 1]}">${avatarSvg(look, 112, name)}</span><b>${ic} ${esc(name)}</b><small>${cnt} itens · cores personalizáveis</small>${own ? `<button class="btn sm primary" data-act="wear-pack" data-k="${id}">Vestir</button>` : `<button class="btn sm${can ? ' primary' : ''}" data-act="buy-pack" data-k="${id}"${can ? '' : ' aria-disabled="true"'}>🪙 ${price}</button>`}</div>`; }).join('')}</div>
-    <p class="note">Depois de comprar, as peças aparecem no editor do avatar e você pode misturar com qualquer outra roupa e trocar as cores.</p></section>`; })()}
-  <section class="blk"><div class="blk-h"><h2>Desafio da semana</h2><span style="color:var(--muted);font-size:13px">+150 XP</span></div><div class="group" style="padding:14px">
-    ${w ? `<div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline"><b>${w.done ? '✅ ' : '🎯 '}${CH_LABEL[w.type](w.target)}</b><span class="num" style="color:var(--muted);font-size:14px">${Math.min(w.prog, w.target)}/${w.target}</span></div>
-      <div class="bar" style="--c:var(--brand);margin-top:10px"><i style="width:${Math.min(100, Math.round(w.prog / w.target * 100))}%"></i></div>
-      <p class="note" style="padding:8px 0 0">${w.done ? 'Cumprido! Um desafio novo chega na segunda-feira.' : 'A meta é calculada pelo seu ritmo das últimas 4 semanas, um pouco acima do normal. Muda toda segunda.'}</p>`
-    : '<div class="empty" style="padding:6px"><b>Sem desafio ainda</b>Crie hábitos, fichas de treino, matérias ou livros em leitura para receber desafios.</div>'}
-  </div></section>
-  <section class="blk"><div class="blk-h"><h2>Ranking por área</h2><span style="color:var(--muted);font-size:13px">sua posição em cada área</span></div>
+  <div class="in-band"><div class="seg sm pf-seg" role="tablist">${PF_TABS.map(([k, l]) => `<button role="tab" class="${tab === k ? 'on' : ''}" aria-selected="${tab === k}" data-act="pf-tab" data-k="${k}">${l}</button>`).join('')}</div></div>`;
+  let body = '';
+  if (tab === 'missoes') {
+    const ms = dailyMissions(), done = ((g.mis || {})[today()]) || {}, wp = weeklyProg(), wd = (g.mis || {})[wp.k] || {};
+    body = `<section class="blk"><div class="blk-h"><h2>Missões diárias</h2><span class="coinpill">🪙 ${ci.coins} moedas</span></div>
+    <div class="group">${ms.length ? ms.map(m => { const pr = Math.min(missionProg(m, st), m[4]), ok = !!done[m[0]]; return `<div class="row mission${ok ? ' done' : ''}"><span class="rk-ic">${ok ? '✅' : m[1]}</span><div class="main"><div class="t">${esc(m[2])}</div><div class="bar" style="--c:#E8A13A;margin-top:6px"><i style="width:${Math.round(pr / m[4] * 100)}%"></i></div><div class="s num">${pr}/${m[4]}</div></div><span class="coinpill sm">+${m[5]} 🪙</span></div>`; }).join('') + `<div class="row"><span class="rk-ic">${done.bonus ? '🎉' : '🎁'}</span><div class="main"><div class="t">Bônus por cumprir as 3</div><div class="s">${done.bonus ? 'Recebido hoje' : 'Novas missões todo dia'}</div></div><span class="coinpill sm">+15 🪙</span></div>` : '<div class="empty">As missões do dia aparecem aqui.</div>'}</div></section>
+  <section class="blk"><div class="blk-h"><h2>Missões semanais</h2>${sub('renovam toda segunda')}</div>
+    <div class="group">${WEEKLY.map(([id, ic, name, key, need, coins]) => { const pr = Math.min(wp[key], need), ok = !!wd[id]; return `<div class="row mission${ok ? ' done' : ''}"><span class="rk-ic">${ok ? '✅' : ic}</span><div class="main"><div class="t">${esc(name)}</div><div class="bar" style="--c:var(--brand);margin-top:6px"><i style="width:${Math.round(pr / need * 100)}%"></i></div><div class="s num">${pr}/${need}</div></div><span class="coinpill sm">+${coins} 🪙</span></div>`; }).join('')}
+    <div class="row mission${w && w.done ? ' done' : ''}" style="flex-wrap:wrap"><span class="rk-ic">${w && w.done ? '✅' : '🏁'}</span><div class="main">${w ? `<div class="t">Desafio: ${CH_LABEL[w.type](w.target)}</div><div class="bar" style="--c:var(--brand);margin-top:6px"><i style="width:${Math.min(100, Math.round(w.prog / w.target * 100))}%"></i></div><div class="s num">${Math.min(w.prog, w.target)}/${w.target} · ${w.done ? 'cumprido! Um novo chega na segunda' : 'meta pelo seu ritmo das últimas 4 semanas'}</div>` : '<div class="t">Desafio da semana</div><div class="s">Crie hábitos, fichas de treino, matérias ou livros em leitura para receber desafios.</div>'}</div><span class="coinpill sm">+150 XP</span></div></div>
+    <p class="note">Você também ganha 🪙 20 por conquista, 🪙 30 por título, 🪙 50 por desafio da semana e 🪙 10 por nível. Já ganhou ${ci.earned} e gastou ${ci.spent}.</p></section>`;
+  } else if (tab === 'ranking') {
+    body = `<section class="blk"><div class="blk-h"><h2>Ranking por área</h2>${sub('sua posição em cada área')}</div>
     <div class="group">${areas.slice().sort((x, y) => y[1] - x[1]).map(([k, v], i) => { const t = tierOf(v), r = XP_RULES.find(x => x[0] === k); const pc = t.next ? Math.round((v - t.base) / (t.next - t.base) * 100) : 100; return `<div class="row rank"><span class="rk-pos num">${i + 1}º</span><span class="rk-ic" style="--c:${t.c}">${t.ic}</span><div class="main"><div class="t">${k} <span class="tag" style="--c:${t.c}">${t.name}</span></div><div class="bar" style="--c:${r ? r[1] : 'var(--brand)'};margin-top:6px"><i style="width:${pc}%"></i></div><div class="s num">${v.toLocaleString('pt-BR')} XP${t.next ? ` · faltam ${(t.next - v).toLocaleString('pt-BR')} para ${t.nextName}` : ' · nível máximo'}</div></div></div>`; }).join('')}</div>
     <p class="note">Bronze, Prata (250 XP), Ouro (750), Platina (1.500), Diamante (3.000) e Lendário (6.000), separados por área.</p></section>
-  <section class="blk"><div class="blk-h"><h2>Títulos</h2><span class="num" style="color:var(--muted);font-size:13px">${TITLES.filter(([id]) => (g.tit || {})[id]).length} de ${TITLES.length} · toque para usar</span></div>
+  <section class="blk"><div class="blk-h"><h2>XP por área</h2></div><div class="group">${areas.map(([k, v]) => { const r = XP_RULES.find(x => x[0] === k); return `<div class="row" style="flex-direction:column;align-items:stretch;gap:6px"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-weight:600">${k}</b><span class="num" style="color:var(--muted);font-size:14px">${v.toLocaleString('pt-BR')} XP</span></div><div class="bar" style="--c:${r[1]}"><i style="width:${Math.round(v / mx * 100)}%"></i></div><div style="font-size:12px;color:var(--muted)">${r[2]}</div></div>`; }).join('')}</div>
+    <p class="note">Os pontos vêm do que você já registra no app: nada para preencher a mais. Nas sequências de hábitos, uma falta por semana não quebra a sequência (🛡️).</p></section>`;
+  } else if (tab === 'conquistas') {
+    body = `<section class="blk"><div class="blk-h"><h2>Títulos</h2><span class="num" style="color:var(--muted);font-size:13px">${TITLES.filter(([id]) => (g.tit || {})[id]).length} de ${TITLES.length} · toque para usar</span></div>
     <div class="titles"><button class="ttl${!g.title ? ' on' : ''}" data-act="set-title" data-k=""><span>⭐</span><b>${LEVEL_TITLE(st.level)}</b><small>Título do seu nível</small></button>${TITLES.map(([id, ic, name, desc]) => { const has = (g.tit || {})[id]; return has ? `<button class="ttl${g.title === id ? ' on' : ''}" data-act="set-title" data-k="${id}"><span>${ic}</span><b>${esc(name)}</b><small>${esc(desc)}</small></button>` : `<div class="ttl lock"><span>🔒</span><b>${esc(name)}</b><small>${esc(desc)}</small></div>`; }).join('')}</div></section>
   <section class="blk"><div class="blk-h"><h2>Aparências</h2><span class="num" style="color:var(--muted);font-size:13px">${Object.keys(AV_UNLOCK).filter(k => !avLocked(...k.split('.'))).length} de ${Object.keys(AV_UNLOCK).length} desbloqueadas</span></div>
     <div class="group">${Object.entries(AV_UNLOCK).map(([key, r]) => { const lk = avLocked(...key.split('.')); return `<div class="row"><span class="rk-ic">${lk ? '🔒' : '🎨'}</span><div class="main"><div class="t">${esc(AV_LABEL(key))}</div><div class="s">${lk ? `Desbloqueia com ${esc(lk)}` : 'Liberado para o seu avatar'}</div></div></div>`; }).join('')}</div>
     <div class="btns"><button class="btn primary" data-act="av-edit">Usar no avatar</button></div></section>
   <section class="blk"><div class="blk-h"><h2>Conquistas</h2><span class="num" style="color:var(--muted);font-size:13px">${got} de ${ACHIEVEMENTS.length}</span></div>
-    <div class="achs">${ACHIEVEMENTS.map(([id, ic, name, desc]) => { const d = (g.ach || {})[id]; return `<div class="ach${d ? ' on' : ''}" title="${esc(desc)}"><span class="ach-i">${d ? ic : '🔒'}</span><b>${esc(name)}</b><small>${d ? `${pad(parse(d).getDate())}/${pad(parse(d).getMonth() + 1)}/${parse(d).getFullYear()}` : esc(desc)}</small></div>`; }).join('')}</div></section>
-  <section class="blk"><div class="blk-h"><h2>XP por área</h2></div><div class="group">${areas.map(([k, v]) => { const r = XP_RULES.find(x => x[0] === k); return `<div class="row" style="flex-direction:column;align-items:stretch;gap:6px"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-weight:600">${k}</b><span class="num" style="color:var(--muted);font-size:14px">${v.toLocaleString('pt-BR')} XP</span></div><div class="bar" style="--c:${r[1]}"><i style="width:${Math.round(v / mx * 100)}%"></i></div><div style="font-size:12px;color:var(--muted)">${r[2]}</div></div>`; }).join('')}</div>
-    <p class="note">Os pontos vêm do que você já registra no app: nada para preencher a mais. Nas sequências de hábitos, uma falta por semana não quebra a sequência (🛡️).</p></section>`;
+    <div class="achs">${ACHIEVEMENTS.map(([id, ic, name, desc]) => { const d = (g.ach || {})[id]; return `<div class="ach${d ? ' on' : ''}" title="${esc(desc)}"><span class="ach-i">${d ? ic : '🔒'}</span><b>${esc(name)}</b><small>${d ? `${pad(parse(d).getDate())}/${pad(parse(d).getMonth() + 1)}/${parse(d).getFullYear()}` : esc(desc)}</small></div>`; }).join('')}</div></section>`;
+  } else {
+    const base = { ...AV_DEF, ...(S.meta.avatar || {}) }, on = petOn();
+    body = `<section class="blk"><div class="blk-h"><h2>Loja de pacotes</h2><span class="coinpill">🪙 ${ci.coins} moedas</span></div>
+    <div class="shop">${PACKS.map(([id, name, ic, price, items, preset]) => { const own = ownsPack(id), look = { ...base, ...preset }, can = ci.coins >= price, cnt = Object.values(items).reduce((a, v) => a + v.length, 0); return `<div class="pack${own ? ' own' : ''}"><span class="pack-av" style="--av:${AV_BG[base.bg ?? 1]}">${avatarSvg(look, 112, name)}</span><b>${ic} ${esc(name)}</b><small>${cnt} itens · cores personalizáveis</small>${own ? `<button class="btn sm primary" data-act="wear-pack" data-k="${id}">Vestir</button>` : `<button class="btn sm${can ? ' primary' : ''}" data-act="buy-pack" data-k="${id}"${can ? '' : ' aria-disabled="true"'}>🪙 ${price}</button>`}</div>`; }).join('')}</div>
+    <p class="note">Depois de comprar, as peças aparecem no editor do avatar e você pode misturar com qualquer outra roupa e trocar as cores.</p></section>
+  <section class="blk"><div class="blk-h"><h2>Loja de mascotes</h2>${sub(`${MASCOTS.filter(m => ownsPet(m[0])).length} de ${MASCOTS.length} adotados`)}</div>
+    <div class="shop">${MASCOTS.map(([id, name, ic, price, desc]) => { const own = ownsPet(id), can = ci.coins >= price; return `<div class="pack pet${own ? ' own' : ''}${on === id ? ' on' : ''}"><span class="pack-av" style="--av:${AV_BG[base.bg ?? 1]}">${mascotSvg(id, 76)}</span><b>${esc(name)}</b><small>${esc(desc)}</small>${own ? `<button class="btn sm${on === id ? '' : ' primary'}" data-act="pet-use" data-k="${id}">${on === id ? 'Guardar' : 'Levar junto'}</button>` : `<button class="btn sm${can ? ' primary' : ''}" data-act="buy-pet" data-k="${id}"${can ? '' : ' aria-disabled="true"'}>🪙 ${price}</button>`}</div>`; }).join('')}</div>
+    <p class="note">O mascote escolhido aparece ao lado do seu avatar no topo das telas e no perfil.</p></section>`;
+  }
+  return top + body;
 };
 function avEditorBody(d) {
   const lk = (k, v) => d[k] == v ? null : avLocked(k, v);
@@ -2898,6 +2963,9 @@ const ACT = {
   'ev-done': () => { const e = $('#sheet')._event; if (!e) return; e.done = !e.done; e.doneAt = e.done ? today() : null; persist('events'); toast(e.done ? `Compromisso concluído · +${XP_PRIO[e.prio || 'media']} XP` : 'Conclusão desfeita'); EDIT.eventoView(e.id); },
   'buy-pack': el => { const pk = PACKS.find(x => x[0] === el.dataset.k); if (!pk) return; const ci = coinsInfo(GAME || gameStats()); if (ownsPack(pk[0])) return; if (ci.coins < pk[3]) { toast(`Faltam 🪙 ${pk[3] - ci.coins}. Cumpra missões para ganhar moedas.`); return; } S.meta.game.packs = S.meta.game.packs || {}; S.meta.game.packs[pk[0]] = { price: pk[3], d: today() }; persist('meta'); render(); toast(`${pk[2]} Pacote ${pk[1]} desbloqueado!`); },
   'wear-pack': el => { const pk = PACKS.find(x => x[0] === el.dataset.k); if (!pk || !ownsPack(pk[0])) return; S.meta.avatar = { ...AV_DEF, ...(S.meta.avatar || {}), ...pk[5] }; persist('meta'); render(); toast('Visual aplicado — ajuste as cores no editor'); },
+  'pf-tab': el => { UI.pfTab = el.dataset.k; saveUI(); render(); window.scrollTo(0, 0); },
+  'buy-pet': el => { const m = MASCOTS.find(x => x[0] === el.dataset.k); if (!m || ownsPet(m[0])) return; const ci = coinsInfo(GAME || gameStats()); if (ci.coins < m[3]) { toast(`Faltam 🪙 ${m[3] - ci.coins}. Cumpra missões para ganhar moedas.`); return; } const g = S.meta.game = S.meta.game || {}; g.pets = g.pets || {}; g.pets[m[0]] = { price: m[3], d: today() }; g.pet = m[0]; persist('meta'); render(); toast(`${m[2]} ${m[1]} adotado! Já está com você.`); },
+  'pet-use': el => { const g = S.meta.game = S.meta.game || {}; const k = el.dataset.k; if (!ownsPet(k)) return; g.pet = g.pet === k ? null : k; persist('meta'); render(); toast(g.pet ? 'Mascote ao seu lado' : 'Mascote guardado'); },
   'set-title': el => { S.meta.game = S.meta.game || {}; S.meta.game.title = el.dataset.k || null; persist('meta'); render(); toast(el.dataset.k ? 'Título escolhido' : 'Usando o título do seu nível'); },
   'av-opt': el => { const d = $('#sheet')._av; if (!d) return; const k = el.dataset.k, v = el.dataset.v; { const L = d[k] == v ? null : avLocked(k, v); if (L) { toast(`🔒 Desbloqueia com ${L}`); return; } } if (k === 'base') Object.assign(d, AV_PRESET[v] || {}, { base: v }); else d[k] = ['skin', 'hc', 'hatc', 'topc', 'top2c', 'botc', 'accc', 'bg'].includes(k) ? +v : v; avRefresh(); },
   'av-rand': () => { const d = $('#sheet')._av; if (!d) return; const keep = { ...d }; const r = n => Math.floor(Math.random() * n), o = k => AV_OPTS[k][r(AV_OPTS[k].length)][0]; d.base = o('base'); Object.assign(d, AV_PRESET[d.base]); Object.assign(d, { skin: r(AV_SKIN.length), hc: r(AV_HAIR.length), hair: Math.random() < .7 ? d.hair : o('hair'), mouth: o('mouth'), hat: Math.random() < .45 ? o('hat') : 'nenhum', hatc: r(AV_CLOTH.length), top: o('top'), topc: r(AV_CLOTH.length), top2c: r(AV_CLOTH.length), botc: r(AV_CLOTH.length), acc: Math.random() < .4 ? o('acc') : 'nenhum', accc: r(AV_CLOTH.length), bg: r(AV_BG.length) }); Object.keys(d).forEach(k => { if (d[k] !== keep[k] && avLocked(k, d[k])) d[k] = AV_DEF[k]; }); avRefresh(); },
