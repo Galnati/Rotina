@@ -602,6 +602,19 @@ body{background:var(--bg)}
 .gp-c span{display:flex;flex-direction:column;min-width:0;font-size:13px}.gp-c small{color:var(--muted);font-size:12px}
 .gp-presets{display:flex;flex-wrap:wrap;gap:8px}
 .gp-pre{width:38px;height:38px;border-radius:12px;box-shadow:var(--shadow)}
+
+/* ranking, títulos e aparências */
+.rank{align-items:center}
+.rk-pos{width:28px;flex:none;font-weight:800;color:var(--muted);font-size:14px}
+.rk-ic{width:34px;height:34px;flex:none;border-radius:12px;display:grid;place-items:center;font-size:18px;background:color-mix(in srgb,var(--c,var(--brand)) 14%,var(--surface))}
+.titles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ttl{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:var(--surface);border-radius:14px;box-shadow:var(--shadow);padding:10px 12px;min-width:0}
+.ttl span{font-size:20px}.ttl b{font-size:13px;font-weight:700}.ttl small{font-size:11px;color:var(--muted);line-height:1.25}
+.ttl.on{outline:2px solid var(--brand);background:color-mix(in srgb,var(--brand) 8%,var(--surface))}
+.ttl.lock{opacity:.55}.ttl.lock span{filter:grayscale(1)}
+.avth.lock{opacity:.55}.avth.lock svg{filter:grayscale(.8)}
+.avth small{font-size:10px;color:var(--muted);line-height:1.2;text-align:center}
+.avsw.lock{opacity:.45;display:grid;place-items:center;font-size:13px}
 </style>
 
 <div id="app" aria-live="polite"></div>
@@ -1016,13 +1029,13 @@ const XP_PRIO = { baixa: 10, media: 20, alta: 35 }, XP_HAB = { baixa: 5, media: 
 const URG_OPTS = (tab = XP_PRIO, sfx = '') => [['baixa', `Baixa · +${tab.baixa} XP${sfx}`], ['media', `Média · +${tab.media} XP${sfx}`], ['alta', `Alta · +${tab.alta} XP${sfx}`]];
 const xpBadge = n => `<span class="xpb">+${n} XP</span>`;
 const XP_RULES = [
-  ['Hábitos', 'var(--c-habito)', '5, 10 ou 15 por marcação, conforme a importância do hábito · 10 por página do diário'],
-  ['Treinos', 'var(--c-treino)', '40 por treino · 50 por recorde de carga'],
-  ['Estudos', 'var(--c-estudo)', '1 a cada 2 min estudados · 1 a cada 50 palavras escritas'],
-  ['Leitura', 'var(--c-leitura)', '1 por página lida · 100 por livro terminado'],
-  ['Tarefas', 'var(--c-tarefa)', 'Tarefas e compromissos concluídos: 10, 20 ou 35 conforme a urgência'],
-  ['Finanças', 'var(--c-fin)', '25 por parcela de dívida paga · 200 por dívida quitada'],
-  ['Jogos', 'var(--c-jogo)', '15 por partida registrada'],
+  ['Hábitos', 'var(--c-habito)', '10 por hábito criado · 5, 10 ou 15 por dia marcado (conforme a importância) · 10 por página do diário'],
+  ['Treinos', 'var(--c-treino)', '20 por ficha criada · 40 por treino feito · 50 por recorde de carga'],
+  ['Estudos', 'var(--c-estudo)', '10 por matéria · 1 a cada 2 min estudados · 25 por resumo · 15 por capítulo · 1 a cada 50 palavras'],
+  ['Leitura', 'var(--c-leitura)', '10 por livro cadastrado · 5 por leitura registrada · 1 por página · 100 por livro terminado'],
+  ['Agenda e tarefas', 'var(--c-tarefa)', '5 por compromisso ou tarefa cadastrada · 10 por reunião · 10, 20 ou 35 ao concluir, conforme a urgência'],
+  ['Finanças', 'var(--c-fin)', '5 por lançamento ou compra · 15 por conta ou cartão · 20 por atualizar o saldo · 1 a cada R$ 10 guardados · 100 por mês no azul · 25 por parcela de dívida paga · 200 por dívida quitada'],
+  ['Coleção', 'var(--c-jogo)', '10 por jogo cadastrado · 15 por partida · 5 por empréstimo registrado'],
   ['Desafios', 'var(--brand)', '150 por desafio da semana cumprido'],
 ];
 function habitStreak(h) {
@@ -1063,6 +1076,13 @@ function gameStats() {
   st.booksDone = S.books.filter(b => b.status === 'lido').length;
   st.tasks = S.tasks.filter(t => t.done).length;
   st.taskXp = S.tasks.filter(t => t.done).reduce((a, t) => a + (XP_PRIO[t.prio || 'media'] || 20), 0) + S.events.filter(e => e.done).reduce((a, e) => a + (XP_PRIO[e.prio || 'media'] || 20), 0);
+  const f = S.finance, P = f.plan || {}, sv = new Set([P.reservaAccountId, P.investAccountId].filter(Boolean)); f.accounts.forEach(a => { if (/poup|invest|reserva|cofre/i.test(`${a.type || ''} ${a.name || ''}`)) sv.add(a.id); });
+  st.saved = f.tx.filter(t => t.type === 'in' && sv.has(t.accountId)).reduce((a, t) => a + (+t.amount || 0), 0);
+  { const cur = today().slice(0, 7), ms = [...new Set(f.tx.map(t => t.date.slice(0, 7)))].filter(m => m < cur); st.greenMonths = ms.filter(m => { try { return monthTotals(m).bal > 0; } catch (e) { return false; } }).length; }
+  st.reg = { ev: S.events.length, meet: S.meetings.length, meetDone: S.meetings.filter(m => m.status === 'realizada').length, task: S.tasks.length, book: S.books.length, blog: S.books.reduce((a, b) => a + (b.log || []).length, 0), game: S.games.length, loans: [...S.books, ...S.games].reduce((a, x) => a + (x.loans || []).length, 0),
+    tx: f.tx.length, buy: f.purchases.length, acc: f.accounts.length + f.cards.length, opening: f.opening && f.opening.month ? 1 : 0, plan: S.workouts.plans.length, subj: S.study.subjects.length, sum: (S.study.summaries || []).length, ch: S.writing.projects.reduce((a, x) => a + (x.chapters || []).length, 0), hab: S.habits.list.length };
+  st.records = Object.values(st.reg).reduce((a, v) => a + v, 0);
+  st.eventsDone = S.events.filter(e => e.done).length;
   const dv = S.finance.tx.filter(t => t.rep === 'divida' && t.type === 'out'); st.debtPaid = dv.filter(t => t.paid).length;
   const groups = {}; dv.forEach(t => { const g = groups[t.rid || t.id] = groups[t.rid || t.id] || { n: 0, p: 0 }; g.n++; if (t.paid) g.p++; });
   st.debtsCleared = Object.values(groups).filter(g => g.n && g.p === g.n).length;
@@ -1070,9 +1090,12 @@ function gameStats() {
   st.challenges = Object.keys((S.meta.game || {}).ch || {}).length;
   st.best = Math.max(0, ...S.habits.list.map(bestRun));
   st.hp = debtHP();
+  const R = st.reg;
   st.area = {
-    'Hábitos': habXp + st.journal * 10, 'Treinos': st.workouts * 40 + st.prs * 50, 'Estudos': st.studyXp + Math.floor(st.words / 50),
-    'Leitura': st.pages + st.booksDone * 100, 'Tarefas': st.taskXp, 'Finanças': st.debtPaid * 25 + st.debtsCleared * 200, 'Jogos': st.plays * 15, 'Desafios': st.challenges * 150,
+    'Hábitos': R.hab * 10 + habXp + st.journal * 10, 'Treinos': R.plan * 20 + st.workouts * 40 + st.prs * 50, 'Estudos': R.subj * 10 + st.studyXp + R.sum * 25 + R.ch * 15 + Math.floor(st.words / 50),
+    'Leitura': R.book * 10 + R.blog * 5 + st.pages + st.booksDone * 100, 'Agenda e tarefas': (R.ev + R.task) * 5 + R.meet * 10 + R.meetDone * 20 + st.taskXp,
+    'Finanças': (R.tx + R.buy) * 5 + R.acc * 15 + R.opening * 20 + Math.floor(st.saved / 10) + st.greenMonths * 100 + st.debtPaid * 25 + st.debtsCleared * 200,
+    'Coleção': R.game * 10 + st.plays * 15 + R.loans * 5, 'Desafios': st.challenges * 150,
   };
   st.xp = Object.values(st.area).reduce((a, v) => a + v, 0);
   let L = 1, into = st.xp, need = 100; while (into >= need) { into -= need; L++; need = 100 + 50 * (L - 1); }
@@ -1104,6 +1127,11 @@ const ACHIEVEMENTS = [
   ['chefe50', '⚔️', 'Metade do chefão', 'Pague metade das dívidas', s => s.hp.total > 0 && s.hp.pct >= 50],
   ['chefe100', '🛡️', 'Chefão derrotado', 'Quite todas as dívidas', s => s.hp.total > 0 && s.hp.pct >= 100],
   ['desafio1', '🎯', 'Desafio aceito', 'Cumpra um desafio da semana', s => s.challenges >= 1],
+  ['registro50', '🗂️', 'Tudo anotado', 'Faça 50 registros no app', s => s.records >= 50],
+  ['registro300', '🧭', 'Organização total', 'Faça 300 registros no app', s => s.records >= 300],
+  ['poupar1k', '🐷', 'Primeiro cofrinho', 'Guarde R$ 1.000', s => s.saved >= 1000],
+  ['azul3', '💙', 'Três meses no azul', 'Feche 3 meses com saldo positivo', s => s.greenMonths >= 3],
+  ['compromisso20', '📅', 'Palavra cumprida', 'Conclua 20 compromissos', s => s.eventsDone >= 20],
   ['desafio10', '🥇', 'Colecionador de desafios', 'Cumpra 10 desafios da semana', s => s.challenges >= 10],
 ];
 function weekRange(d = new Date()) { const a = weekStart(d); return [iso(a), iso(addDays(a, 6))]; }
@@ -1135,6 +1163,36 @@ function weekChallenge() {
   if (!g.week || g.week.k !== k) return null;
   const prog = weekAmount(g.week.type, weekRange()); return { ...g.week, prog, done: !!(g.ch || {})[k] };
 }
+const TIERS = [[0, 'Bronze', '🥉', '#B87333'], [250, 'Prata', '🥈', '#8C96A8'], [750, 'Ouro', '🥇', '#D9A21B'], [1500, 'Platina', '💠', '#2FA3B5'], [3000, 'Diamante', '💎', '#4E7BEA'], [6000, 'Lendário', '🏆', '#B03FC4']];
+const tierOf = xp => { let t = TIERS[0], i = 0; TIERS.forEach((x, k) => { if (xp >= x[0]) { t = x; i = k; } }); const nx = TIERS[i + 1]; return { name: t[1], ic: t[2], c: t[3], next: nx ? nx[0] : null, nextName: nx ? nx[1] : null, base: t[0] }; };
+const TITLES = [
+  ['leitor', '📚', 'Leitor voraz', 'Termine 5 livros', s => s.booksDone >= 5],
+  ['bibliotecario', '🏛️', 'Bibliotecário', 'Tenha 20 livros na coleção', s => s.reg.book >= 20],
+  ['academia', '🏋️', 'Rato de academia', 'Registre 30 treinos', s => s.workouts >= 30],
+  ['forca', '💪', 'Força bruta', 'Bata 3 recordes de carga', s => s.prs >= 3],
+  ['estudioso', '🎓', 'Estudioso', 'Estude 10 horas', s => s.studyMin >= 600],
+  ['escritor', '✍️', 'Escritor de verdade', 'Escreva 5.000 palavras', s => s.words >= 5000],
+  ['tarefas', '✅', 'Mestre das tarefas', 'Conclua 30 tarefas', s => s.tasks >= 30],
+  ['pontual', '⏰', 'Pontual', 'Conclua 20 compromissos', s => s.eventsDone >= 20],
+  ['poupador', '🐷', 'Poupador', 'Guarde R$ 1.000', s => s.saved >= 1000],
+  ['azul', '💙', 'Sempre no azul', 'Feche 3 meses com saldo positivo', s => s.greenMonths >= 3],
+  ['cacador', '⚔️', 'Caçador de dívidas', 'Quite uma dívida parcelada', s => s.debtsCleared >= 1],
+  ['organizado', '🗂️', 'Organizado', 'Faça 100 registros no app', s => s.records >= 100],
+  ['constante', '🔥', 'Inabalável', '30 dias seguidos num hábito', s => s.best >= 30],
+  ['diarista', '📔', 'Cronista', 'Anexe 30 páginas ao diário', s => s.journal >= 30],
+  ['estrategista', '🎲', 'Estrategista', 'Registre 20 partidas', s => s.plays >= 20],
+  ['lenda', '👑', 'Lenda', 'Chegue ao nível 20', s => s.level >= 20],
+];
+const curTitle = st => { const g = S.meta.game || {}, t = TITLES.find(x => x[0] === g.title && (g.tit || {})[x[0]]); return t ? `${t[1]} ${t[2]}` : LEVEL_TITLE(st.level); };
+// aparências que se desbloqueiam com nível ou conquistas
+const AV_UNLOCK = {
+  'hat.bone': ['lv', 2], 'hat.gorro': ['lv', 3], 'hat.touca': ['ach', 'seq7'], 'hat.boina': ['ach', 'livro1'], 'hat.chapeu': ['lv', 8], 'hat.bandana': ['ach', 'treino10'],
+  'acc.oculos': ['lv', 2], 'acc.brinco': ['lv', 4], 'acc.escuros': ['lv', 6], 'acc.fone': ['ach', 'estudo20'], 'acc.cachecol': ['ach', 'desafio1'],
+  'hc.7': ['lv', 10], 'hc.8': ['lv', 12], 'bg.6': ['lv', 5], 'bg.7': ['lv', 15], 'topc.4': ['ach', 'registro50'], 'topc.8': ['ach', 'poupar1k'],
+};
+const avReqText = r => r[0] === 'lv' ? `nível ${r[1]}` : `conquista "${(ACHIEVEMENTS.find(a => a[0] === r[1]) || [, , r[1]])[2]}"`;
+function avLocked(k, v) { const r = AV_UNLOCK[`${k}.${v}`]; if (!r) return null; const st = GAME || gameStats(), g = S.meta.game || {}; const ok = r[0] === 'lv' ? st.level >= r[1] : !!(g.ach || {})[r[1]]; return ok ? null : avReqText(r); }
+const AV_LABEL = key => { const [k, v] = key.split('.'); const o = (AV_OPTS[k] || []).find(x => x[0] === v); return o ? o[1] : ({ hc: 'cor de cabelo especial', bg: 'fundo especial', topc: 'cor de roupa especial' }[k] || key); };
 let GAME = null;
 function gameSync() {
   if (!S || !S.meta) return;
@@ -1144,6 +1202,8 @@ function gameSync() {
   if (g.week && g.week.k === k && !g.ch[k] && weekAmount(g.week.type, weekRange()) >= g.week.target) { g.ch[k] = today(); ch = true; msgs.push('🎯 Desafio da semana cumprido! +150 XP'); }
   const st = gameStats();
   ACHIEVEMENTS.forEach(([id, ic, name, , test]) => { if (!g.ach[id] && test(st)) { g.ach[id] = today(); ch = true; if (g.seeded) msgs.push(`${ic} Conquista: ${name}`); } });
+  g.tit = g.tit || {}; TITLES.forEach(([id, ic, name, , test]) => { if (!g.tit[id] && test(st)) { g.tit[id] = today(); ch = true; if (g.seeded) msgs.push(`${ic} Novo título: ${name}`); } });
+  GAME = st; g.unl = g.unl || {}; Object.keys(AV_UNLOCK).forEach(key => { const [k, v] = key.split('.'); if (!g.unl[key] && !avLocked(k, v)) { g.unl[key] = today(); ch = true; if (g.seeded) msgs.push(`🎨 Nova aparência: ${AV_LABEL(key)}`); } });
   if (g.seeded && g.lvl && st.level > g.lvl) msgs.unshift(`⬆️ Você subiu para o nível ${st.level}!`);
   if (g.lvl !== st.level) { g.lvl = st.level; ch = true; }
   if (!g.seeded) { g.seeded = true; ch = true; }
@@ -1279,7 +1339,7 @@ function hxHoje(d, ovHtml) {
   <button class="hh-player" data-act="sub" data-k="perfil" aria-label="Abrir perfil: nível ${st.level}, ${st.into} de ${st.need} XP">
     <span class="hh-av" style="--av:${AV_BG[av.bg ?? 1]}">${avatarSvg(av, 118)}</span>
     <span class="hh-info">
-      <span class="hh-lv"><b>Nível ${st.level}</b><span>${LEVEL_TITLE(st.level)}</span></span>
+      <span class="hh-lv"><b>Nível ${st.level}</b><span>${curTitle(st)}</span></span>
       <span class="xpbar"><i style="width:${Math.round(st.into / st.need * 100)}%"></i></span>
       <span class="hh-xp num">${st.into}/${st.need} XP · faltam ${st.need - st.into} para o nível ${st.level + 1}</span>
       <span class="hh-chips">${w ? `<span class="hh-chip">🎯 ${w.done ? 'Desafio cumprido' : `${Math.min(w.prog, w.target)}/${w.target} ${CH_UNIT[w.type]}`}</span>` : ''}<span class="hh-chip">🏅 ${got}/${ACHIEVEMENTS.length}</span></span>
@@ -1294,7 +1354,7 @@ function hxTop({ eyebrow = '', title = '', right = '', date = '', extra = '', bi
     <div class="hx-av">${date ? `<span class="hx-date">${date}</span>` : ''}<button class="hx-card" data-act="sub" data-k="perfil" style="--av:${AV_BG[av.bg ?? 1]}" aria-label="Abrir perfil e avatar">${big ? `<span class="hx-lv">NV ${st.level}</span>` : ''}${avatarSvg(av, big ? 172 : 92)}</button></div>
     <div class="hx-main">
       <div class="hx-row"><div style="min-width:0">${back}${eyebrow ? `<div class="eyebrow">${eyebrow}</div>` : ''}<h1>${title}</h1></div>${right}</div>
-      <button class="hx-xpwrap" data-act="sub" data-k="perfil" aria-label="Nível ${st.level}, ${st.into} de ${st.need} XP"><span class="hx-xp"><span>Nível ${st.level} · ${LEVEL_TITLE(st.level)}</span><span class="num">${st.into}/${st.need} XP</span></span>
+      <button class="hx-xpwrap" data-act="sub" data-k="perfil" aria-label="Nível ${st.level}, ${st.into} de ${st.need} XP"><span class="hx-xp"><span>Nível ${st.level} · ${curTitle(st)}</span><span class="num">${st.into}/${st.need} XP</span></span>
       <span class="xpbar"><i style="width:${Math.round(st.into / st.need * 100)}%"></i></span>
       ${w ? `<span class="hx-ch">🎯 ${w.done ? 'Desafio da semana cumprido' : `Desafio: ${Math.min(w.prog, w.target)}/${w.target} ${CH_UNIT[w.type]}`}</span>` : ''}</button>
       ${extra}
@@ -1304,7 +1364,7 @@ function playerCard() {
   const st = GAME || gameStats(), w = weekChallenge();
   return `<button class="player" data-act="sub" data-k="perfil" aria-label="Abrir seu perfil: nível ${st.level}">
     ${avatarBox(50)}
-    <span class="pl-main"><span class="pl-top"><b>Nível ${st.level}</b><span>${LEVEL_TITLE(st.level)}</span></span>
+    <span class="pl-main"><span class="pl-top"><b>Nível ${st.level}</b><span>${curTitle(st)}</span></span>
       <span class="xpbar"><i style="width:${Math.round(st.into / st.need * 100)}%"></i></span>
       <span class="pl-sub"><span class="num">${st.into}/${st.need} XP</span>${w ? `<span>🎯 ${w.done ? 'Desafio cumprido' : `${Math.min(w.prog, w.target)}/${w.target} ${CH_UNIT[w.type]}`}</span>` : ''}</span></span>
   </button>`;
@@ -1315,7 +1375,7 @@ VIEWS.perfil = () => {
   return `${header('', 'Perfil')}
   <section class="blk in-band"><div class="prof">
     ${avatarBox(150, 'big')}
-    <div class="prof-main"><div class="prof-name">${esc(S.meta.name || 'Você')}</div><div class="prof-t">Nível ${st.level} · ${LEVEL_TITLE(st.level)}</div>
+    <div class="prof-main"><div class="prof-name">${esc(S.meta.name || 'Você')}</div><div class="prof-t">Nível ${st.level} · ${curTitle(st)}</div>
       <span class="xpbar lg"><i style="width:${Math.round(st.into / st.need * 100)}%"></i></span>
       <div class="prof-xp num">${st.into} de ${st.need} XP para o nível ${st.level + 1}</div>
       <div class="prof-xp num">${st.xp.toLocaleString('pt-BR')} XP no total</div>
@@ -1327,14 +1387,23 @@ VIEWS.perfil = () => {
       <p class="note" style="padding:8px 0 0">${w.done ? 'Cumprido! Um desafio novo chega na segunda-feira.' : 'A meta é calculada pelo seu ritmo das últimas 4 semanas, um pouco acima do normal. Muda toda segunda.'}</p>`
     : '<div class="empty" style="padding:6px"><b>Sem desafio ainda</b>Crie hábitos, fichas de treino, matérias ou livros em leitura para receber desafios.</div>'}
   </div></section>
+  <section class="blk"><div class="blk-h"><h2>Ranking por área</h2><span style="color:var(--muted);font-size:13px">sua posição em cada área</span></div>
+    <div class="group">${areas.slice().sort((x, y) => y[1] - x[1]).map(([k, v], i) => { const t = tierOf(v), r = XP_RULES.find(x => x[0] === k); const pc = t.next ? Math.round((v - t.base) / (t.next - t.base) * 100) : 100; return `<div class="row rank"><span class="rk-pos num">${i + 1}º</span><span class="rk-ic" style="--c:${t.c}">${t.ic}</span><div class="main"><div class="t">${k} <span class="tag" style="--c:${t.c}">${t.name}</span></div><div class="bar" style="--c:${r ? r[1] : 'var(--brand)'};margin-top:6px"><i style="width:${pc}%"></i></div><div class="s num">${v.toLocaleString('pt-BR')} XP${t.next ? ` · faltam ${(t.next - v).toLocaleString('pt-BR')} para ${t.nextName}` : ' · nível máximo'}</div></div></div>`; }).join('')}</div>
+    <p class="note">Bronze, Prata (250 XP), Ouro (750), Platina (1.500), Diamante (3.000) e Lendário (6.000), separados por área.</p></section>
+  <section class="blk"><div class="blk-h"><h2>Títulos</h2><span class="num" style="color:var(--muted);font-size:13px">${TITLES.filter(([id]) => (g.tit || {})[id]).length} de ${TITLES.length} · toque para usar</span></div>
+    <div class="titles"><button class="ttl${!g.title ? ' on' : ''}" data-act="set-title" data-k=""><span>⭐</span><b>${LEVEL_TITLE(st.level)}</b><small>Título do seu nível</small></button>${TITLES.map(([id, ic, name, desc]) => { const has = (g.tit || {})[id]; return has ? `<button class="ttl${g.title === id ? ' on' : ''}" data-act="set-title" data-k="${id}"><span>${ic}</span><b>${esc(name)}</b><small>${esc(desc)}</small></button>` : `<div class="ttl lock"><span>🔒</span><b>${esc(name)}</b><small>${esc(desc)}</small></div>`; }).join('')}</div></section>
+  <section class="blk"><div class="blk-h"><h2>Aparências</h2><span class="num" style="color:var(--muted);font-size:13px">${Object.keys(AV_UNLOCK).filter(k => !avLocked(...k.split('.'))).length} de ${Object.keys(AV_UNLOCK).length} desbloqueadas</span></div>
+    <div class="group">${Object.entries(AV_UNLOCK).map(([key, r]) => { const lk = avLocked(...key.split('.')); return `<div class="row"><span class="rk-ic">${lk ? '🔒' : '🎨'}</span><div class="main"><div class="t">${esc(AV_LABEL(key))}</div><div class="s">${lk ? `Desbloqueia com ${esc(lk)}` : 'Liberado para o seu avatar'}</div></div></div>`; }).join('')}</div>
+    <div class="btns"><button class="btn primary" data-act="av-edit">Usar no avatar</button></div></section>
   <section class="blk"><div class="blk-h"><h2>Conquistas</h2><span class="num" style="color:var(--muted);font-size:13px">${got} de ${ACHIEVEMENTS.length}</span></div>
     <div class="achs">${ACHIEVEMENTS.map(([id, ic, name, desc]) => { const d = (g.ach || {})[id]; return `<div class="ach${d ? ' on' : ''}" title="${esc(desc)}"><span class="ach-i">${d ? ic : '🔒'}</span><b>${esc(name)}</b><small>${d ? `${pad(parse(d).getDate())}/${pad(parse(d).getMonth() + 1)}/${parse(d).getFullYear()}` : esc(desc)}</small></div>`; }).join('')}</div></section>
   <section class="blk"><div class="blk-h"><h2>XP por área</h2></div><div class="group">${areas.map(([k, v]) => { const r = XP_RULES.find(x => x[0] === k); return `<div class="row" style="flex-direction:column;align-items:stretch;gap:6px"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-weight:600">${k}</b><span class="num" style="color:var(--muted);font-size:14px">${v.toLocaleString('pt-BR')} XP</span></div><div class="bar" style="--c:${r[1]}"><i style="width:${Math.round(v / mx * 100)}%"></i></div><div style="font-size:12px;color:var(--muted)">${r[2]}</div></div>`; }).join('')}</div>
     <p class="note">Os pontos vêm do que você já registra no app: nada para preencher a mais. Nas sequências de hábitos, uma falta por semana não quebra a sequência (🛡️).</p></section>`;
 };
 function avEditorBody(d) {
-  const sw = (k, list) => `<div class="avsw-row">${list.map((c, i) => `<button class="avsw${+d[k] === i ? ' on' : ''}" data-act="av-opt" data-k="${k}" data-v="${i}" style="--a:${c}" aria-label="Cor ${i + 1}" aria-pressed="${+d[k] === i}"></button>`).join('')}</div>`;
-  const thumbs = k => `<div class="avthumbs">${AV_OPTS[k].map(([v, l]) => `<button class="avth${d[k] === v ? ' on' : ''}" data-act="av-opt" data-k="${k}" data-v="${v}" aria-pressed="${d[k] === v}">${avatarSvg({ ...d, [k]: v }, 58, l)}<span>${l}</span></button>`).join('')}</div>`;
+  const lk = (k, v) => d[k] == v ? null : avLocked(k, v);
+  const sw = (k, list) => `<div class="avsw-row">${list.map((c, i) => { const L = lk(k, i); return `<button class="avsw${+d[k] === i ? ' on' : ''}${L ? ' lock' : ''}" data-act="av-opt" data-k="${k}" data-v="${i}" style="--a:${c}" aria-label="Cor ${i + 1}${L ? ', bloqueada: ' + L : ''}" aria-pressed="${+d[k] === i}">${L ? '🔒' : ''}</button>`; }).join('')}</div>`;
+  const thumbs = k => `<div class="avthumbs">${AV_OPTS[k].map(([v, l]) => { const L = lk(k, v); return `<button class="avth${d[k] === v ? ' on' : ''}${L ? ' lock' : ''}" data-act="av-opt" data-k="${k}" data-v="${v}" aria-pressed="${d[k] === v}">${avatarSvg({ ...d, [k]: v }, 58, l)}<span>${L ? '🔒 ' + l : l}</span>${L ? `<small>${esc(L)}</small>` : ''}</button>`; }).join('')}</div>`;
   const chips = k => `<div class="radios">${AV_OPTS[k].map(([v, l]) => `<button class="avchip${d[k] === v ? ' on' : ''}" data-act="av-opt" data-k="${k}" data-v="${v}" aria-pressed="${d[k] === v}">${l}</button>`).join('')}</div>`;
   const sec = (t, h) => `<div class="fld"><span class="lbl">${t}</span>${h}</div>`;
   return `<div class="avprev" style="--av:${AV_BG[d.bg]}">${avatarSvg(d, 168)}</div>
@@ -2488,8 +2557,9 @@ const ACT = {
   'close-sheet': () => closeSheet(),
   'av-edit': () => openAvatarEditor(),
   'ev-done': () => { const e = $('#sheet')._event; if (!e) return; e.done = !e.done; e.doneAt = e.done ? today() : null; persist('events'); toast(e.done ? `Compromisso concluído · +${XP_PRIO[e.prio || 'media']} XP` : 'Conclusão desfeita'); EDIT.eventoView(e.id); },
-  'av-opt': el => { const d = $('#sheet')._av; if (!d) return; const k = el.dataset.k, v = el.dataset.v; if (k === 'base') Object.assign(d, AV_PRESET[v] || {}, { base: v }); else d[k] = ['skin', 'hc', 'hatc', 'topc', 'top2c', 'botc', 'accc', 'bg'].includes(k) ? +v : v; avRefresh(); },
-  'av-rand': () => { const d = $('#sheet')._av; if (!d) return; const r = n => Math.floor(Math.random() * n), o = k => AV_OPTS[k][r(AV_OPTS[k].length)][0]; d.base = o('base'); Object.assign(d, AV_PRESET[d.base]); Object.assign(d, { skin: r(AV_SKIN.length), hc: r(AV_HAIR.length), hair: Math.random() < .7 ? d.hair : o('hair'), mouth: o('mouth'), hat: Math.random() < .45 ? o('hat') : 'nenhum', hatc: r(AV_CLOTH.length), top: o('top'), topc: r(AV_CLOTH.length), top2c: r(AV_CLOTH.length), botc: r(AV_CLOTH.length), acc: Math.random() < .4 ? o('acc') : 'nenhum', accc: r(AV_CLOTH.length), bg: r(AV_BG.length) }); avRefresh(); },
+  'set-title': el => { S.meta.game = S.meta.game || {}; S.meta.game.title = el.dataset.k || null; persist('meta'); render(); toast(el.dataset.k ? 'Título escolhido' : 'Usando o título do seu nível'); },
+  'av-opt': el => { const d = $('#sheet')._av; if (!d) return; const k = el.dataset.k, v = el.dataset.v; { const L = d[k] == v ? null : avLocked(k, v); if (L) { toast(`🔒 Desbloqueia com ${L}`); return; } } if (k === 'base') Object.assign(d, AV_PRESET[v] || {}, { base: v }); else d[k] = ['skin', 'hc', 'hatc', 'topc', 'top2c', 'botc', 'accc', 'bg'].includes(k) ? +v : v; avRefresh(); },
+  'av-rand': () => { const d = $('#sheet')._av; if (!d) return; const keep = { ...d }; const r = n => Math.floor(Math.random() * n), o = k => AV_OPTS[k][r(AV_OPTS[k].length)][0]; d.base = o('base'); Object.assign(d, AV_PRESET[d.base]); Object.assign(d, { skin: r(AV_SKIN.length), hc: r(AV_HAIR.length), hair: Math.random() < .7 ? d.hair : o('hair'), mouth: o('mouth'), hat: Math.random() < .45 ? o('hat') : 'nenhum', hatc: r(AV_CLOTH.length), top: o('top'), topc: r(AV_CLOTH.length), top2c: r(AV_CLOTH.length), botc: r(AV_CLOTH.length), acc: Math.random() < .4 ? o('acc') : 'nenhum', accc: r(AV_CLOTH.length), bg: r(AV_BG.length) }); Object.keys(d).forEach(k => { if (d[k] !== keep[k] && avLocked(k, d[k])) d[k] = AV_DEF[k]; }); avRefresh(); },
   'av-save': () => { const d = $('#sheet')._av; if (!d) return; S.meta.avatar = { ...d }; persist('meta'); closeSheet(); toast('Avatar salvo'); },
   'clear-demo': () => { S = blankState(S.meta.name); normalize(); persist(...MODULES); toast('Tudo em branco. Bom começo!'); render(); },
   'ag-day': el => { UI.agDay = el.dataset.d; UI.agMonth = el.dataset.d.slice(0, 7); render(); },
