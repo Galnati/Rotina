@@ -4,8 +4,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Rotina">
-<meta name="theme-color" content="#F4F5F7" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0E1014" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#6A3FD8">
 <meta name="description" content="Organize agenda, treinos, estudos, leituras, finanças e hábitos — funciona offline.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
@@ -329,6 +328,175 @@ select.inp{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 5
 .jimg{display:block;width:100%;aspect-ratio:3/4;border-radius:10px;background:var(--surface-2) center/cover no-repeat;border:1px solid var(--line)}
 .jd{font-size:12px;color:var(--muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .jfull{display:block;width:100%;border-radius:12px;border:1px solid var(--line);background:var(--surface-2)}
+
+/* ===== Visual 2026: cartões brancos, cabeçalho em degradê, cor do app escolhível =====
+   Inspirado em quadros de tarefas: fundo frio, cartões com sombra suave, faixas coloridas por área,
+   uma cor de marca (roxo por padrão) nos botões, abas ativas e no topo da tela Hoje. */
+:root{
+  --brand:#6A3FD8; --brand-2:#B03FC4; --brand-soft:rgba(106,63,216,.12); --on-brand:#FFFFFF;
+  --bg:#EEF0F6; --surface:#FFFFFF; --surface-2:#E6E9F2; --fg:#1B1D2A; --muted:#6B6F84; --line:rgba(27,29,42,.08);
+  --shadow:0 1px 2px rgba(27,29,42,.06),0 6px 18px rgba(27,29,42,.06); --radius:16px;
+  --ink:var(--brand); --on-ink:var(--on-brand); --tint:var(--brand);
+  --side:#1E1B2E; --side-fg:#C9C6DA;
+}
+:root[data-brand="azul"]{--brand:#2F6FE0;--brand-2:#2BA7E0;--brand-soft:rgba(47,111,224,.12)}
+:root[data-brand="verde"]{--brand:#13897F;--brand-2:#3BB273;--brand-soft:rgba(19,137,127,.12)}
+:root[data-brand="laranja"]{--brand:#E2632A;--brand-2:#F2A33A;--brand-soft:rgba(226,99,42,.13)}
+:root[data-brand="rosa"]{--brand:#D23C78;--brand-2:#8E44D6;--brand-soft:rgba(210,60,120,.12)}
+:root[data-brand="grafite"]{--brand:#2C3142;--brand-2:#5A6178;--brand-soft:rgba(44,49,66,.12)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111219; --surface:#1B1C26; --surface-2:#262836; --fg:#ECECF3; --muted:#9A9DB2; --line:rgba(236,236,243,.08);
+  --shadow:0 1px 2px rgba(0,0,0,.4); --brand-soft:rgba(160,130,255,.16); --side:#0B0B12; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#111219; --surface:#1B1C26; --surface-2:#262836; --fg:#ECECF3; --muted:#9A9DB2; --line:rgba(236,236,243,.08);
+  --shadow:0 1px 2px rgba(0,0,0,.4); --brand-soft:rgba(160,130,255,.16); --side:#0B0B12; color-scheme:dark;
+}
+body{background:var(--bg)}
+.group,.tile,.cal,.timer,.shelf-wrap,.logger{border:0;border-radius:var(--radius);box-shadow:var(--shadow)}
+.top h1{font-weight:750;letter-spacing:-.03em}
+.blk-h h2{font-weight:700}
+.blk-h a,.blk-h button.link:not([data-act="tl-clear"]){color:var(--brand)!important}
+.back,.sheet-h button,.icon-btn,.md a{color:var(--brand)}
+.cal-g button.today{color:var(--brand)}
+.cal-g button.sel{background:var(--brand);color:var(--on-brand)}
+.inp{border:1px solid var(--line);background:var(--surface)}
+.inp:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+:focus-visible{outline-color:var(--brand)}
+/* ações */
+.btn{border:0;box-shadow:var(--shadow);background:var(--surface)}
+.btn.primary,.btn.primary[style*="--c"]{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:var(--on-brand);box-shadow:0 6px 16px var(--brand-soft)}
+.fab{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:var(--on-brand);box-shadow:0 10px 24px var(--brand-soft),0 4px 10px rgba(0,0,0,.18)}
+.chip{border:0;box-shadow:var(--shadow)}
+.chip.on{background:var(--brand);color:var(--on-brand)}
+.chip.hab.on{background:var(--c);color:#fff}
+.radios input:checked + span{background:var(--brand);color:var(--on-brand);border-color:transparent}
+/* abas internas: pílulas com a ativa preenchida */
+.seg{background:var(--surface);box-shadow:var(--shadow);border-radius:14px;padding:4px}
+.seg button{border-radius:10px}
+.seg button.on{background:var(--brand);color:var(--on-brand);box-shadow:none}
+/* listas com faixa colorida no topo, como colunas de um quadro */
+.blk > .group:has(.row){position:relative;padding-top:4px}
+.blk > .group:has(.row)::before{content:"";position:absolute;inset:0 0 auto;height:4px;background:var(--brand)}
+.row .check.on{box-shadow:0 0 0 3px color-mix(in srgb,var(--c,var(--brand)) 20%,transparent)}
+.tag{border-radius:999px;padding:2px 9px}
+/* barra de abas */
+.tabbar{background:var(--surface);border-top:0;box-shadow:0 -6px 20px rgba(27,29,42,.06);-webkit-backdrop-filter:none;backdrop-filter:none}
+.tabbar button{color:var(--muted);border-radius:12px;padding:6px 0}
+.tabbar button svg{padding:3px 10px;width:42px;height:28px;border-radius:999px;transition:background .15s}
+.tabbar button.on{color:var(--brand)}
+.tabbar button.on svg{color:var(--brand);background:var(--brand-soft)}
+/* tela Hoje: topo em degradê com visão geral */
+.hero{margin:-12px -16px 22px;padding:14px 16px 18px;background:linear-gradient(140deg,var(--brand) 0%,var(--brand-2) 100%);border-radius:0 0 26px 26px;color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;right:-90px;top:-120px;background:radial-gradient(circle,rgba(255,255,255,.22),transparent 70%);pointer-events:none}
+.hero .top{margin-bottom:14px;position:relative;z-index:1}
+.hero .top h1,.hero .top .eyebrow{color:#fff}
+.hero .top .eyebrow{opacity:.85}
+.hero .icon-btn{color:#fff!important;background:rgba(255,255,255,.16)}
+.hero .ov{position:relative;z-index:1;background:var(--surface);color:var(--fg);border-radius:18px;box-shadow:0 10px 28px rgba(20,10,60,.22);padding:12px 12px 10px}
+.hero .ov-h{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:15px;margin:0 4px 8px}
+.hero .ov-h span{font-size:12px;color:var(--muted);font-weight:500}
+.hero .tiles{gap:8px}
+.hero .tile{box-shadow:none;background:var(--surface-2);border-radius:14px;display:flex;flex-direction:column;gap:6px;padding:10px}
+.hero .tile .k{order:2;font-size:12px}
+.hero .tile .v{order:1;display:flex;align-items:center;gap:8px;margin:0;font-size:22px;color:var(--fg)}
+.hero .tile .v::before{content:"";width:22px;height:22px;border-radius:50%;flex:none;border:4px solid var(--c);box-sizing:border-box}
+.hero .tile .v.sm{font-size:clamp(12px,3.6vw,16px);padding:0;gap:6px;letter-spacing:-.02em}
+.hero .tile .v.sm::before{width:16px;height:16px;border-width:3px}
+.hero .banner{color:var(--fg)}
+/* folhas e páginas */
+.sheet{background:var(--bg)}
+.pbox.on{background:var(--brand);border-color:var(--brand)}
+.toast{background:var(--fg);color:var(--bg)}
+/* tela grande: barra lateral escura */
+@media (min-width:900px){
+  .tabbar{top:0;bottom:0;right:auto;width:220px;padding:22px 12px;background:var(--side);box-shadow:none;border:0}
+  .tabbar::before{content:"Rotina";display:block;color:#fff;font-weight:800;font-size:22px;letter-spacing:-.02em;padding:0 12px 20px}
+  .tabbar nav{display:flex;flex-direction:column;gap:4px;max-width:none}
+  .tabbar button{flex-direction:row;gap:12px;font-size:15px;color:var(--side-fg);padding:10px 12px;justify-content:flex-start}
+  .tabbar button svg{width:22px;height:22px;padding:0;background:none!important}
+  .tabbar button span{overflow:visible}
+  .tabbar button.on{background:rgba(255,255,255,.1);color:#fff}
+  .tabbar button.on svg{color:var(--brand-2)}
+  #app{max-width:780px;margin-left:calc(220px + max(24px,(100vw - 220px - 780px)/2));padding-bottom:60px}
+  .fab{right:max(32px,calc((100vw - 220px - 780px)/2 - 20px));bottom:32px}
+  .sheet{left:220px}
+  .hero{margin:-12px 0 22px;border-radius:0 0 26px 26px}
+}
+
+/* calendário com topo colorido */
+.hero.ag{background:none;overflow:visible;padding-bottom:0}
+.hero.ag::before{content:"";position:absolute;inset:0 0 auto;height:calc(100% - 150px);min-height:190px;background:linear-gradient(140deg,var(--brand),var(--brand-2));border-radius:0 0 26px 26px}
+.hero.ag::after{display:none}
+.hero.ag > *{position:relative;z-index:1}
+.hero .seg{background:rgba(255,255,255,.16);box-shadow:none}
+.hero .seg button{color:rgba(255,255,255,.88)}
+.hero .seg button.on{background:#fff;color:var(--brand)}
+.hero .pill-btn{background:rgba(255,255,255,.2);color:#fff;border:0;box-shadow:none}
+.hero .cal{color:var(--fg);box-shadow:0 12px 30px rgba(20,10,60,.18);padding:14px 12px 12px}
+.hero .cal-h b{font-size:19px}
+.cal-g button{border-radius:50%;font-weight:500}
+.cal-g button.today{background:var(--brand-soft);color:var(--brand);font-weight:800}
+.cal-g button.sel{background:transparent;color:var(--brand);font-weight:800;box-shadow:inset 0 0 0 2px var(--brand)}
+.cal-g button.sel .dots i{background:var(--c)}
+.cal-g button.today.sel{background:var(--brand);color:var(--on-brand);box-shadow:none}
+.cal-g button.today.sel .dots i{background:var(--on-brand)}
+.hero .cal .icon-btn{color:var(--brand)!important;background:var(--surface-2)}
+.hero .cal-h div{gap:8px}
+.evlist{display:flex;flex-direction:column;gap:10px}
+.evcard{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:12px 12px 12px 16px;position:relative;overflow:hidden}
+.evcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c)}
+.evcard .main{flex:1;min-width:0}
+.evcard .t{font-weight:650;overflow-wrap:anywhere}
+.evcard .s{font-size:13px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.evcard.done .t{text-decoration:line-through;color:var(--muted)}
+.evdate{flex:none;width:48px;height:52px;border-radius:12px;background:color-mix(in srgb,var(--c) 14%,var(--surface));color:var(--c);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.evdate b{font-size:19px;font-weight:800}
+.evdate span{font-size:11px;font-weight:700;margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+
+/* gráfico anual de gastos: 8 cores fixas por categoria (validadas para daltonismo) + cinza para Outros */
+:root{--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--s7:#6250d6;--s8:#e34948;--s0:#9A9CA8}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#008300;--s7:#9085e9;--s8:#e66767;--s0:#6E7082}}
+:root[data-theme="dark"]{--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#008300;--s7:#9085e9;--s8:#e66767;--s0:#6E7082}
+.ychart svg path[data-tip]{cursor:pointer;transition:opacity .12s}
+.ychart svg:hover path[data-tip]{opacity:.55}
+.ychart svg path[data-tip]:hover,.ychart svg path.hl{opacity:1}
+.lgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:6px 18px;margin:12px 4px 0}
+@media (min-width:600px){.lgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.lg{display:grid;grid-template-columns:12px minmax(0,1fr) auto auto;gap:6px;align-items:center;font-size:13px;min-width:0}
+.lg i{width:12px;height:12px;border-radius:4px}
+.lg span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lg b{font-weight:650;font-size:12px}
+.lg em{font-style:normal;color:var(--muted);font-size:11px;min-width:28px;text-align:right}
+.ctip{position:fixed;z-index:70;pointer-events:none;background:var(--fg);color:var(--bg);font-size:12px;font-weight:600;padding:7px 10px;border-radius:10px;max-width:240px;box-shadow:0 6px 18px rgba(0,0,0,.2)}
+
+/* cabeçalho em degradê em todas as telas */
+.hero.band{padding-bottom:16px;margin-bottom:20px}
+.hero.band .top{margin-bottom:12px}
+.hero.band .top:last-child{margin-bottom:0}
+.hero.band .seg{margin-bottom:0}
+.hero .back{color:#fff}
+.hero .pill-btn{color:#fff!important;background:rgba(255,255,255,.2)!important;border:0}
+.hero .top .eyebrow{color:#fff}
+
+/* blocos dentro da faixa colorida */
+.hero.band .in-band{margin:16px 0 0}
+.hero .blk-h h2{color:#fff}
+.hero .blk-h span,.hero .blk-h .link{color:rgba(255,255,255,.85)!important}
+.hero .week div{color:rgba(255,255,255,.85)}
+.hero .week i{background:rgba(255,255,255,.18);color:#fff;box-shadow:none}
+.hero .week i.on{background:#fff;color:var(--c-treino)}
+.hero .week i.today{outline-color:#fff}
+.hero.band .cal-h b{color:#fff}
+.hero.band .tile{background:var(--surface);box-shadow:0 8px 22px rgba(20,10,60,.16);color:var(--fg)}
+.hero.band .tiles{gap:8px}
+.swatches{display:flex;gap:12px;flex-wrap:wrap}
+.swatch{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--muted)}
+.swatch i{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--a),var(--b));box-shadow:var(--shadow);display:grid;place-items:center;color:#fff}
+.swatch i svg{width:20px;height:20px;opacity:0}
+.swatch.on{color:var(--fg)}
+.swatch.on i{outline:3px solid var(--fg);outline-offset:2px}
+.swatch.on i svg{opacity:1}
 </style>
 
 <div id="app" aria-live="polite"></div>
@@ -627,12 +795,13 @@ function accentNow() {
 function render() {
   if (!S) return;
   const app = $('#app');
-  document.documentElement.style.setProperty('--accent', 'var(--ink)');
+  document.documentElement.style.setProperty('--accent', 'var(--brand)'); document.documentElement.dataset.brand = (S.meta && S.meta.brand) || 'roxo'; { const tm = document.querySelector('meta[name=theme-color]'), bb = BRANDS.find(x => x[0] === document.documentElement.dataset.brand); if (tm && bb) tm.content = bb[2]; }
   const v = UI.sub || UI.tab;
   let html;
   try { html = (VIEWS[v] || VIEWS.hoje)(); }
   catch (err) { try { normalize(); html = (VIEWS[v] || VIEWS.hoje)(); } catch (err2) { html = `${header('', 'Ops')}<div class="group"><div class="empty"><b>Esta tela não abriu.</b>Seus dados estão salvos. Toque em outra aba ou recarregue a página.<br><small style="opacity:.6">${esc(err2.message)}</small></div></div>`; } }
   app.innerHTML = html;
+  { const f = app.firstElementChild; if (f && f.classList.contains('top')) { const w = document.createElement('div'); w.className = 'hero band'; app.insertBefore(w, f); w.appendChild(f); const n = w.nextElementSibling; if (n && n.classList.contains('seg')) w.appendChild(n); let x = w.nextElementSibling; while (x && x.classList.contains('in-band')) { const nx = x.nextElementSibling; w.appendChild(x); x = nx; } } }
   const onChip = app.querySelector('[data-act="tl-pick"].on'); if (onChip) { const st = onChip.parentElement; st.scrollLeft += onChip.getBoundingClientRect().left - st.getBoundingClientRect().left - 16; }
   renderTabs();
   const fab = $('#fab');
@@ -703,6 +872,12 @@ const hm = min => { const h = Math.floor(min / 60), m = Math.round(min % 60); re
 const greet = () => { const h = new Date().getHours(); return h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'; };
 
 /* ---------- linhas reutilizáveis ---------- */
+function evCard(it, day) {
+  const d = parse(day);
+  return `<button class="evcard${it.done ? ' done' : ''}" data-act="open" data-k="${it.kind}" data-id="${it.id}" style="--c:${it.c}">
+    <div class="main"><div class="t">${esc(it.title)}</div><div class="s">${it.time ? esc(it.time) + ' · ' : 'Dia todo · '}${esc(it.sub)}</div></div>
+    <div class="evdate"><b>${d.getDate()}</b><span>${WD[d.getDay()]}</span></div></button>`;
+}
 function itemRow(it) {
   return `<button class="row${it.done ? ' done' : ''}" data-act="open" data-k="${it.kind}" data-id="${it.id}">
     <div class="timebox">${it.time ? esc(it.time) : '<small>Dia todo</small>'}</div><span class="stripe" style="--c:${it.c}"></span>
@@ -727,6 +902,41 @@ function debtSeries() {
   const P = f.plan, teto = ym => { const ph = P && P.phases && P.phases.find(x => ym >= x.from && ym <= x.to); return ph ? ph.teto : 0; }; let gastos = 0;
   while (guard++ < 72) { const d = Math.round(cardLeft(m) + txLeft(m)); gastos += teto(m); const c = carryIn(shiftMonth(m, 1)); pts.push({ m, d, s: c === null ? null : Math.round(c - gastos) }); if (d <= 0 && pts.length > 1) break; m = shiftMonth(m, 1); }
   return pts;
+}
+const CAT_SLOT = { Moradia: 1, Mercado: 2, Transporte: 3, 'Saúde': 4, 'Educação': 5, Lazer: 6, Contas: 7, 'Cartão': 8 };
+function yearSpend(y) {
+  const months = Array.from({ length: 12 }, () => ({})), add = (ym, cat, v) => { if (!ym || +ym.slice(0, 4) !== y) return; const m = months[+ym.slice(5, 7) - 1]; const c = CAT_SLOT[cat] ? cat : 'Outros'; m[c] = (m[c] || 0) + v; };
+  S.finance.tx.filter(t => t.type === 'out' && !t.xfer).forEach(t => add(t.date.slice(0, 7), t.cat, t.amount));
+  S.finance.cards.forEach(c => invoices(c).forEach(v => v.items.forEach(i => add(v.due.slice(0, 7), i.p.cat, i.amount))));
+  return months;
+}
+function yearChart() {
+  const y = +(UI.chartYear || UI.finMonth.slice(0, 4)), months = yearSpend(y);
+  const cats = [...Object.keys(CAT_SLOT), 'Outros'], totals = {}; months.forEach(m => Object.entries(m).forEach(([k, v]) => totals[k] = (totals[k] || 0) + v));
+  const used = cats.filter(c => totals[c] > 0), sums = months.map(m => Object.values(m).reduce((a, v) => a + v, 0)), year = sums.reduce((a, v) => a + v, 0);
+  const nav = `<div style="display:flex;gap:6px"><button class="icon-btn" data-act="chart-year" data-n="-1" aria-label="Ano anterior">${I.left}</button><button class="icon-btn" data-act="chart-year" data-n="1" aria-label="Próximo ano">${I.right}</button></div>`;
+  if (!year) return `<section class="blk ychart"><div class="blk-h"><h2>Gastos de ${y}</h2>${nav}</div><div class="group"><div class="empty"><b>Nenhum gasto em ${y}</b>Os lançamentos de saída e as compras no cartão aparecem aqui, mês a mês, por categoria.</div></div></section>`;
+  const nice = v => { const p = Math.pow(10, Math.floor(Math.log10(v))); return [1, 2, 2.5, 5, 10].map(k => k * p).find(k => k >= v); };
+  const step = nice(Math.max(...sums) / 4), top = step * Math.ceil(Math.max(...sums) / step);
+  const W = 360, H = 135, L = 34, R = 4, T = 16, B = 20, bw = (W - L - R) / 12, gap = Math.max(4, bw * .22), yb = H - B, sc = v => v / top * (yb - T);
+  const kfmt = v => v >= 1000 ? (v / 1000).toLocaleString('pt-BR', { maximumFractionDigits: v >= 10000 ? 0 : 1 }) + ' mil' : Math.round(v).toLocaleString('pt-BR');
+  let bars = months.map((m, i) => `<rect x="${L + i * bw}" y="${T}" width="${bw}" height="${yb - T + B}" fill="transparent" data-act="fin-goto" data-m="${y}-${pad(i + 1)}" aria-label="Abrir ${MES[i]}" style="cursor:pointer"/>`).join('');
+  months.forEach((m, i) => { const x = L + i * bw + gap / 2, w = bw - gap; let yy = yb; const segs = used.filter(c => m[c] > 0);
+    segs.forEach((c, j) => { const h = sc(m[c]); const last = j === segs.length - 1; const hh = Math.max(1, h - (last ? 0 : 2)); const yTop = yy - h;
+      const r = last ? Math.min(4, hh / 2) : 0;
+      const d = r ? `M${x},${yTop + h} V${yTop + r} Q${x},${yTop} ${x + r},${yTop} H${x + w - r} Q${x + w},${yTop} ${x + w},${yTop + r} V${yTop + h} Z` : `M${x},${yy} V${yy - hh} H${x + w} V${yy} Z`;
+      bars += `<path d="${d}" fill="var(--s${CAT_SLOT[c] || 0})" data-tip="${MES[i].slice(0, 3)}/${String(y).slice(2)} · ${esc(c)}: ${money(m[c])} (${Math.round(m[c] / sums[i] * 100)}%) · total ${money(sums[i])}"/>`; yy -= h; });
+    if (sums[i]) bars += `<text x="${x + w / 2}" y="${yb - sc(sums[i]) - 5}" text-anchor="middle" font-size="9.5" font-weight="700" fill="var(--fg)">${kfmt(sums[i])}</text>`;
+  });
+  const grid = Array.from({ length: Math.round(top / step) + 1 }, (_, k) => k * step).map(v => `<line x1="${L}" x2="${W - R}" y1="${yb - sc(v)}" y2="${yb - sc(v)}" stroke="var(--line)"/><text x="${L - 6}" y="${yb - sc(v) + 3}" text-anchor="end" font-size="9" fill="var(--muted)">${kfmt(v)}</text>`).join('');
+  const labels = MES.map((n, i) => `<text x="${L + i * bw + bw / 2}" y="${H - 6}" text-anchor="middle" font-size="9.5" fill="${y + '-' + pad(i + 1) === UI.finMonth ? 'var(--fg)' : 'var(--muted)'}" font-weight="${y + '-' + pad(i + 1) === UI.finMonth ? 700 : 500}">${n.slice(0, 3)}</text>`).join('');
+  const legend = used.sort((a, b) => totals[b] - totals[a]).map(c => `<div class="lg"><i style="background:var(--s${CAT_SLOT[c] || 0})"></i><span>${esc(c)}</span><b class="num">${money(totals[c])}</b><em class="num">${Math.round(totals[c] / year * 100)}%</em></div>`).join('');
+  const mAvg = year / (sums.filter(v => v > 0).length || 1);
+  return `<section class="blk ychart"><div class="blk-h"><h2>Gastos de ${y}</h2>${nav}</div><div class="group" style="padding:14px 12px 12px">
+    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline;margin:0 4px"><div><span style="color:var(--muted);font-size:13px">Total</span> <b class="num" style="font-size:18px">${money(year)}</b></div><div style="color:var(--muted);font-size:13px">Média de <b class="num" style="color:var(--fg)">${money(mAvg)}</b> por mês</div></div>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gastos por mês em ${y}, empilhados por categoria" style="width:100%;height:auto;display:block;margin-top:8px">${grid}<line x1="${L}" x2="${W - R}" y1="${yb}" y2="${yb}" stroke="var(--muted)" stroke-opacity=".5"/>${bars}${labels}</svg>
+    <div class="lgrid">${legend}</div>
+    <p class="note" style="padding:6px 2px 0">Saídas lançadas e compras no cartão (cada parcela no mês em que a fatura vence). Toque numa cor para ver o valor e num mês para abri-lo.</p></div></section>`;
 }
 function debtChart() {
   const pts = debtSeries(); if (pts.length < 2 || pts[0].d <= 0) return '';
@@ -762,14 +972,14 @@ VIEWS.hoje = () => {
   const checks = S.habits.checks[t] || [];
   const next = S.meetings.filter(m => m.status === 'proxima' && m.date >= t).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))[0];
   const sw = studyWeek();
-  return `${header(`${WDL[d.getDay()]}, ${d.getDate()} de ${MES[d.getMonth()]}`, `${greet()}${S.meta.name ? ', ' + esc(S.meta.name) : ''}`, `<div style="display:flex;gap:2px"><button class="icon-btn" data-act="search" aria-label="Buscar" style="color:var(--muted)">${I.search}</button><button class="icon-btn" data-act="sub" data-k="ajustes" aria-label="Ajustes e backup" style="color:var(--muted)">${I.ajustes}</button></div>`)}
-  ${demoBanner()}
-  ${alertsCard()}
-  <section class="blk"><div class="tiles">
+  return `<div class="hero">${header(`${WDL[d.getDay()]}, ${d.getDate()} de ${MES[d.getMonth()]}`, `${greet()}${S.meta.name ? ', ' + esc(S.meta.name) : ''}`, `<div style="display:flex;gap:2px"><button class="icon-btn" data-act="search" aria-label="Buscar" style="color:var(--muted)">${I.search}</button><button class="icon-btn" data-act="sub" data-k="ajustes" aria-label="Ajustes e backup" style="color:var(--muted)">${I.ajustes}</button></div>`)}
+  <div class="ov"><div class="ov-h">Visão geral <span>hoje</span></div><div class="tiles">
     <button class="tile" data-act="tab" data-k="agenda" style="--c:var(--c-agenda)"><div class="k">Hoje</div><div class="v">${items.length}</div></button>
     <button class="tile" data-act="sub" data-k="tarefas" style="--c:var(--c-tarefa)"><div class="k">A fazer</div><div class="v">${open.length}</div></button>
     ${(() => { const inv = (S.finance.plan || {}).investAccountId, accs = S.finance.accounts.filter(a => a.id !== inv), v = accs.length ? accs.reduce((a, c) => a + accBalance(c), 0) : mt.bal; return `<button class="tile" data-act="tab" data-k="financas" style="--c:${v >= 0 ? 'var(--c-fin)' : 'var(--danger)'}"><div class="k">${accs.length ? 'Em conta' : 'Saldo'}</div><div class="v sm">${moneyS(v)}</div></button>`; })()}
-  </div></section>
+  </div></div></div>
+  ${demoBanner()}
+  ${alertsCard()}
   <section class="blk"><div class="blk-h"><h2>Seu dia</h2><button class="link" data-act="new" data-k="evento" data-date="${t}">Adicionar</button></div>
     <div class="group">${items.length ? items.map(itemRow).join('') : '<div class="empty"><b>Dia livre</b>Nada marcado para hoje.</div>'}</div></section>
   ${debtChart()}
@@ -818,14 +1028,14 @@ VIEWS.agenda = () => {
   if (UI.agMode === 'reunioes') return `${header('', 'Agenda')}${agSeg()}${meetingsBody()}`;
   if (UI.agMode === 'tarefas') return `${header('', 'Agenda')}${agSeg()}${VIEWS.tarefas()}`;
   if (UI.agMode === 'habitos') return `${header('', 'Agenda')}${agSeg()}${VIEWS.habitos()}`;
-  return `${header('', 'Agenda', `<button class="pill-btn" data-act="ag-today">Hoje</button>`)}
+  return `<div class="hero ag">${header('', 'Agenda', `<button class="pill-btn" data-act="ag-today">Hoje</button>`)}
   ${agSeg()}
-  <section class="blk"><div class="cal"><div class="cal-h"><b>${MES[m - 1]} ${y}</b><div>
+  <div class="cal"><div class="cal-h"><b>${MES[m - 1]} ${y}</b><div>
     <button class="icon-btn" data-act="ag-month" data-n="-1" aria-label="Mês anterior">${I.left}</button><button class="icon-btn" data-act="ag-month" data-n="1" aria-label="Próximo mês">${I.right}</button></div></div>
-    <div class="cal-g">${['S', 'T', 'Q', 'Q', 'S', 'S', 'D'].map(w => `<div class="wd">${w}</div>`).join('')}${cells}</div></div></section>
+    <div class="cal-g">${['S', 'T', 'Q', 'Q', 'S', 'S', 'D'].map(w => `<div class="wd">${w}</div>`).join('')}${cells}</div></div></div>
   <section class="blk"><div class="blk-h"><h2>${fmtDay(UI.agDay)}</h2><button class="link" data-act="new" data-k="evento" data-date="${UI.agDay}">Adicionar</button></div>
-    <div class="group">${its.length ? its.map(itemRow).join('') : '<div class="empty"><b>Nada marcado</b>Toque em + para adicionar um compromisso neste dia.</div>'}</div></section>
-  ${upcoming.length ? `<section class="blk"><div class="blk-h"><h2>Nos próximos dias</h2></div><div class="group">${upcoming.map(x => itemRow({ ...x, sub: `${fmtDay(x.day)} · ${x.sub}` })).join('')}</div></section>` : ''}`;
+    ${its.length ? `<div class="evlist">${its.map(x => evCard(x, UI.agDay)).join('')}</div>` : '<div class="group"><div class="empty"><b>Nada marcado</b>Toque em + para adicionar um compromisso neste dia.</div></div>'}</section>
+  ${upcoming.length ? `<section class="blk"><div class="blk-h"><h2>Nos próximos dias</h2></div><div class="evlist">${upcoming.map(x => evCard(x, x.day)).join('')}</div></section>` : ''}`;
 };
 
 function careerWeek() { const ts = S.career?.tasks || []; if (!ts.length) return 1; const t = today(); for (let w = 1; w <= 12; w++) { const wk = ts.filter(x => x.w === w); if (wk.length && wk.some(x => x.prazo >= t)) return w; } return 12; }
@@ -888,7 +1098,7 @@ VIEWS.financas = () => {
   const { tx, invs, inn, out, bal } = monthTotals(ym);
   const mode = UI.finMode || 'resumo';
   const seg = `<div class="seg" role="tablist">${[['resumo', 'Resumo'], ['contas', 'Contas'], ['cartoes', 'Cartões'], ['plano', 'Plano']].filter(([k]) => k !== 'plano' || (f.plan && (f.plan.phases || []).length)).map(([k, l]) => `<button class="${mode === k ? 'on' : ''}" data-act="fin-mode" data-k="${k}">${l}</button>`).join('')}</div>`;
-  const nav = `<section class="blk"><div class="cal-h" style="padding:0 2px 10px"><b style="font-family:var(--f-display);font-size:20px;text-transform:capitalize">${MES[m - 1]} ${y}</b><div><button class="icon-btn" data-act="fin-month" data-n="-1" aria-label="Mês anterior">${I.left}</button><button class="icon-btn" data-act="fin-month" data-n="1" aria-label="Próximo mês">${I.right}</button></div></div>
+  const nav = `<section class="blk in-band"><div class="cal-h" style="padding:0 2px 10px"><b style="font-family:var(--f-display);font-size:20px;text-transform:capitalize">${MES[m - 1]} ${y}</b><div><button class="icon-btn" data-act="fin-month" data-n="-1" aria-label="Mês anterior">${I.left}</button><button class="icon-btn" data-act="fin-month" data-n="1" aria-label="Próximo mês">${I.right}</button></div></div>
     <div class="tiles"><div class="tile" style="--c:var(--c-fin)"><div class="k">Entradas</div><div class="v sm">${moneyS(inn)}</div></div><div class="tile" style="--c:var(--danger)"><div class="k">Saídas</div><div class="v sm">${moneyS(out)}</div></div><div class="tile" style="--c:${bal >= 0 ? 'var(--fg)' : 'var(--danger)'}"><div class="k">Saldo do mês</div><div class="v sm">${moneyS(bal)}</div></div></div></section>`;
   const carry = carryIn(ym), endBal = carry === null ? null : carry + bal, opM = f.opening && f.opening.month;
   const conta = `<section class="blk"><div class="blk-h"><h2>Saldo em conta</h2><button class="link" data-act="new" data-k="saldo" style="color:var(--c-fin)">${opM ? 'Ajustar' : 'Definir'}</button></div><div class="group">
@@ -929,7 +1139,7 @@ VIEWS.financas = () => {
   }
   if (mode === 'contas') {
     const curM = today().slice(0, 7), past = ym < curM, isCur = ym === curM;
-    const anav = `<section class="blk"><div class="cal-h" style="padding:0 2px 10px"><b style="font-family:var(--f-display);font-size:20px;text-transform:capitalize">${MES[m - 1]} ${y}</b><div><button class="icon-btn" data-act="fin-month" data-n="-1" aria-label="Mês anterior">${I.left}</button><button class="icon-btn" data-act="fin-month" data-n="1" aria-label="Próximo mês">${I.right}</button></div></div></section>`;
+    const anav = `<section class="blk in-band"><div class="cal-h" style="padding:0 2px 10px"><b style="font-family:var(--f-display);font-size:20px;text-transform:capitalize">${MES[m - 1]} ${y}</b><div><button class="icon-btn" data-act="fin-month" data-n="-1" aria-label="Mês anterior">${I.left}</button><button class="icon-btn" data-act="fin-month" data-n="1" aria-label="Próximo mês">${I.right}</button></div></div></section>`;
     const tot = f.accounts.reduce((a, c) => a + accProj(c, ym), 0);
     return `${header('', 'Finanças')}${seg}${f.accounts.length ? anav : ''}<section class="blk"><div class="blk-h"><h2>${past ? 'Saldo atual' : `Previsão no fim de ${MES[m - 1]}`}</h2><span class="num" style="color:${tot < 0 ? 'var(--danger)' : 'var(--muted)'};font-size:14px">${money(tot)}</span></div>
     <div class="group">${f.accounts.length ? f.accounts.map(a => { const cs = f.cards.filter(c => c.accountId === a.id); const pv = accProj(a, ym), now = accBalance(a); return `<button class="row" data-act="open" data-k="conta" data-id="${a.id}"><span style="width:36px;height:36px;border-radius:10px;background:${a.color};flex:none;display:grid;place-items:center;color:var(--on-accent);font-weight:800;font-size:14px">${esc((a.bank || a.name).slice(0, 2).toUpperCase())}</span><div class="main"><div class="t">${esc(a.bank)} · ${esc(a.name)}</div><div class="s">${!past ? `Hoje ${money(now)}` : esc(a.type)}${cs.length ? ` · ${cs.length} ${cs.length === 1 ? 'cartão' : 'cartões'}` : ''}</div></div><span class="end num" style="font-weight:700;color:${pv < 0 ? 'var(--danger)' : 'var(--fg)'}">${money(pv)}</span>${I.chev}</button>`; }).join('') : '<div class="empty"><b>Nenhuma conta</b>Toque em + para cadastrar sua primeira conta bancária.</div>'}</div>
@@ -937,7 +1147,7 @@ VIEWS.financas = () => {
   }
   if (mode === 'cartoes') {
     const cInv = f.cards.flatMap(c => invoices(c).filter(v => v.due.slice(0, 7) === ym)); const cTot = cInv.reduce((a, v) => a + v.total, 0), cOpen = cInv.filter(v => !v.paid).reduce((a, v) => a + v.total, 0);
-    const cnav = `<section class="blk"><div class="cal-h" style="padding:0 2px 10px"><b style="font-family:var(--f-display);font-size:20px;text-transform:capitalize">${MES[m - 1]} ${y}</b><div><button class="icon-btn" data-act="fin-month" data-n="-1" aria-label="Mês anterior">${I.left}</button><button class="icon-btn" data-act="fin-month" data-n="1" aria-label="Próximo mês">${I.right}</button></div></div>
+    const cnav = `<section class="blk in-band"><div class="cal-h" style="padding:0 2px 10px"><b style="font-family:var(--f-display);font-size:20px;text-transform:capitalize">${MES[m - 1]} ${y}</b><div><button class="icon-btn" data-act="fin-month" data-n="-1" aria-label="Mês anterior">${I.left}</button><button class="icon-btn" data-act="fin-month" data-n="1" aria-label="Próximo mês">${I.right}</button></div></div>
       <div class="tiles" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div class="tile" style="--c:var(--danger)"><div class="k">Faturas do mês</div><div class="v sm">${money(cTot)}</div></div><div class="tile" style="--c:${cOpen ? 'var(--fg)' : 'var(--c-fin)'}"><div class="k">Falta pagar</div><div class="v sm">${money(cOpen)}</div></div></div></section>`;
     return `${header('', 'Finanças')}${seg}${f.cards.length ? cnav : ''}<section class="blk" style="display:flex;flex-direction:column;gap:12px">${f.cards.length ? f.cards.map(c => cardBlock(c, ym)).join('') : '<div class="group"><div class="empty"><b>Nenhum cartão</b>Cadastre uma conta e depois toque em + para vincular um cartão de crédito.</div></div>'}</section>
     ${f.cards.length ? `<div class="btns" style="margin:0 0 24px"><button class="btn" data-act="new" data-k="cartao">Novo cartão</button><button class="btn primary" data-act="new" data-k="compra">Nova compra</button></div>` : ''}`;
@@ -949,7 +1159,7 @@ VIEWS.financas = () => {
   const pend = [...f.tx.filter(t => t.type === 'out' && !t.paid && t.date.slice(0, 7) <= ym).map(t => ({ k: 'lancamento', id: t.id, title: t.desc || t.cat, date: t.date, amount: t.amount })), ...f.cards.flatMap(c => invoices(c).filter(v => !v.paid && v.total > 0 && v.due.slice(0, 7) <= ym && v.state !== 'Futura').map(v => ({ k: 'cartao', id: c.id, inv: v.key, title: `Fatura ${c.name}${v.state === 'Aberta' ? ' (aberta)' : ''}`, date: v.due, amount: v.total })))].sort((a, b) => a.date.localeCompare(b.date));
   const groups = {};
   [...tx].sort((a, b) => b.date.localeCompare(a.date)).forEach(t => (groups[t.date] = groups[t.date] || []).push(t));
-  return `${header('', 'Finanças')}${seg}${nav}${conta}${meta}
+  return `${header('', 'Finanças')}${seg}${nav}${yearChart()}${conta}${meta}
   ${pend.length ? `<section class="blk"><div class="blk-h"><h2>Contas a pagar</h2><span class="end num" style="color:var(--muted);font-size:14px">${money(pend.reduce((a, t) => a + t.amount, 0))}</span></div><div class="group">
     ${pend.map(t => `<div class="row"><button data-act="${t.k === 'cartao' ? 'pay-invoice' : 'toggle-paid'}" data-id="${t.id}" data-inv="${t.inv || ''}" aria-label="Marcar como paga">${CHECK(false, 'var(--c-fin)')}</button><button class="main" style="text-align:left" data-act="open" data-k="${t.k}" data-id="${t.id}"><div class="t">${esc(t.title)}</div><div class="s" style="${t.date < today() ? 'color:var(--danger);font-weight:600' : ''}">${t.date < today() ? 'Vencida · ' : 'Vence '}${fmtDay(t.date).toLowerCase()}</div></button><span class="end num" style="color:var(--fg);font-weight:600">${money(t.amount)}</span></div>`).join('')}</div></section>` : ''}
   <section class="blk"><div class="blk-h"><h2>Gastos por categoria</h2></div><div class="group" style="padding:6px 14px 12px">
@@ -995,7 +1205,7 @@ VIEWS.treinos = () => {
   const log = [...S.workouts.log].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 8);
   const plan = id => S.workouts.plans.find(p => p.id === id);
   return `${header('', 'Treinos')}
-  <section class="blk"><div class="blk-h"><h2>Esta semana</h2><span style="color:var(--muted);font-size:14px">${count} ${count === 1 ? 'treino' : 'treinos'}</span></div>
+  <section class="blk in-band"><div class="blk-h"><h2>Esta semana</h2><span style="color:var(--muted);font-size:14px">${count} ${count === 1 ? 'treino' : 'treinos'}</span></div>
     <div class="week">${week.map(w => `<div>${WD[w.d.getDay()].slice(0, 3)}<i class="${w.on ? 'on' : ''} ${w.k === t ? 'today' : ''}">${w.d.getDate()}</i></div>`).join('')}</div></section>
   <section class="blk"><div class="blk-h"><h2>Fichas</h2></div><div style="display:flex;flex-direction:column;gap:10px">
   ${S.workouts.plans.length ? S.workouts.plans.map(p => {
@@ -1346,7 +1556,9 @@ function alertsCard() {
   return `<section class="blk"><div class="blk-h"><h2>Atenção</h2></div><div class="group">${out.map(([txt, lab, act, k, c]) => `<button class="row alert-row" data-act="${act}" data-k="${k}" data-id="${k}"><span class="dot" style="--c:${c}"></span><div class="main"><div class="t" style="font-weight:600">${esc(txt)}</div></div><span class="end" style="color:${c};font-weight:600;font-size:13px">${lab}</span></button>`).join('')}</div></section>`;
 }
 
+const BRANDS = [['roxo', 'Roxo', '#6A3FD8', '#B03FC4'], ['azul', 'Azul', '#2F6FE0', '#2BA7E0'], ['verde', 'Verde', '#13897F', '#3BB273'], ['laranja', 'Laranja', '#E2632A', '#F2A33A'], ['rosa', 'Rosa', '#D23C78', '#8E44D6'], ['grafite', 'Grafite', '#2C3142', '#5A6178']];
 VIEWS.ajustes = () => `${header('', 'Ajustes')}
+  <section class="blk"><div class="blk-h"><h2>Tema do aplicativo</h2></div><div class="group" style="padding:14px"><div class="swatches">${BRANDS.map(([k, l, a, b]) => `<button class="swatch${(S.meta.brand || 'roxo') === k ? ' on' : ''}" data-act="set-brand" data-k="${k}" aria-pressed="${(S.meta.brand || 'roxo') === k}" style="--a:${a};--b:${b}"><i>${I.tick}</i>${l}</button>`).join('')}</div><p class="note" style="padding:10px 0 0">A cor aparece no topo da tela Hoje, nos botões e na aba ativa. As cores de cada área continuam as mesmas.</p></div></section>
   <section class="blk"><div class="fld"><label for="set-name">Seu nome</label><input class="inp" id="set-name" value="${esc(S.meta.name)}" placeholder="Como quer ser chamado" data-act="set-name"></div></section>
   <section class="blk"><div class="blk-h"><h2>Onde seus dados ficam</h2></div><div class="group" style="padding:14px">
     <span class="sync" style="--c:${store.mode === 'conta' ? 'var(--c-fin)' : 'var(--c-reun)'}"><i></i>${store.mode === 'conta' ? 'Sincronizado com sua conta Claude' : 'Salvo neste aparelho · funciona offline'}</span>
@@ -1818,6 +2030,9 @@ const ACT = {
   'ch-move': el => { const P = S.writing.projects.find(p => p.chapters.some(c => c.id === el.dataset.id)); const i = P.chapters.findIndex(c => c.id === el.dataset.id), j = i + (+el.dataset.n); if (j < 0 || j >= P.chapters.length) return; [P.chapters[i], P.chapters[j]] = [P.chapters[j], P.chapters[i]]; persist('writing'); EDIT.capitulo(el.dataset.id); },
   'ev-del-next': el => { const e = S.events.find(x => x.id === el.dataset.id); if (!e) return; if (!el.classList.contains('arm')) { el.classList.add('arm'); el.textContent = 'Toque de novo para excluir'; return; } const n = S.events.filter(x => x.rid === e.rid && x.date >= e.date).length; S.events = S.events.filter(x => !(x.rid === e.rid && x.date >= e.date)); persist('events'); toast(`${n} compromissos excluídos`); closeSheet(); },
   'plan-step': el => { const P = S.finance.plan; const st = P && P.steps.find(x => x.id === el.dataset.id); if (!st) return; st.done = !st.done; persist('finance'); render(); },
+  'set-brand': el => { S.meta.brand = el.dataset.k; persist('meta'); render(); toast('Tema aplicado'); },
+  'chart-year': el => { UI.chartYear = +(UI.chartYear || UI.finMonth.slice(0, 4)) + (+el.dataset.n); render(); },
+  'fin-goto': el => { UI.finMonth = el.dataset.m; UI.chartYear = +el.dataset.m.slice(0, 4); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); },
   'fin-mode': el => { UI.finMode = el.dataset.k; saveUI(); render(); },
   'pay-invoice': el => { const c = S.finance.cards.find(x => x.id === el.dataset.id); if (!c) return; if (!c.paid.includes(el.dataset.inv)) c.paid.push(el.dataset.inv); persist('finance'); toast('Fatura paga — saldo da conta atualizado'); if ($('#sheet').classList.contains('show')) EDIT.cartaoView(c.id); else render(); },
   'ac-edit': el => { sheetClose = null; EDIT.conta(el.dataset.id); },
@@ -1959,6 +2174,12 @@ async function setCover(file) {
   } catch (e) { toast('Não consegui abrir essa imagem. Tente outra foto.'); }
 }
 $('#backdrop').addEventListener('click', closeSheet);
+(() => { const tip = document.createElement('div'); tip.className = 'ctip'; tip.hidden = true; document.body.appendChild(tip); let cur = null;
+  const show = (el, x, y) => { if (cur) cur.classList.remove('hl'); cur = el; el.classList.add('hl'); tip.textContent = el.dataset.tip; tip.hidden = false; const r = tip.getBoundingClientRect(); tip.style.left = Math.max(8, Math.min(window.innerWidth - r.width - 8, x - r.width / 2)) + 'px'; tip.style.top = Math.max(8, y - r.height - 12) + 'px'; };
+  const hide = () => { tip.hidden = true; if (cur) cur.classList.remove('hl'); cur = null; };
+  document.addEventListener('pointermove', e => { const el = e.target.closest && e.target.closest('[data-tip]'); if (el && e.pointerType === 'mouse') show(el, e.clientX, e.clientY); else if (e.pointerType === 'mouse') hide(); });
+  document.addEventListener('pointerdown', e => { const el = e.target.closest && e.target.closest('[data-tip]'); if (el) { show(el, e.clientX, e.clientY); } else hide(); });
+  window.addEventListener('scroll', hide, { passive: true }); })();
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#sheet').classList.contains('show')) closeSheet(); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { tickTimer(); } });
 
