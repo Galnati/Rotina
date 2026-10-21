@@ -615,6 +615,18 @@ body{background:var(--bg)}
 .avth.lock{opacity:.55}.avth.lock svg{filter:grayscale(.8)}
 .avth small{font-size:10px;color:var(--muted);line-height:1.2;text-align:center}
 .avsw.lock{opacity:.45;display:grid;place-items:center;font-size:13px}
+
+/* moedas, missões e loja */
+.coinpill{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:800;padding:3px 10px;border-radius:999px;background:color-mix(in srgb,#E8A13A 18%,var(--surface));color:#A0600A;white-space:nowrap}
+.coinpill.sm{font-size:12px;padding:2px 8px;flex:none}
+.hh-chip.coin{background:#FFE9B8;color:#7A4A06}
+.mission.done .t{text-decoration:line-through;color:var(--muted)}
+.shop{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.pack{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:10px 10px 12px;text-align:center;min-width:0}
+.pack-av{display:grid;place-items:end center;width:100%;background:var(--av);border-radius:12px;padding:8px 0 4px}
+.pack b{font-size:14px;font-weight:700}.pack small{font-size:11px;color:var(--muted)}
+.pack .btn{width:100%;margin-top:2px}
+.pack.own{outline:2px solid color-mix(in srgb,var(--c-fin) 60%,transparent)}
 </style>
 
 <div id="app" aria-live="polite"></div>
@@ -1082,7 +1094,7 @@ function gameStats() {
   st.reg = { ev: S.events.length, meet: S.meetings.length, meetDone: S.meetings.filter(m => m.status === 'realizada').length, task: S.tasks.length, book: S.books.length, blog: S.books.reduce((a, b) => a + (b.log || []).length, 0), game: S.games.length, loans: [...S.books, ...S.games].reduce((a, x) => a + (x.loans || []).length, 0),
     tx: f.tx.length, buy: f.purchases.length, acc: f.accounts.length + f.cards.length, opening: f.opening && f.opening.month ? 1 : 0, plan: S.workouts.plans.length, subj: S.study.subjects.length, sum: (S.study.summaries || []).length, ch: S.writing.projects.reduce((a, x) => a + (x.chapters || []).length, 0), hab: S.habits.list.length };
   st.records = Object.values(st.reg).reduce((a, v) => a + v, 0);
-  st.eventsDone = S.events.filter(e => e.done).length;
+  st.eventsDone = S.events.filter(e => e.done).length; st.txs = st.reg.tx;
   const dv = S.finance.tx.filter(t => t.rep === 'divida' && t.type === 'out'); st.debtPaid = dv.filter(t => t.paid).length;
   const groups = {}; dv.forEach(t => { const g = groups[t.rid || t.id] = groups[t.rid || t.id] || { n: 0, p: 0 }; g.n++; if (t.paid) g.p++; });
   st.debtsCleared = Object.values(groups).filter(g => g.n && g.p === g.n).length;
@@ -1097,6 +1109,7 @@ function gameStats() {
     'Finanças': (R.tx + R.buy) * 5 + R.acc * 15 + R.opening * 20 + Math.floor(st.saved / 10) + st.greenMonths * 100 + st.debtPaid * 25 + st.debtsCleared * 200,
     'Coleção': R.game * 10 + st.plays * 15 + R.loans * 5, 'Desafios': st.challenges * 150,
   };
+  st.doneAny = st.tasks + st.eventsDone;
   st.xp = Object.values(st.area).reduce((a, v) => a + v, 0);
   let L = 1, into = st.xp, need = 100; while (into >= need) { into -= need; L++; need = 100 + 50 * (L - 1); }
   Object.assign(st, { level: L, into, need });
@@ -1191,8 +1204,35 @@ const AV_UNLOCK = {
   'hc.7': ['lv', 10], 'hc.8': ['lv', 12], 'bg.6': ['lv', 5], 'bg.7': ['lv', 15], 'topc.4': ['ach', 'registro50'], 'topc.8': ['ach', 'poupar1k'],
 };
 const avReqText = r => r[0] === 'lv' ? `nível ${r[1]}` : `conquista "${(ACHIEVEMENTS.find(a => a[0] === r[1]) || [, , r[1]])[2]}"`;
-function avLocked(k, v) { const r = AV_UNLOCK[`${k}.${v}`]; if (!r) return null; const st = GAME || gameStats(), g = S.meta.game || {}; const ok = r[0] === 'lv' ? st.level >= r[1] : !!(g.ach || {})[r[1]]; return ok ? null : avReqText(r); }
+function avLocked(k, v) { const pk = PACK_OF[`${k}.${v}`]; if (pk && !ownsPack(pk[0])) return `pacote ${pk[1]} (🪙 ${pk[3]})`; const r = AV_UNLOCK[`${k}.${v}`]; if (!r) return null; const st = GAME || gameStats(), g = S.meta.game || {}; const ok = r[0] === 'lv' ? st.level >= r[1] : !!(g.ach || {})[r[1]]; return ok ? null : avReqText(r); }
 const AV_LABEL = key => { const [k, v] = key.split('.'); const o = (AV_OPTS[k] || []).find(x => x[0] === v); return o ? o[1] : ({ hc: 'cor de cabelo especial', bg: 'fundo especial', topc: 'cor de roupa especial' }[k] || key); };
+const PACKS = [
+  ['guerreiro', 'Guerreiro medieval', '⚔️', 300, { hat: ['elmo'], top: ['armadura'], acc: ['espada'] }, { hat: 'elmo', hatc: 0, top: 'armadura', topc: 0, acc: 'espada', accc: 1, bottom: 'calca', botc: 7 }],
+  ['arqueiro', 'Arqueiro medieval', '🏹', 250, { hat: ['capuz'], top: ['gibao'], acc: ['arco'] }, { hat: 'capuz', hatc: 2, top: 'gibao', topc: 2, acc: 'arco', accc: 0, bottom: 'calca', botc: 7 }],
+  ['mago', 'Mago medieval', '🧙', 300, { hat: ['mago'], top: ['manto'], acc: ['cajado'] }, { hat: 'mago', hatc: 4, top: 'manto', topc: 4, top2c: 3, acc: 'cajado', accc: 9 }],
+  ['clerigo', 'Clérigo medieval', '✨', 250, { hat: ['mitra'], top: ['tunica'], acc: ['livro'] }, { hat: 'mitra', hatc: 6, top: 'tunica', topc: 6, acc: 'livro' }],
+  ['ninja', 'Ninja asiático', '🥷', 300, { hat: ['ninja'], top: ['gi'], acc: ['katana'] }, { hat: 'ninja', hatc: 11, top: 'gi', topc: 11, acc: 'katana', accc: 0, bottom: 'calca', botc: 11 }],
+  ['neon', 'Moderno neon', '🌃', 200, { hat: ['viseira'], top: ['neon'], acc: ['neonglass'] }, { hat: 'viseira', top: 'neon', topc: 11, acc: 'nenhum', accc: 9, bottom: 'calca', botc: 11 }],
+  ['clubber', 'Moderno clubber', '🪩', 200, { hat: ['ledears'], top: ['glitter'], acc: ['glow'] }, { hat: 'ledears', top: 'glitter', topc: 8, top2c: 10, acc: 'glow', accc: 9, bottom: 'shorts', botc: 11 }],
+  ['futebol', 'Moderno futebol', '⚽', 200, { hat: ['faixa'], top: ['futebol'], bottom: ['futebol'], acc: ['bola'] }, { hat: 'nenhum', hatc: 3, top: 'futebol', topc: 2, top2c: 6, bottom: 'futebol', botc: 6, acc: 'bola' }],
+];
+const PACK_OF = {}; PACKS.forEach(pk => Object.entries(pk[4]).forEach(([k, vs]) => vs.forEach(v => PACK_OF[`${k}.${v}`] = pk)));
+const ownsPack = id => !!(((S.meta.game || {}).packs || {})[id]);
+const MISSIONS = [
+  ['habito', '✅', 'Marque 2 hábitos', 'checks', 2, 10, () => S.habits.list.length],
+  ['concluir', '📌', 'Conclua 1 tarefa ou compromisso', 'doneAny', 1, 10, () => true],
+  ['registro', '🗂️', 'Faça 3 registros no app', 'records', 3, 10, () => true],
+  ['leitura', '📖', 'Leia 10 páginas', 'pages', 10, 10, () => S.books.some(b => b.status === 'lendo')],
+  ['treino', '🏋️', 'Registre um treino', 'workouts', 1, 15, () => S.workouts.plans.length],
+  ['estudo', '🎓', 'Estude 20 minutos', 'studyMin', 20, 10, () => S.study.subjects.length],
+  ['financa', '💰', 'Registre 1 lançamento', 'txs', 1, 10, () => true],
+];
+const MISSION_KEYS = ['checks', 'doneAny', 'records', 'pages', 'workouts', 'studyMin', 'txs'];
+const dailyMissions = () => { const g = S.meta.game || {}; return g.day && g.day.d === today() ? g.day.ids.map(id => MISSIONS.find(m => m[0] === id)).filter(Boolean) : []; };
+const missionProg = (m, st) => { const g = S.meta.game || {}; return Math.max(0, (st[m[3]] || 0) - ((g.day && g.day.snap || {})[m[3]] || 0)); };
+function coinsInfo(st) { const g = S.meta.game || {}; let earned = 0; Object.values(g.mis || {}).forEach(o => Object.values(o).forEach(v => earned += +v || 0));
+  earned += Object.keys(g.ach || {}).length * 20 + Object.keys(g.tit || {}).length * 30 + Object.keys(g.ch || {}).length * 50 + 10 * Math.max(0, st.level - 1);
+  const spent = Object.values(g.packs || {}).reduce((a, x) => a + (+x.price || 0), 0); return { earned, spent, coins: earned - spent }; }
 let GAME = null;
 function gameSync() {
   if (!S || !S.meta) return;
@@ -1204,6 +1244,10 @@ function gameSync() {
   ACHIEVEMENTS.forEach(([id, ic, name, , test]) => { if (!g.ach[id] && test(st)) { g.ach[id] = today(); ch = true; if (g.seeded) msgs.push(`${ic} Conquista: ${name}`); } });
   g.tit = g.tit || {}; TITLES.forEach(([id, ic, name, , test]) => { if (!g.tit[id] && test(st)) { g.tit[id] = today(); ch = true; if (g.seeded) msgs.push(`${ic} Novo título: ${name}`); } });
   GAME = st; g.unl = g.unl || {}; Object.keys(AV_UNLOCK).forEach(key => { const [k, v] = key.split('.'); if (!g.unl[key] && !avLocked(k, v)) { g.unl[key] = today(); ch = true; if (g.seeded) msgs.push(`🎨 Nova aparência: ${AV_LABEL(key)}`); } });
+  { const d = today(); if (!g.day || g.day.d !== d) { const av = MISSIONS.filter(m => m[6]()); const n = Math.floor(parse(d).getTime() / 864e5); const ids = []; for (let i = 0; i < Math.min(3, av.length); i++) ids.push(av[(n + i * 2) % av.length][0]); g.day = { d, ids: [...new Set(ids)], snap: Object.fromEntries(MISSION_KEYS.map(k => [k, st[k] || 0])) }; ch = true; }
+    g.mis = g.mis || {}; const done = g.mis[d] = g.mis[d] || {};
+    g.day.ids.forEach(id => { const m = MISSIONS.find(x => x[0] === id); if (m && !done[id] && missionProg(m, st) >= m[4]) { done[id] = m[5]; ch = true; msgs.push(`🪙 Missão cumprida: ${m[2]} (+${m[5]})`); } });
+    if (g.day.ids.length && g.day.ids.every(id => done[id]) && !done.bonus) { done.bonus = 15; ch = true; msgs.push('🪙 Todas as missões do dia! +15 de bônus'); } }
   if (g.seeded && g.lvl && st.level > g.lvl) msgs.unshift(`⬆️ Você subiu para o nível ${st.level}!`);
   if (g.lvl !== st.level) { g.lvl = st.level; ch = true; }
   if (!g.seeded) { g.seeded = true; ch = true; }
@@ -1215,7 +1259,7 @@ function gameSync() {
 /* avatar em pixel art: grade 24×32, contorno escuro automático e sombra nas bordas direita e de baixo */
 const AV_SKIN = ['#FFDDC4', '#F4C39B', '#DFA06C', '#B97646', '#8C5232', '#5C3520'];
 const AV_HAIR = ['#2B201C', '#5A3A26', '#93602F', '#E2B24C', '#C4472E', '#B9BCC4', '#F3F1EC', '#7A4FD6', '#2F8F8A'];
-const AV_CLOTH = ['#C93A4A', '#2F6FE0', '#2E9E6A', '#E8A13A', '#7A4FD6', '#3A3F52', '#F1EEE6', '#8A5A3C', '#E06A9A'];
+const AV_CLOTH = ['#C93A4A', '#2F6FE0', '#2E9E6A', '#E8A13A', '#7A4FD6', '#3A3F52', '#F1EEE6', '#8A5A3C', '#E06A9A', '#22D3EE', '#A3E635', '#1E1B2E', '#9AA3B5'];
 const AV_BG = ['#DCE7F5', '#E9DDF8', '#DDF2E4', '#FBE7D2', '#F8DCE4', '#E4E6EC', '#FFF1C2', '#2C3142'];
 const AV_OPTS = {
   base: [['masc', 'Masculino'], ['fem', 'Feminino'], ['andro', 'Andrógino']],
@@ -1224,10 +1268,10 @@ const AV_OPTS = {
   eyes: [['normal', 'Normal'], ['cilios', 'Cílios'], ['feliz', 'Feliz'], ['bravo', 'Determinado']],
   mouth: [['sorriso', 'Sorriso'], ['neutro', 'Neutro'], ['aberto', 'Animado']],
   beard: [['nenhuma', 'Sem barba'], ['bigode', 'Bigode'], ['cavanhaque', 'Cavanhaque'], ['curta', 'Barba curta'], ['cheia', 'Barba cheia']],
-  hat: [['nenhum', 'Sem chapéu'], ['bone', 'Boné'], ['gorro', 'Gorro'], ['touca', 'Touca'], ['boina', 'Boina'], ['chapeu', 'Chapéu'], ['bandana', 'Bandana']],
-  top: [['camiseta', 'Camiseta'], ['regata', 'Regata'], ['colete', 'Colete'], ['jaqueta', 'Jaqueta']],
-  bottom: [['calca', 'Calça'], ['shorts', 'Shorts'], ['saia', 'Saia']],
-  acc: [['nenhum', 'Nada'], ['oculos', 'Óculos'], ['escuros', 'Óculos escuros'], ['fone', 'Fone'], ['brinco', 'Brincos'], ['cachecol', 'Cachecol']],
+  hat: [['nenhum', 'Sem chapéu'], ['bone', 'Boné'], ['gorro', 'Gorro'], ['touca', 'Touca'], ['boina', 'Boina'], ['chapeu', 'Chapéu'], ['bandana', 'Bandana'], ['elmo', 'Elmo'], ['capuz', 'Capuz'], ['mago', 'Chapéu de mago'], ['mitra', 'Mitra'], ['ninja', 'Máscara ninja'], ['viseira', 'Viseira neon'], ['ledears', 'Orelhas LED'], ['faixa', 'Faixa de capitão']],
+  top: [['camiseta', 'Camiseta'], ['regata', 'Regata'], ['colete', 'Colete'], ['jaqueta', 'Jaqueta'], ['armadura', 'Armadura'], ['gibao', 'Gibão'], ['manto', 'Manto de mago'], ['tunica', 'Túnica de clérigo'], ['gi', 'Traje ninja'], ['neon', 'Jaqueta neon'], ['glitter', 'Regata glitter'], ['futebol', 'Camisa de futebol']],
+  bottom: [['calca', 'Calça'], ['shorts', 'Shorts'], ['saia', 'Saia'], ['futebol', 'Calção e meião']],
+  acc: [['nenhum', 'Nada'], ['oculos', 'Óculos'], ['escuros', 'Óculos escuros'], ['fone', 'Fone'], ['brinco', 'Brincos'], ['cachecol', 'Cachecol'], ['espada', 'Espada e escudo'], ['arco', 'Arco e aljava'], ['cajado', 'Cajado'], ['livro', 'Livro sagrado'], ['katana', 'Katana'], ['neonglass', 'Óculos neon'], ['glow', 'Bastões neon'], ['bola', 'Bola']],
 };
 const AV_PRESET = {
   masc: { body: 'reto', hair: 'curto', eyes: 'normal', beard: 'curta', bottom: 'calca' },
@@ -1245,17 +1289,20 @@ function avatarSvg(a0, h = 64, label = 'Seu avatar') {
   const F = (x0, y0, x1, y1, c) => R(x0, y0, x1, y1, c, 'f', false); // detalhe sem volume
   const X = (...pts) => pts.forEach(([x, y]) => { if (G[y]) G[y][x] = null; });
   const skin = AV_SKIN[a.skin] || AV_SKIN[1], hc = AV_HAIR[a.hc] || AV_HAIR[0], top = AV_CLOTH[a.topc] || AV_CLOTH[1], top2 = AV_CLOTH[a.top2c] || AV_CLOTH[6], bot = AV_CLOTH[a.botc] || AV_CLOTH[5], hatc = AV_CLOTH[a.hatc] || AV_CLOTH[0], accc = AV_CLOTH[a.accc] || AV_CLOTH[3];
-  const INK = '#2B1D1A', EYE = '#1E1416', MOUTH = '#6E2A26', shoe = '#4A3026', belt = '#4A3328';
+  const INK = '#2B1D1A', EYE = '#1E1416', MOUTH = '#6E2A26', shoe = '#4A3026', belt = '#4A3328', METAL = '#A9B1C2', GOLD = '#E2B24C', WOOD = '#7A4A26', LEATHER = '#6B4423';
   // cabelo de trás
   if (a.hair === 'longo') { R(5, 9, 26, 31, hc, 'hairb'); X([5, 31], [26, 31]); }
   if (a.hair === 'rabo') { R(25, 11, 28, 24, hc, 'hairb'); X([28, 11], [28, 24]); F(25, 13, 27, 13, accc); }
   if (a.hair === 'coque') { R(11, 1, 20, 6, hc, 'hairb'); X([11, 1], [20, 1], [11, 2], [20, 2]); }
   if (a.hair === 'trancas') { for (let y = 15; y <= 32; y++) { const c = y % 3 === 0 ? darken(hc, .82) : hc; R(4, y, 6, y, c, 'brL'); R(25, y, 27, y, c, 'brR'); } F(4, 33, 6, 33, accc); F(25, 33, 27, 33, accc); }
+  if (a.acc === 'arco') { R(23, 8, 26, 22, LEATHER, 'quiver'); F(23, 5, 23, 7, '#E8E4D8'); F(25, 4, 25, 7, accc); F(26, 6, 26, 7, '#E8E4D8'); }
+  if (a.acc === 'katana') { for (let i = 0; i <= 21; i++) { const x = 28 - i, y = 6 + i; R(x, y, x + 1, y, i < 4 ? '#2B2B35' : i === 4 ? GOLD : '#D8DEE9', i < 5 ? 'kh' : 'kb'); } }
   // pernas e roupa de baixo
   R(9, 40, 14, 41, shoe, 'shoeL'); R(17, 40, 22, 41, shoe, 'shoeR');
   if (a.bottom === 'calca') { R(10, 34, 21, 35, bot, 'bot'); R(10, 36, 14, 39, bot, 'legL'); R(17, 36, 21, 39, bot, 'legR'); }
   if (a.bottom === 'shorts') { R(10, 34, 21, 36, bot, 'bot'); X([15, 36], [16, 36]); R(10, 37, 14, 39, skin, 'legL'); R(17, 37, 21, 39, skin, 'legR'); }
   if (a.bottom === 'saia') { R(9, 33, 22, 33, bot, 'bot'); R(8, 34, 23, 35, bot, 'bot'); R(7, 36, 24, 37, bot, 'bot'); R(10, 38, 14, 39, skin, 'legL'); R(17, 38, 21, 39, skin, 'legR'); }
+  if (a.bottom === 'futebol') { R(10, 34, 21, 36, bot, 'bot'); X([15, 36], [16, 36]); R(10, 37, 14, 37, skin, 'legL'); R(17, 37, 21, 37, skin, 'legR'); R(10, 38, 14, 39, top2, 'sockL'); R(17, 38, 21, 39, top2, 'sockR'); }
   // tronco
   const body = a.top === 'colete' ? top2 : top;
   R(9, 24, 22, 33, body, 'torso');
@@ -1264,11 +1311,26 @@ function avatarSvg(a0, h = 64, label = 'Seu avatar') {
   if (a.top === 'camiseta' || a.top === 'regata') { F(14, 24, 17, 24, skin); F(15, 25, 16, 25, skin); }
   if (a.top === 'regata') { F(11, 24, 12, 25, darken(top, .85)); F(19, 24, 20, 25, darken(top, .85)); }
   if (a.body === 'curvo') { X([9, 29], [9, 30], [9, 31], [22, 29], [22, 30], [22, 31]); }
-  if (a.bottom !== 'saia') { R(9, 33, 22, 33, belt, 'belt'); F(15, 33, 16, 33, '#E2B24C'); }
+  if (a.bottom !== 'saia' && a.bottom !== 'futebol') { R(9, 33, 22, 33, belt, 'belt'); F(15, 33, 16, 33, '#E2B24C'); }
   // braços (um pixel de folga do tronco vira contorno)
   const sl = a.top === 'jaqueta' ? 31 : a.top === 'colete' ? 29 : a.top === 'regata' ? 23 : 27, arm = a.top === 'colete' ? top2 : top;
   for (const [x0, k] of [[5, 'armL'], [24, 'armR']]) { if (sl >= 24) R(x0, 24, x0 + 2, sl, arm, k); R(x0, sl + 1, x0 + 2, 31, skin, k + 's'); R(x0, 32, x0 + 2, 34, skin, k + 'h'); }
   X([5, 24], [26, 24]);
+  // roupas dos pacotes (desenhadas por cima do tronco e dos braços)
+  const arms = (fn) => [[5, 'armL'], [24, 'armR']].forEach(([x0, k]) => fn(x0, k));
+  if (a.top === 'armadura') { R(9, 24, 22, 33, METAL, 'torso'); F(10, 27, 21, 27, darken(METAL, .82)); F(10, 30, 21, 30, darken(METAL, .82)); R(13, 25, 18, 29, top, 'crest'); F(15, 26, 16, 28, GOLD); arms((x0, k) => { R(x0, 24, x0 + 2, 31, '#7D8596', k); R(x0, 32, x0 + 2, 34, '#5E6575', k + 'h'); }); R(4, 22, 9, 25, METAL, 'paulL'); R(22, 22, 27, 25, METAL, 'paulR'); X([4, 22], [27, 22]); R(9, 33, 22, 33, LEATHER, 'belt'); F(15, 33, 16, 33, GOLD); }
+  if (a.top === 'gibao') { R(9, 24, 22, 33, top, 'torso'); for (let i = 0; i < 9; i++) F(10 + i, 24 + i, 11 + i, 24 + i, LEATHER); R(9, 32, 22, 33, LEATHER, 'belt'); F(15, 32, 16, 32, GOLD); arms((x0, k) => { R(x0, 24, x0 + 2, 29, top, k); R(x0, 30, x0 + 2, 31, LEATHER, k + 'b'); }); }
+  if (a.top === 'manto' || a.top === 'tunica') { const tr = a.top === 'tunica' ? GOLD : top2;
+    R(8, 24, 23, 33, top, 'robe'); R(7, 34, 24, 39, top, 'robe'); F(7, 39, 24, 39, tr); if (a.top === 'manto') F(15, 25, 16, 38, tr);
+    R(4, 24, 8, 31, top, 'slL'); R(23, 24, 27, 31, top, 'slR'); X([4, 24], [27, 24]); F(4, 31, 8, 31, tr); F(23, 31, 27, 31, tr);
+    R(5, 32, 7, 34, skin, 'armLh'); R(24, 32, 26, 34, skin, 'armRh'); R(8, 31, 23, 31, a.top === 'tunica' ? GOLD : darken(top, .8), 'sash');
+    if (a.top === 'tunica') { F(14, 25, 17, 28, GOLD); F(13, 26, 18, 27, GOLD); F(15, 26, 16, 27, lighten(GOLD, .5)); } else { F(11, 27, 11, 27, GOLD); F(20, 29, 20, 29, GOLD); F(12, 35, 12, 35, GOLD); F(19, 36, 19, 36, GOLD); } }
+  if (a.top === 'gi') { R(9, 24, 22, 33, top, 'torso'); for (let i = 0; i < 6; i++) { F(11 + i, 24 + i, 11 + i, 24 + i, lighten(top, .25)); F(20 - i, 24 + i, 20 - i, 24 + i, lighten(top, .25)); } R(9, 30, 22, 32, accc, 'sash'); F(20, 33, 21, 35, accc); arms((x0, k) => { R(x0, 24, x0 + 2, 31, top, k); F(x0, 27, x0 + 2, 27, lighten(top, .2)); F(x0, 30, x0 + 2, 30, lighten(top, .2)); }); }
+  if (a.top === 'neon') { const n = lighten(accc, .25); R(9, 24, 22, 33, top, 'torso'); F(9, 24, 9, 33, n); F(22, 24, 22, 33, n); F(15, 25, 15, 33, n); F(10, 29, 21, 29, n); arms((x0, k) => { R(x0, 24, x0 + 2, 31, top, k); F(x0, 31, x0 + 2, 31, n); F(x0 + 1, 25, x0 + 1, 30, n); }); }
+  if (a.top === 'glitter') { R(9, 24, 22, 33, top, 'torso'); F(14, 24, 17, 24, skin); F(15, 25, 16, 25, skin); for (let y = 26; y <= 32; y++) for (let x = 10; x <= 21; x++) if ((x * 7 + y * 3) % 5 === 0) F(x, y, x, y, (x + y) % 2 ? lighten(top, .6) : '#FFFFFF'); arms((x0, k) => { R(x0, 24, x0 + 2, 31, skin, k); F(x0, 29, x0 + 2, 29, accc); }); F(11, 24, 12, 25, darken(top, .8)); F(19, 24, 20, 25, darken(top, .8)); }
+  if (a.top === 'futebol') { R(9, 24, 22, 33, top, 'torso'); [10, 21].forEach(x => F(x, 25, x, 33, top2)); F(13, 24, 18, 24, top2); F(15, 25, 16, 25, skin);
+    [[13, 27], [13, 28], [13, 29], [13, 30], [13, 31], [15, 27], [16, 27], [17, 27], [15, 28], [17, 28], [15, 29], [17, 29], [15, 30], [17, 30], [15, 31], [16, 31], [17, 31]].forEach(([x, y]) => F(x, y, x, y, '#FFFFFF'));
+    arms((x0, k) => { R(x0, 24, x0 + 2, 26, top, k); F(x0, 27, x0 + 2, 27, top2); R(x0, 28, x0 + 2, 31, skin, k + 's'); }); }
   // cabeça e orelhas
   R(7, 8, 24, 23, skin, 'head'); X([7, 8], [8, 8], [7, 9], [24, 8], [23, 8], [24, 9], [7, 23], [24, 23]);
   R(5, 14, 6, 18, skin, 'earL'); R(25, 14, 26, 18, skin, 'earR'); X([5, 14], [5, 18], [26, 14], [26, 18]);
@@ -1307,11 +1369,26 @@ function avatarSvg(a0, h = 64, label = 'Seu avatar') {
   if (a.hat === 'boina') { R(9, 2, 22, 2, hatc, 'hat'); R(6, 3, 27, 8, hatc, 'hat'); R(6, 9, 23, 10, hatc, 'hat'); X([27, 3], [27, 8], [6, 3]); R(21, 0, 23, 1, darken(hatc, .8), 'nub'); F(10, 4, 13, 5, lighten(hatc, .35)); }
   if (a.hat === 'chapeu') { R(10, 1, 21, 7, hatc, 'hat'); X([10, 1], [21, 1]); R(10, 6, 21, 7, darken(hatc, .7), 'band'); R(2, 8, 29, 10, hatc, 'brim'); X([2, 10], [29, 10], [2, 8], [29, 8]); }
   if (a.hat === 'bandana') { R(7, 5, 24, 10, hatc, 'hat'); X([7, 5], [24, 5]); [[10, 7], [15, 6], [20, 8], [12, 9], [18, 9]].forEach(([x, y]) => F(x, y, x, y, '#FFFFFF')); R(25, 9, 27, 12, hatc, 'knot'); X([27, 9]); }
+  if (a.hat === 'elmo') { R(7, 3, 24, 9, METAL, 'helm'); X([7, 3], [24, 3], [7, 4], [24, 4]); R(7, 10, 24, 11, darken(METAL, .85), 'hband'); R(6, 9, 8, 20, METAL, 'helmL'); R(23, 9, 25, 20, METAL, 'helmR'); R(15, 11, 16, 16, darken(METAL, .8), 'nguard'); R(13, 0, 18, 2, hatc, 'plume'); X([13, 0], [18, 0]); F(10, 6, 10, 6, lighten(METAL, .6)); F(21, 6, 21, 6, lighten(METAL, .6)); }
+  if (a.hat === 'capuz') { R(7, 3, 24, 9, hatc, 'hood'); X([7, 3], [24, 3]); R(14, 1, 17, 2, hatc, 'hood'); R(5, 7, 8, 25, hatc, 'hoodL'); R(23, 7, 26, 25, hatc, 'hoodR'); F(9, 10, 22, 10, darken(hatc, .7)); }
+  if (a.hat === 'mago') { [[0, 15, 16], [1, 14, 17], [2, 14, 17], [3, 13, 18], [4, 12, 19], [5, 12, 19], [6, 11, 20], [7, 10, 21], [8, 9, 22]].forEach(([y, x0, x1]) => R(x0, y, x1, y, hatc, 'wiz')); R(3, 9, 28, 11, hatc, 'brim'); X([3, 11], [28, 11]); F(9, 8, 22, 8, accc); F(14, 4, 14, 4, '#FFE27A'); F(17, 2, 17, 2, '#FFE27A'); F(18, 6, 18, 6, '#FFE27A'); }
+  if (a.hat === 'mitra') { R(10, 1, 21, 8, hatc, 'mitra'); X([10, 1], [21, 1], [10, 2], [21, 2], [15, 1], [16, 1]); R(9, 9, 22, 10, GOLD, 'mband'); F(15, 2, 16, 7, GOLD); F(13, 4, 18, 5, GOLD); }
+  if (a.hat === 'ninja') { R(7, 4, 24, 12, hatc, 'nhead'); X([7, 4], [24, 4]); R(7, 16, 24, 23, hatc, 'nlow'); X([7, 23], [24, 23]); R(7, 13, 8, 15, hatc, 'nhead'); R(23, 13, 24, 15, hatc, 'nhead'); R(25, 8, 28, 9, hatc, 'ntail'); R(26, 10, 29, 11, hatc, 'ntail'); F(8, 12, 23, 12, darken(hatc, .7)); }
+  if (a.hat === 'viseira') { R(6, 12, 25, 15, '#1B1830', 'visor'); F(7, 13, 24, 13, lighten(accc, .35)); F(7, 14, 24, 14, accc); F(6, 12, 6, 15, accc); F(25, 12, 25, 15, accc); }
+  if (a.hat === 'ledears') { R(8, 4, 23, 5, '#2A2A35', 'hb'); [[1, 9, 9], [2, 9, 10], [3, 8, 11]].forEach(([y, x0, x1]) => { R(x0, y, x1, y, accc, 'ledL'); R(31 - x1, y, 31 - x0, y, accc, 'ledR'); }); F(9, 3, 10, 3, lighten(accc, .5)); F(21, 3, 22, 3, lighten(accc, .5)); }
+  if (a.hat === 'faixa') { R(7, 9, 24, 10, hatc, 'band'); F(7, 9, 24, 9, lighten(hatc, .45)); }
   // acessórios
   if (a.acc === 'oculos' || a.acc === 'escuros') { const dk = a.acc === 'escuros'; for (const x0 of [8, 18]) { F(x0, 12, x0 + 5, 12, INK); F(x0, 16, x0 + 5, 16, INK); F(x0, 12, x0, 16, INK); F(x0 + 5, 12, x0 + 5, 16, INK); if (dk) { F(x0 + 1, 13, x0 + 4, 15, '#1D1B24'); F(x0 + 1, 13, x0 + 2, 13, '#7A7E92'); } } F(14, 13, 17, 13, INK); F(7, 13, 7, 13, INK); F(24, 13, 24, 13, INK); }
   if (a.acc === 'fone') { R(9, 1, 22, 2, '#3A3542', 'band'); R(6, 3, 8, 4, '#3A3542', 'band'); R(23, 3, 25, 4, '#3A3542', 'band'); R(4, 5, 6, 12, '#3A3542', 'band'); R(25, 5, 27, 12, '#3A3542', 'band'); R(3, 13, 7, 19, accc, 'cupL'); R(24, 13, 28, 19, accc, 'cupR'); }
   if (a.acc === 'brinco') { F(5, 19, 5, 20, '#E2B24C'); F(26, 19, 26, 20, '#E2B24C'); }
   if (a.acc === 'cachecol') { R(8, 23, 23, 26, accc, 'scarf'); X([8, 23], [23, 23]); R(18, 27, 21, 32, darken(accc, .9), 'scarfT'); for (let y = 24; y <= 25; y++) F(10, y, 10, y, darken(accc, .8)); }
+  if (a.acc === 'espada') { R(27, 18, 28, 30, '#D8DEE9', 'blade'); X([27, 18]); R(25, 31, 30, 31, GOLD, 'guard'); R(27, 32, 28, 34, '#5A3A20', 'grip'); R(1, 25, 7, 35, accc, 'shield'); X([1, 25], [7, 25], [1, 35], [7, 35]); F(4, 27, 4, 33, GOLD); F(2, 29, 6, 29, GOLD); }
+  if (a.acc === 'arco') { for (let y = 20; y <= 41; y++) P(y <= 21 || y >= 40 ? 4 : y <= 24 || y >= 37 ? 3 : 2, y, WOOD, 'bow'); }
+  if (a.acc === 'cajado') { R(27, 14, 28, 41, WOOD, 'staff'); R(26, 9, 29, 13, accc, 'orb'); X([26, 9], [29, 9], [26, 13], [29, 13]); F(27, 10, 27, 10, '#FFFFFF'); }
+  if (a.acc === 'livro') { R(1, 29, 7, 36, '#7A2E2E', 'book'); F(4, 30, 4, 35, GOLD); F(2, 32, 6, 32, GOLD); F(7, 30, 7, 35, '#F1EEE6'); }
+  if (a.acc === 'neonglass') { const n = lighten(accc, .2); for (const x0 of [8, 18]) { F(x0, 12, x0 + 5, 12, n); F(x0, 16, x0 + 5, 16, n); F(x0, 12, x0, 16, n); F(x0 + 5, 12, x0 + 5, 16, n); F(x0 + 1, 13, x0 + 4, 15, '#1D1B24'); F(x0 + 1, 13, x0 + 1, 13, '#FFFFFF'); } F(14, 13, 17, 13, n); }
+  if (a.acc === 'glow') { [[4, 31], [3, 30], [2, 29], [1, 28], [0, 27]].forEach(([x, y]) => F(x, y, x, y, lighten(accc, .3))); [[27, 31], [28, 30], [29, 29], [30, 28], [31, 27]].forEach(([x, y]) => F(x, y, x, y, lighten(top2, .2))); }
+  if (a.acc === 'bola') { R(24, 37, 29, 42, '#F2F2F2', 'ball'); X([24, 37], [29, 37], [24, 42], [29, 42]); F(26, 39, 27, 40, '#222222'); F(24, 40, 24, 40, '#222222'); F(29, 39, 29, 39, '#222222'); F(26, 37, 26, 37, '#222222'); F(27, 42, 27, 42, '#222222'); }
   // luz de cima à esquerda: brilho nas bordas expostas, sombra à direita e embaixo, sombra projetada sob cabelo e cabeça
   const out = [], at = (x, y) => (G[y] && G[y][x]) || null, diff = (p, n) => !n || (n.r !== p.r && n.r !== 'f');
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -1342,7 +1419,7 @@ function hxHoje(d, ovHtml) {
       <span class="hh-lv"><b>Nível ${st.level}</b><span>${curTitle(st)}</span></span>
       <span class="xpbar"><i style="width:${Math.round(st.into / st.need * 100)}%"></i></span>
       <span class="hh-xp num">${st.into}/${st.need} XP · faltam ${st.need - st.into} para o nível ${st.level + 1}</span>
-      <span class="hh-chips">${w ? `<span class="hh-chip">🎯 ${w.done ? 'Desafio cumprido' : `${Math.min(w.prog, w.target)}/${w.target} ${CH_UNIT[w.type]}`}</span>` : ''}<span class="hh-chip">🏅 ${got}/${ACHIEVEMENTS.length}</span></span>
+      <span class="hh-chips">${w ? `<span class="hh-chip">🎯 ${w.done ? 'Desafio cumprido' : `${Math.min(w.prog, w.target)}/${w.target} ${CH_UNIT[w.type]}`}</span>` : ''}<span class="hh-chip">🏅 ${got}/${ACHIEVEMENTS.length}</span><span class="hh-chip coin">🪙 ${coinsInfo(st).coins}</span></span>
     </span>
   </button>
   ${ovHtml}`;
@@ -1354,7 +1431,7 @@ function hxTop({ eyebrow = '', title = '', right = '', date = '', extra = '', bi
     <div class="hx-av">${date ? `<span class="hx-date">${date}</span>` : ''}<button class="hx-card" data-act="sub" data-k="perfil" style="--av:${AV_BG[av.bg ?? 1]}" aria-label="Abrir perfil e avatar">${big ? `<span class="hx-lv">NV ${st.level}</span>` : ''}${avatarSvg(av, big ? 172 : 92)}</button></div>
     <div class="hx-main">
       <div class="hx-row"><div style="min-width:0">${back}${eyebrow ? `<div class="eyebrow">${eyebrow}</div>` : ''}<h1>${title}</h1></div>${right}</div>
-      <button class="hx-xpwrap" data-act="sub" data-k="perfil" aria-label="Nível ${st.level}, ${st.into} de ${st.need} XP"><span class="hx-xp"><span>Nível ${st.level} · ${curTitle(st)}</span><span class="num">${st.into}/${st.need} XP</span></span>
+      <button class="hx-xpwrap" data-act="sub" data-k="perfil" aria-label="Nível ${st.level}, ${st.into} de ${st.need} XP"><span class="hx-xp"><span>Nível ${st.level} · ${curTitle(st)}</span><span class="num">${st.into}/${st.need} XP · 🪙 ${coinsInfo(st).coins}</span></span>
       <span class="xpbar"><i style="width:${Math.round(st.into / st.need * 100)}%"></i></span>
       ${w ? `<span class="hx-ch">🎯 ${w.done ? 'Desafio da semana cumprido' : `Desafio: ${Math.min(w.prog, w.target)}/${w.target} ${CH_UNIT[w.type]}`}</span>` : ''}</button>
       ${extra}
@@ -1381,6 +1458,12 @@ VIEWS.perfil = () => {
       <div class="prof-xp num">${st.xp.toLocaleString('pt-BR')} XP no total</div>
       <button class="btn sm" data-act="av-edit" style="margin-top:10px">Editar avatar</button></div>
   </div></section>
+  ${(() => { const ci = coinsInfo(st), ms = dailyMissions(), done = ((g.mis || {})[today()]) || {}; return `<section class="blk"><div class="blk-h"><h2>Missões de hoje</h2><span class="coinpill">🪙 ${ci.coins} moedas</span></div>
+    <div class="group">${ms.length ? ms.map(m => { const pr = Math.min(missionProg(m, st), m[4]), ok = !!done[m[0]]; return `<div class="row mission${ok ? ' done' : ''}"><span class="rk-ic">${ok ? '✅' : m[1]}</span><div class="main"><div class="t">${esc(m[2])}</div><div class="bar" style="--c:#E8A13A;margin-top:6px"><i style="width:${Math.round(pr / m[4] * 100)}%"></i></div><div class="s num">${pr}/${m[4]}</div></div><span class="coinpill sm">+${m[5]} 🪙</span></div>`; }).join('') + `<div class="row"><span class="rk-ic">${done.bonus ? '🎉' : '🎁'}</span><div class="main"><div class="t">Bônus por cumprir as 3</div><div class="s">${done.bonus ? 'Recebido hoje' : 'Novas missões todo dia'}</div></div><span class="coinpill sm">+15 🪙</span></div>` : '<div class="empty">As missões do dia aparecem aqui.</div>'}</div>
+    <p class="note">Você também ganha 🪙 20 por conquista, 🪙 30 por título, 🪙 50 por desafio da semana e 🪙 10 por nível. Já ganhou ${ci.earned} e gastou ${ci.spent}.</p></section>
+  <section class="blk"><div class="blk-h"><h2>Loja de pacotes</h2><span style="color:var(--muted);font-size:13px">roupas e itens para o avatar</span></div>
+    <div class="shop">${PACKS.map(([id, name, ic, price, items, preset]) => { const own = ownsPack(id), base = { ...AV_DEF, ...(S.meta.avatar || {}) }; const look = { ...base, ...preset }; const can = ci.coins >= price; const cnt = Object.values(items).reduce((a, v) => a + v.length, 0); return `<div class="pack${own ? ' own' : ''}"><span class="pack-av" style="--av:${AV_BG[base.bg ?? 1]}">${avatarSvg(look, 112, name)}</span><b>${ic} ${esc(name)}</b><small>${cnt} itens · cores personalizáveis</small>${own ? `<button class="btn sm primary" data-act="wear-pack" data-k="${id}">Vestir</button>` : `<button class="btn sm${can ? ' primary' : ''}" data-act="buy-pack" data-k="${id}"${can ? '' : ' aria-disabled="true"'}>🪙 ${price}</button>`}</div>`; }).join('')}</div>
+    <p class="note">Depois de comprar, as peças aparecem no editor do avatar e você pode misturar com qualquer outra roupa e trocar as cores.</p></section>`; })()}
   <section class="blk"><div class="blk-h"><h2>Desafio da semana</h2><span style="color:var(--muted);font-size:13px">+150 XP</span></div><div class="group" style="padding:14px">
     ${w ? `<div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline"><b>${w.done ? '✅ ' : '🎯 '}${CH_LABEL[w.type](w.target)}</b><span class="num" style="color:var(--muted);font-size:14px">${Math.min(w.prog, w.target)}/${w.target}</span></div>
       <div class="bar" style="--c:var(--brand);margin-top:10px"><i style="width:${Math.min(100, Math.round(w.prog / w.target * 100))}%"></i></div>
@@ -2557,6 +2640,8 @@ const ACT = {
   'close-sheet': () => closeSheet(),
   'av-edit': () => openAvatarEditor(),
   'ev-done': () => { const e = $('#sheet')._event; if (!e) return; e.done = !e.done; e.doneAt = e.done ? today() : null; persist('events'); toast(e.done ? `Compromisso concluído · +${XP_PRIO[e.prio || 'media']} XP` : 'Conclusão desfeita'); EDIT.eventoView(e.id); },
+  'buy-pack': el => { const pk = PACKS.find(x => x[0] === el.dataset.k); if (!pk) return; const ci = coinsInfo(GAME || gameStats()); if (ownsPack(pk[0])) return; if (ci.coins < pk[3]) { toast(`Faltam 🪙 ${pk[3] - ci.coins}. Cumpra missões para ganhar moedas.`); return; } S.meta.game.packs = S.meta.game.packs || {}; S.meta.game.packs[pk[0]] = { price: pk[3], d: today() }; persist('meta'); render(); toast(`${pk[2]} Pacote ${pk[1]} desbloqueado!`); },
+  'wear-pack': el => { const pk = PACKS.find(x => x[0] === el.dataset.k); if (!pk || !ownsPack(pk[0])) return; S.meta.avatar = { ...AV_DEF, ...(S.meta.avatar || {}), ...pk[5] }; persist('meta'); render(); toast('Visual aplicado — ajuste as cores no editor'); },
   'set-title': el => { S.meta.game = S.meta.game || {}; S.meta.game.title = el.dataset.k || null; persist('meta'); render(); toast(el.dataset.k ? 'Título escolhido' : 'Usando o título do seu nível'); },
   'av-opt': el => { const d = $('#sheet')._av; if (!d) return; const k = el.dataset.k, v = el.dataset.v; { const L = d[k] == v ? null : avLocked(k, v); if (L) { toast(`🔒 Desbloqueia com ${L}`); return; } } if (k === 'base') Object.assign(d, AV_PRESET[v] || {}, { base: v }); else d[k] = ['skin', 'hc', 'hatc', 'topc', 'top2c', 'botc', 'accc', 'bg'].includes(k) ? +v : v; avRefresh(); },
   'av-rand': () => { const d = $('#sheet')._av; if (!d) return; const keep = { ...d }; const r = n => Math.floor(Math.random() * n), o = k => AV_OPTS[k][r(AV_OPTS[k].length)][0]; d.base = o('base'); Object.assign(d, AV_PRESET[d.base]); Object.assign(d, { skin: r(AV_SKIN.length), hc: r(AV_HAIR.length), hair: Math.random() < .7 ? d.hair : o('hair'), mouth: o('mouth'), hat: Math.random() < .45 ? o('hat') : 'nenhum', hatc: r(AV_CLOTH.length), top: o('top'), topc: r(AV_CLOTH.length), top2c: r(AV_CLOTH.length), botc: r(AV_CLOTH.length), acc: Math.random() < .4 ? o('acc') : 'nenhum', accc: r(AV_CLOTH.length), bg: r(AV_BG.length) }); Object.keys(d).forEach(k => { if (d[k] !== keep[k] && avLocked(k, d[k])) d[k] = AV_DEF[k]; }); avRefresh(); },
