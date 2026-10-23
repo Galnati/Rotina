@@ -1316,6 +1316,19 @@ const PACKS = [
   ['ninja', 'Ninja asiático', '🥷', 300, { hat: ['ninja'], top: ['gi'], acc: ['katana'] }, { hat: 'ninja', hatc: 11, top: 'gi', topc: 11, acc: 'katana', accc: 0, bottom: 'calca', botc: 11 }],
   ['neon', 'Moderno neon', '🌃', 200, { hat: ['viseira'], top: ['neon'], acc: ['neonglass'] }, { hat: 'viseira', top: 'neon', topc: 11, acc: 'nenhum', accc: 9, bottom: 'calca', botc: 11 }],
   ['clubber', 'Moderno clubber', '🪩', 200, { hat: ['ledears'], top: ['glitter'], acc: ['glow'] }, { hat: 'ledears', top: 'glitter', topc: 8, top2c: 10, acc: 'glow', accc: 9, bottom: 'shorts', botc: 11 }],
+  ['elementais', 'Criaturas elementais', '🌀', 350, { hat: ['h-raio', 'h-chama', 'h-onda', 'h-broto'], top: ['macacao'] }, { hat: 'h-chama', hatc: 0, top: 'macacao', topc: 0, acc: 'nenhum' }],
+  ['expedicao', 'Expedição belle époque', '🎨', 300, { hat: ['cartola'], top: ['sobrecasaca'], acc: ['paleta', 'florete'] }, { hat: 'cartola', hatc: 11, top: 'sobrecasaca', topc: 5, top2c: 0, acc: 'paleta', accc: 1, bottom: 'calca', botc: 11 }],
+  ['jardim', 'Jardineiro do reino', '🍄', 250, { hat: ['cogumelo'], top: ['avental'], acc: ['regador'] }, { hat: 'cogumelo', hatc: 7, top: 'avental', topc: 2, top2c: 6, acc: 'regador', accc: 9, bottom: 'calca', botc: 7 }],
+  ['dunas', 'Andarilho das dunas', '🏜️', 250, { hat: ['lenco'], top: ['poncho'], acc: ['lanterna'] }, { hat: 'lenco', hatc: 3, top: 'poncho', topc: 0, top2c: 3, acc: 'lanterna', bottom: 'calca', botc: 7 }],
+  ['piloto', 'Piloto de dirigível', '🎈', 300, { hat: ['aviador'], top: ['bomber'], acc: ['luneta'] }, { hat: 'aviador', hatc: 7, top: 'bomber', topc: 7, acc: 'luneta', bottom: 'calca', botc: 5 }],
+  ['cavaleira', 'Cavaleira do reino', '🛡️', 300, { hat: ['diadema'], top: ['tabardo'], acc: ['lanca'] }, { hat: 'diadema', hatc: 1, top: 'tabardo', topc: 1, top2c: 3, acc: 'lanca', accc: 0, bottom: 'calca', botc: 5 }],
+  ['ferreiro', 'Ferreiro do reino', '🔨', 250, { top: ['forja'], acc: ['martelo'] }, { hat: 'bandana', hatc: 0, top: 'forja', topc: 7, top2c: 6, acc: 'martelo', bottom: 'calca', botc: 5 }],
+  ['operario', 'Operário da cidade', '👷', 200, { hat: ['capacete'], top: ['jardineira'], acc: ['chave'] }, { hat: 'capacete', hatc: 3, top: 'jardineira', topc: 1, top2c: 0, acc: 'chave', bottom: 'calca', botc: 1 }],
+  ['agente', 'Agente da cidade', '🕴️', 250, { top: ['terno'], acc: ['maleta'] }, { hat: 'nenhum', top: 'terno', topc: 11, top2c: 5, acc: 'maleta', bottom: 'calca', botc: 11 }],
+  ['cientista', 'Cientista da cidade', '🧪', 250, { top: ['jaleco'], acc: ['frasco'] }, { hat: 'nenhum', top: 'jaleco', topc: 6, top2c: 1, acc: 'frasco', accc: 10, bottom: 'calca', botc: 5 }],
+  ['mimico', 'Mímico da trupe', '🎭', 200, { top: ['listras'], acc: ['luvas'] }, { hat: 'boina', hatc: 11, top: 'listras', topc: 11, top2c: 0, acc: 'luvas', bottom: 'calca', botc: 11 }],
+  ['acrobata', 'Acrobata da trupe', '🤸', 250, { top: ['collant'], acc: ['argola'] }, { hat: 'nenhum', top: 'collant', topc: 4, top2c: 3, acc: 'argola', accc: 3, bottom: 'calca', botc: 4 }],
+  ['mestre', 'Mestre de cerimônias', '🎪', 300, { hat: ['coco'], top: ['fraque'], acc: ['bengala'] }, { hat: 'coco', hatc: 11, top: 'fraque', topc: 0, acc: 'bengala', bottom: 'calca', botc: 11 }],
   ['futebol', 'Moderno futebol', '⚽', 200, { hat: ['faixa'], top: ['futebol'], bottom: ['futebol'], acc: ['bola'] }, { hat: 'nenhum', hatc: 3, top: 'futebol', topc: 2, top2c: 6, bottom: 'futebol', botc: 6, acc: 'bola' }],
 ];
 const PACK_OF = {}; PACKS.forEach(pk => Object.entries(pk[4]).forEach(([k, vs]) => vs.forEach(v => PACK_OF[`${k}.${v}`] = pk)));
@@ -1374,10 +1387,10 @@ const AV_OPTS = {
   eyes: [['normal', 'Normal'], ['cilios', 'Cílios'], ['feliz', 'Feliz'], ['bravo', 'Determinado']],
   mouth: [['sorriso', 'Sorriso'], ['neutro', 'Neutro'], ['aberto', 'Animado']],
   beard: [['nenhuma', 'Sem barba'], ['bigode', 'Bigode'], ['cavanhaque', 'Cavanhaque'], ['curta', 'Barba curta'], ['cheia', 'Barba cheia']],
-  hat: [['nenhum', 'Sem chapéu'], ['bone', 'Boné'], ['gorro', 'Gorro'], ['touca', 'Touca'], ['boina', 'Boina'], ['chapeu', 'Chapéu'], ['bandana', 'Bandana'], ['elmo', 'Elmo'], ['capuz', 'Capuz'], ['mago', 'Chapéu de mago'], ['mitra', 'Mitra'], ['ninja', 'Máscara ninja'], ['viseira', 'Viseira neon'], ['ledears', 'Orelhas LED'], ['faixa', 'Faixa de capitão']],
-  top: [['camiseta', 'Camiseta'], ['regata', 'Regata'], ['colete', 'Colete'], ['jaqueta', 'Jaqueta'], ['armadura', 'Armadura'], ['gibao', 'Gibão'], ['manto', 'Manto de mago'], ['tunica', 'Túnica de clérigo'], ['gi', 'Traje ninja'], ['neon', 'Jaqueta neon'], ['glitter', 'Regata glitter'], ['futebol', 'Camisa de futebol']],
+  hat: [['nenhum', 'Sem chapéu'], ['bone', 'Boné'], ['gorro', 'Gorro'], ['touca', 'Touca'], ['boina', 'Boina'], ['chapeu', 'Chapéu'], ['bandana', 'Bandana'], ['elmo', 'Elmo'], ['capuz', 'Capuz'], ['mago', 'Chapéu de mago'], ['mitra', 'Mitra'], ['ninja', 'Máscara ninja'], ['viseira', 'Viseira neon'], ['ledears', 'Orelhas LED'], ['faixa', 'Faixa de capitão'], ['h-raio', 'Capuz elétrico'], ['h-chama', 'Capuz de chama'], ['h-onda', 'Capuz de maré'], ['h-broto', 'Capuz de broto'], ['cartola', 'Cartola'], ['cogumelo', 'Chapéu cogumelo'], ['lenco', 'Lenço das dunas'], ['aviador', 'Touca de aviador'], ['diadema', 'Diadema'], ['capacete', 'Capacete de obra'], ['coco', 'Chapéu-coco']],
+  top: [['camiseta', 'Camiseta'], ['regata', 'Regata'], ['colete', 'Colete'], ['jaqueta', 'Jaqueta'], ['armadura', 'Armadura'], ['gibao', 'Gibão'], ['manto', 'Manto de mago'], ['tunica', 'Túnica de clérigo'], ['gi', 'Traje ninja'], ['neon', 'Jaqueta neon'], ['glitter', 'Regata glitter'], ['futebol', 'Camisa de futebol'], ['macacao', 'Macacão de criatura'], ['sobrecasaca', 'Sobrecasaca'], ['avental', 'Avental de jardim'], ['poncho', 'Poncho'], ['bomber', 'Jaqueta de aviador'], ['tabardo', 'Tabardo e cota'], ['forja', 'Avental de forja'], ['jardineira', 'Jardineira de obra'], ['terno', 'Terno e gravata'], ['jaleco', 'Jaleco'], ['listras', 'Camisa listrada'], ['collant', 'Collant de losangos'], ['fraque', 'Fraque de picadeiro']],
   bottom: [['calca', 'Calça'], ['shorts', 'Shorts'], ['saia', 'Saia'], ['futebol', 'Calção e meião']],
-  acc: [['nenhum', 'Nada'], ['oculos', 'Óculos'], ['escuros', 'Óculos escuros'], ['fone', 'Fone'], ['brinco', 'Brincos'], ['cachecol', 'Cachecol'], ['espada', 'Espada e escudo'], ['arco', 'Arco e aljava'], ['cajado', 'Cajado'], ['livro', 'Livro sagrado'], ['katana', 'Katana'], ['neonglass', 'Óculos neon'], ['glow', 'Bastões neon'], ['bola', 'Bola']],
+  acc: [['nenhum', 'Nada'], ['oculos', 'Óculos'], ['escuros', 'Óculos escuros'], ['fone', 'Fone'], ['brinco', 'Brincos'], ['cachecol', 'Cachecol'], ['espada', 'Espada e escudo'], ['arco', 'Arco e aljava'], ['cajado', 'Cajado'], ['livro', 'Livro sagrado'], ['katana', 'Katana'], ['neonglass', 'Óculos neon'], ['glow', 'Bastões neon'], ['bola', 'Bola'], ['paleta', 'Paleta e pincel'], ['florete', 'Florete'], ['regador', 'Regador'], ['lanterna', 'Lanterna'], ['luneta', 'Luneta'], ['lanca', 'Lança e flâmula'], ['martelo', 'Martelo'], ['chave', 'Chave inglesa'], ['maleta', 'Maleta'], ['frasco', 'Frasco'], ['luvas', 'Luvas de mímico'], ['argola', 'Argola'], ['bengala', 'Bengala']],
 };
 const AV_PRESET = {
   masc: { body: 'reto', hair: 'curto', eyes: 'normal', beard: 'curta', bottom: 'calca' },
@@ -1437,6 +1450,19 @@ function avatarSvg(a0, h = 64, label = 'Seu avatar') {
   if (a.top === 'futebol') { R(9, 24, 22, 33, top, 'torso'); [10, 21].forEach(x => F(x, 25, x, 33, top2)); F(13, 24, 18, 24, top2); F(15, 25, 16, 25, skin);
     [[13, 27], [13, 28], [13, 29], [13, 30], [13, 31], [15, 27], [16, 27], [17, 27], [15, 28], [17, 28], [15, 29], [17, 29], [15, 30], [17, 30], [15, 31], [16, 31], [17, 31]].forEach(([x, y]) => F(x, y, x, y, '#FFFFFF'));
     arms((x0, k) => { R(x0, 24, x0 + 2, 26, top, k); F(x0, 27, x0 + 2, 27, top2); R(x0, 28, x0 + 2, 31, skin, k + 's'); }); }
+  if (a.top === 'macacao') { const bl = lighten(top, .45); R(9, 24, 22, 35, top, 'torso'); R(10, 36, 14, 39, top, 'legL'); R(17, 36, 21, 39, top, 'legR'); F(12, 26, 19, 33, bl); X(); F(12, 26, 12, 26, top); F(19, 26, 19, 26, top); arms((x0, k) => { R(x0, 24, x0 + 2, 31, top, k); F(x0, 31, x0 + 2, 31, darken(top, .8)); }); F(10, 39, 14, 39, darken(top, .8)); F(17, 39, 21, 39, darken(top, .8)); }
+  if (a.top === 'sobrecasaca') { const sh = '#F1EEE6'; R(8, 24, 23, 33, top, 'coat'); R(8, 34, 11, 39, top, 'tailL'); R(20, 34, 23, 39, top, 'tailR'); F(13, 24, 18, 30, sh); F(15, 25, 16, 27, top2); F(14, 25, 14, 25, top2); F(17, 25, 17, 25, top2); F(12, 24, 12, 31, darken(top, .75)); F(19, 24, 19, 31, darken(top, .75)); [[11, 28], [11, 31], [20, 28], [20, 31]].forEach(([x, y]) => F(x, y, x, y, GOLD)); arms((x0, k) => { R(x0, 24, x0 + 2, 31, top, k); F(x0, 31, x0 + 2, 31, sh); }); }
+  if (a.top === 'avental') { R(9, 24, 22, 33, top, 'torso'); arms((x0, k) => { R(x0, 24, x0 + 2, 28, top, k); }); R(11, 26, 20, 38, top2, 'apron'); F(11, 24, 11, 25, top2); F(20, 24, 20, 25, top2); F(13, 31, 18, 33, darken(top2, .85)); F(15, 31, 16, 33, darken(top2, .75)); F(12, 29, 19, 29, darken(top2, .9)); }
+  if (a.top === 'poncho') { R(4, 24, 27, 33, top, 'poncho'); X([4, 24], [27, 24], [4, 25], [27, 25]); R(7, 34, 24, 35, top, 'poncho'); F(4, 27, 27, 27, top2); F(4, 30, 27, 30, lighten(top2, .35)); for (let x = 6; x <= 25; x += 3) { F(x, 28, x, 29, '#F1EEE6'); } F(14, 24, 17, 24, skin); F(15, 25, 16, 25, skin); for (let x = 7; x <= 24; x += 2) F(x, 36, x, 36, top2); R(5, 34, 6, 35, skin, 'armLh'); R(25, 34, 26, 35, skin, 'armRh'); }
+  if (a.top === 'bomber') { R(9, 24, 22, 33, top, 'torso'); F(15, 25, 16, 31, darken(top, .7)); R(9, 32, 22, 33, darken(top, .78), 'wb'); F(11, 28, 13, 29, darken(top, .85)); F(18, 28, 20, 29, darken(top, .85)); arms((x0, k) => { R(x0, 24, x0 + 2, 31, top, k); F(x0, 31, x0 + 2, 31, darken(top, .78)); }); R(8, 23, 23, 25, '#F1E6CF', 'collar'); X([8, 23], [23, 23]); F(14, 24, 17, 25, skin); }
+  if (a.top === 'tabardo') { R(9, 24, 22, 33, METAL, 'torso'); for (let y = 25; y <= 33; y += 2) F(9, y, 22, y, darken(METAL, .86)); arms((x0, k) => { R(x0, 24, x0 + 2, 31, METAL, k); F(x0, 26, x0 + 2, 26, darken(METAL, .86)); F(x0, 29, x0 + 2, 29, darken(METAL, .86)); }); R(11, 24, 20, 37, top, 'tabard'); X([11, 37], [20, 37]); F(11, 24, 20, 24, top2); [[15, 27], [16, 27], [14, 28], [17, 28], [14, 29], [17, 29], [15, 30], [16, 30], [15, 28], [16, 28], [15, 29], [16, 29]].forEach(([x, y]) => F(x, y, x, y, top2)); R(9, 32, 22, 32, LEATHER, 'belt'); F(15, 32, 16, 32, GOLD); }
+  if (a.top === 'forja') { R(9, 24, 22, 33, top2, 'torso'); arms((x0, k) => { R(x0, 24, x0 + 2, 26, top2, k); F(x0, 26, x0 + 2, 26, darken(top2, .85)); R(x0, 27, x0 + 2, 31, skin, k + 's'); }); R(10, 25, 21, 38, top, 'apron'); X([10, 38], [21, 38]); F(11, 24, 11, 24, top); F(20, 24, 20, 24, top); F(12, 29, 19, 29, darken(top, .8)); R(13, 31, 15, 33, darken(top, .8), 'apk'); F(10, 30, 21, 30, darken(top, .9)); }
+  if (a.top === 'jardineira') { R(9, 24, 22, 33, top2, 'torso'); arms((x0, k) => { R(x0, 24, x0 + 2, 27, top2, k); R(x0, 28, x0 + 2, 31, skin, k + 's'); }); R(11, 27, 20, 31, top, 'bib'); R(9, 32, 22, 35, top, 'bib'); F(11, 24, 12, 26, top); F(19, 24, 20, 26, top); F(12, 27, 12, 27, GOLD); F(19, 27, 19, 27, GOLD); F(14, 29, 17, 31, darken(top, .85)); R(10, 36, 14, 39, top, 'legL'); R(17, 36, 21, 39, top, 'legR'); }
+  if (a.top === 'terno') { const sh = '#F1EEE6'; R(9, 24, 22, 33, top, 'torso'); F(13, 24, 18, 25, sh); F(14, 26, 17, 27, sh); F(15, 24, 16, 24, darken(top2, .8)); F(15, 25, 16, 30, top2); F(12, 24, 12, 30, darken(top, .7)); F(19, 24, 19, 30, darken(top, .7)); F(13, 31, 13, 31, '#D8DEE9'); F(18, 31, 18, 31, '#D8DEE9'); F(20, 26, 21, 26, sh); arms((x0, k) => { R(x0, 24, x0 + 2, 31, top, k); F(x0, 31, x0 + 2, 31, sh); }); R(9, 33, 22, 33, top, 'torso'); }
+  if (a.top === 'jaleco') { R(8, 24, 23, 33, top, 'coat'); R(8, 34, 12, 38, top, 'coatL'); R(19, 34, 23, 38, top, 'coatR'); F(13, 24, 18, 26, top2); F(14, 27, 17, 28, top2); F(13, 24, 13, 29, darken(top, .8)); F(18, 24, 18, 29, darken(top, .8)); F(15, 30, 15, 33, darken(top, .85)); F(19, 28, 21, 30, darken(top, .9)); F(19, 27, 19, 28, '#2F6FE0'); F(21, 27, 21, 28, '#C93A4A'); arms((x0, k) => { R(x0, 24, x0 + 2, 31, top, k); }); }
+  if (a.top === 'listras') { const wt = '#F4F4F2'; R(9, 24, 22, 33, wt, 'torso'); for (let y = 25; y <= 33; y += 2) F(9, y, 22, y, top); arms((x0, k) => { R(x0, 24, x0 + 2, 31, wt, k); for (let y = 25; y <= 31; y += 2) F(x0, y, x0 + 2, y, top); }); F(14, 24, 17, 24, skin); F(11, 24, 11, 33, top2); F(20, 24, 20, 33, top2); }
+  if (a.top === 'collant') { R(9, 24, 22, 35, top, 'leo'); for (let y = 25; y <= 35; y++) for (let x = 9; x <= 22; x++) if ((x + y) % 4 === 0 || (x - y + 40) % 4 === 0) F(x, y, x, y, top2); F(13, 24, 18, 24, skin); F(14, 25, 17, 25, skin); arms((x0, k) => { R(x0, 24, x0 + 2, 31, skin, k); F(x0, 30, x0 + 2, 30, top2); }); R(10, 36, 14, 39, top, 'legL'); R(17, 36, 21, 39, top, 'legR'); }
+  if (a.top === 'fraque') { R(8, 24, 23, 33, top, 'coat'); R(8, 34, 11, 39, top, 'tailL'); R(20, 34, 23, 39, top, 'tailR'); F(14, 24, 17, 26, '#F4F4F2'); F(15, 27, 16, 27, '#F4F4F2'); [28, 30, 32].forEach(y => { F(10, y, 13, y, GOLD); F(18, y, 21, y, GOLD); }); F(15, 28, 16, 33, darken(top, .72)); arms((x0, k) => { R(x0, 24, x0 + 2, 31, top, k); F(x0, 30, x0 + 2, 30, GOLD); }); R(4, 23, 8, 24, GOLD, 'epL'); R(23, 23, 27, 24, GOLD, 'epR'); X([4, 23], [27, 23]); }
   // cabeça e orelhas
   R(7, 8, 24, 23, skin, 'head'); X([7, 8], [8, 8], [7, 9], [24, 8], [23, 8], [24, 9], [7, 23], [24, 23]);
   R(5, 14, 6, 18, skin, 'earL'); R(25, 14, 26, 18, skin, 'earR'); X([5, 14], [5, 18], [26, 14], [26, 18]);
@@ -1483,6 +1509,18 @@ function avatarSvg(a0, h = 64, label = 'Seu avatar') {
   if (a.hat === 'viseira') { R(6, 12, 25, 15, '#1B1830', 'visor'); F(7, 13, 24, 13, lighten(accc, .35)); F(7, 14, 24, 14, accc); F(6, 12, 6, 15, accc); F(25, 12, 25, 15, accc); }
   if (a.hat === 'ledears') { R(8, 4, 23, 5, '#2A2A35', 'hb'); [[1, 9, 9], [2, 9, 10], [3, 8, 11]].forEach(([y, x0, x1]) => { R(x0, y, x1, y, accc, 'ledL'); R(31 - x1, y, 31 - x0, y, accc, 'ledR'); }); F(9, 3, 10, 3, lighten(accc, .5)); F(21, 3, 22, 3, lighten(accc, .5)); }
   if (a.hat === 'faixa') { R(7, 9, 24, 10, hatc, 'band'); F(7, 9, 24, 9, lighten(hatc, .45)); }
+  const hood = c => { R(7, 3, 24, 9, c, 'hood'); X([7, 3], [24, 3]); R(5, 7, 8, 24, c, 'hoodL'); R(23, 7, 26, 24, c, 'hoodR'); X([5, 7], [26, 7]); F(9, 10, 22, 10, darken(c, .72)); F(10, 4, 14, 5, lighten(c, .3)); };
+  if (a.hat === 'h-raio') { hood(hatc); F(11, 1, 11, 2, darken(hatc, .6)); F(20, 1, 20, 2, darken(hatc, .6)); R(9, 0, 11, 0, '#FFE27A', 'orbL'); R(20, 0, 22, 0, '#FFE27A', 'orbR'); [[16, 4], [15, 5], [16, 6], [15, 7], [16, 8]].forEach(([x, y]) => F(x, y, x, y, '#FFE27A')); }
+  if (a.hat === 'h-chama') { hood(hatc); R(14, 0, 16, 2, '#F08A24', 'flM'); R(10, 1, 12, 2, '#F08A24', 'flL'); R(19, 1, 21, 2, '#F08A24', 'flR'); F(15, 0, 15, 0, '#FFE27A'); F(11, 1, 11, 1, '#FFE27A'); F(20, 1, 20, 1, '#FFE27A'); }
+  if (a.hat === 'h-onda') { hood(hatc); R(3, 10, 4, 15, lighten(hatc, .35), 'finL'); R(27, 10, 28, 15, lighten(hatc, .35), 'finR'); R(12, 1, 19, 2, lighten(hatc, .4), 'crest'); X([12, 1], [19, 1]); [[9, 6], [13, 7], [18, 6], [21, 7]].forEach(([x, y]) => F(x, y, x, y, '#FFFFFF')); }
+  if (a.hat === 'h-broto') { hood(hatc); F(15, 0, 15, 2, '#2E6B30'); R(11, 0, 14, 1, '#7BC96F', 'leafL'); X([11, 0]); R(16, 0, 19, 1, '#7BC96F', 'leafR'); X([19, 0]); [[9, 7], [21, 6]].forEach(([x, y]) => F(x, y, x, y, '#F7B6C4')); }
+  if (a.hat === 'cartola') { R(10, 0, 21, 8, hatc, 'tophat'); F(10, 6, 21, 7, '#C93A4A'); F(11, 1, 12, 5, lighten(hatc, .25)); R(6, 9, 25, 10, hatc, 'brim'); X([6, 10], [25, 10]); }
+  if (a.hat === 'cogumelo') { R(10, 0, 21, 0, hatc, 'cap'); R(7, 1, 24, 2, hatc, 'cap'); R(4, 3, 27, 6, hatc, 'cap'); R(3, 7, 28, 9, hatc, 'cap'); X([3, 7], [28, 7]); F(8, 2, 12, 3, lighten(hatc, .3)); F(6, 4, 9, 5, lighten(hatc, .2)); R(6, 10, 25, 10, '#EADBC0', 'gills'); for (let x = 7; x <= 24; x += 2) F(x, 10, x, 10, '#CDB894'); }
+  if (a.hat === 'lenco') { R(7, 3, 24, 10, hatc, 'wrap'); X([7, 3], [24, 3]); F(8, 6, 23, 6, darken(hatc, .82)); F(8, 9, 23, 9, darken(hatc, .82)); R(25, 7, 28, 16, hatc, 'wtail'); X([28, 7], [28, 16]); R(7, 18, 24, 23, hatc, 'veil'); X([7, 23], [24, 23]); F(8, 20, 23, 20, darken(hatc, .85)); }
+  if (a.hat === 'aviador') { R(7, 4, 24, 10, hatc, 'cap'); X([7, 4], [24, 4]); R(5, 10, 8, 20, hatc, 'flapL'); R(23, 10, 26, 20, hatc, 'flapR'); X([5, 20], [26, 20]); F(15, 4, 16, 10, darken(hatc, .8)); R(8, 6, 14, 9, '#3A3542', 'gogL'); R(17, 6, 23, 9, '#3A3542', 'gogR'); F(9, 7, 13, 8, '#9AD7F0'); F(18, 7, 22, 8, '#9AD7F0'); F(9, 7, 10, 7, '#FFFFFF'); F(18, 7, 19, 7, '#FFFFFF'); F(15, 7, 16, 7, '#3A3542'); }
+  if (a.hat === 'diadema') { R(8, 9, 23, 9, GOLD, 'circ'); R(14, 7, 17, 9, GOLD, 'gemset'); X([14, 7], [17, 7]); F(15, 8, 16, 8, hatc); F(15, 8, 15, 8, lighten(hatc, .5)); }
+  if (a.hat === 'capacete') { R(9, 2, 22, 2, hatc, 'hard'); R(7, 3, 24, 9, hatc, 'hard'); X([7, 3], [24, 3]); R(4, 10, 27, 11, hatc, 'hbrim'); X([4, 11], [27, 11]); F(15, 2, 16, 9, lighten(hatc, .3)); F(10, 4, 12, 5, lighten(hatc, .5)); }
+  if (a.hat === 'coco') { R(10, 2, 21, 7, hatc, 'bowl'); X([10, 2], [21, 2], [10, 3], [21, 3]); F(10, 7, 21, 7, darken(hatc, .6)); F(12, 3, 13, 5, lighten(hatc, .3)); R(6, 8, 25, 9, hatc, 'brim'); X([6, 9], [25, 9]); }
   // acessórios
   if (a.acc === 'oculos' || a.acc === 'escuros') { const dk = a.acc === 'escuros'; for (const x0 of [8, 18]) { F(x0, 12, x0 + 5, 12, INK); F(x0, 16, x0 + 5, 16, INK); F(x0, 12, x0, 16, INK); F(x0 + 5, 12, x0 + 5, 16, INK); if (dk) { F(x0 + 1, 13, x0 + 4, 15, '#1D1B24'); F(x0 + 1, 13, x0 + 2, 13, '#7A7E92'); } } F(14, 13, 17, 13, INK); F(7, 13, 7, 13, INK); F(24, 13, 24, 13, INK); }
   if (a.acc === 'fone') { R(9, 1, 22, 2, '#3A3542', 'band'); R(6, 3, 8, 4, '#3A3542', 'band'); R(23, 3, 25, 4, '#3A3542', 'band'); R(4, 5, 6, 12, '#3A3542', 'band'); R(25, 5, 27, 12, '#3A3542', 'band'); R(3, 13, 7, 19, accc, 'cupL'); R(24, 13, 28, 19, accc, 'cupR'); }
@@ -1495,6 +1533,19 @@ function avatarSvg(a0, h = 64, label = 'Seu avatar') {
   if (a.acc === 'neonglass') { const n = lighten(accc, .2); for (const x0 of [8, 18]) { F(x0, 12, x0 + 5, 12, n); F(x0, 16, x0 + 5, 16, n); F(x0, 12, x0, 16, n); F(x0 + 5, 12, x0 + 5, 16, n); F(x0 + 1, 13, x0 + 4, 15, '#1D1B24'); F(x0 + 1, 13, x0 + 1, 13, '#FFFFFF'); } F(14, 13, 17, 13, n); }
   if (a.acc === 'glow') { [[4, 31], [3, 30], [2, 29], [1, 28], [0, 27]].forEach(([x, y]) => F(x, y, x, y, lighten(accc, .3))); [[27, 31], [28, 30], [29, 29], [30, 28], [31, 27]].forEach(([x, y]) => F(x, y, x, y, lighten(top2, .2))); }
   if (a.acc === 'bola') { R(24, 37, 29, 42, '#F2F2F2', 'ball'); X([24, 37], [29, 37], [24, 42], [29, 42]); F(26, 39, 27, 40, '#222222'); F(24, 40, 24, 40, '#222222'); F(29, 39, 29, 39, '#222222'); F(26, 37, 26, 37, '#222222'); F(27, 42, 27, 42, '#222222'); }
+  if (a.acc === 'paleta') { R(0, 28, 6, 33, '#C9A06A', 'pal'); X([0, 28], [6, 33]); F(1, 29, 1, 29, '#C93A4A'); F(3, 29, 3, 29, '#2F6FE0'); F(5, 30, 5, 30, '#E8A13A'); F(2, 31, 2, 31, '#2E9E6A'); F(4, 32, 4, 32, '#F1EEE6'); R(27, 24, 27, 33, WOOD, 'brush'); F(27, 22, 27, 23, accc); }
+  if (a.acc === 'florete') { R(27, 12, 27, 30, '#D8DEE9', 'blade'); F(27, 12, 27, 12, '#FFFFFF'); R(25, 31, 29, 31, GOLD, 'guard'); F(25, 32, 25, 33, GOLD); R(27, 32, 27, 35, '#5A3A20', 'grip'); F(27, 36, 27, 36, GOLD); }
+  if (a.acc === 'regador') { R(25, 35, 30, 39, accc, 'can'); X([25, 39], [30, 39]); F(26, 33, 29, 33, darken(accc, .7)); F(26, 34, 26, 34, darken(accc, .7)); F(29, 34, 29, 34, darken(accc, .7)); F(31, 35, 31, 36, darken(accc, .8)); F(26, 36, 27, 37, lighten(accc, .35)); }
+  if (a.acc === 'lanterna') { F(25, 35, 25, 36, '#3A3542'); R(23, 37, 27, 41, '#3A3542', 'lant'); F(24, 38, 26, 40, '#FFE27A'); F(24, 38, 24, 38, '#FFFFFF'); }
+  if (a.acc === 'luneta') { R(27, 22, 29, 33, '#C9A04A', 'scope'); F(27, 25, 29, 25, '#8A6A2A'); F(27, 29, 29, 29, '#8A6A2A'); F(28, 21, 28, 21, '#9AD7F0'); }
+  if (a.acc === 'lanca') { R(28, 4, 28, 41, WOOD, 'pole'); [[28, 0], [27, 1], [28, 1], [29, 1], [27, 2], [28, 2], [29, 2], [28, 3]].forEach(([x, y]) => P(x, y, '#D8DEE9', 'tip')); R(29, 5, 31, 7, accc, 'flag'); R(29, 8, 30, 9, accc, 'flag'); F(29, 5, 31, 5, lighten(accc, .3)); }
+  if (a.acc === 'martelo') { R(28, 24, 28, 35, WOOD, 'hnd'); R(25, 19, 31, 23, '#7D8596', 'hhead'); X([25, 19], [31, 23]); F(26, 20, 27, 20, lighten('#7D8596', .45)); }
+  if (a.acc === 'chave') { R(2, 24, 5, 27, '#9AA3B5', 'wjaw'); X([3, 24], [4, 24], [3, 25], [4, 25]); R(3, 28, 4, 38, '#9AA3B5', 'wh'); F(3, 30, 3, 36, lighten('#9AA3B5', .35)); }
+  if (a.acc === 'maleta') { F(2, 32, 4, 32, '#3A2A1A'); F(2, 33, 2, 33, '#3A2A1A'); F(4, 33, 4, 33, '#3A2A1A'); R(0, 34, 6, 39, '#6B4423', 'case'); X([0, 34], [6, 34]); F(0, 36, 6, 36, darken('#6B4423', .8)); F(3, 36, 3, 36, GOLD); }
+  if (a.acc === 'frasco') { R(25, 27, 26, 30, '#DCE6F0', 'neck'); R(23, 31, 28, 36, '#DCE6F0', 'flask'); X([23, 31], [28, 31], [23, 36], [28, 36]); F(24, 33, 27, 35, accc); F(24, 33, 24, 33, lighten(accc, .5)); F(26, 25, 26, 25, lighten(accc, .3)); F(25, 23, 25, 23, lighten(accc, .5)); }
+  if (a.acc === 'luvas') { R(5, 32, 7, 34, '#FFFFFF', 'gloveL'); R(24, 32, 26, 34, '#FFFFFF', 'gloveR'); F(5, 31, 7, 31, '#E4E6EC'); F(24, 31, 26, 31, '#E4E6EC'); F(11, 17, 11, 18, '#2B2B35'); }
+  if (a.acc === 'argola') { for (let t = 0; t < 360; t += 8) { const x = Math.round(27 + 4 * Math.cos(t * Math.PI / 180)), y = Math.round(31 + 6 * Math.sin(t * Math.PI / 180)); F(x, y, x, y, t > 180 ? lighten(accc, .3) : accc); } }
+  if (a.acc === 'bengala') { R(27, 26, 27, 41, '#2B2B35', 'cane'); R(26, 23, 28, 25, GOLD, 'knob'); X([26, 23], [28, 23]); F(27, 41, 27, 41, GOLD); }
   // luz de cima à esquerda: brilho nas bordas expostas, sombra à direita e embaixo, sombra projetada sob cabelo e cabeça
   const out = [], at = (x, y) => (G[y] && G[y][x]) || null, diff = (p, n) => !n || (n.r !== p.r && n.r !== 'f');
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -1533,6 +1584,14 @@ const MASCOTS = [
     '.....ffffff.....', '...ffffffffff...', '..ffffffffffff..', '..ffkkffffkkff..', '..ffkkffffkkff..', '..ffffffffffff..', '..ffhffffffhff..', '..fffffmmfffff..', '..ffffffffffff..', '..ffffffffffff..', '..ffffffffffff..', '..ff.fff.fff.f..', '..f...f...f.....']],
   ['capivara', 'Capivara', '🌿', 150, 'Calma em qualquer semana corrida.', { c: '#A0703F', e: '#7A522C', o: '#F08A24', n: '#4A3020' }, [
     '...oo...........', '..oooo..........', '..ee.ee.........', '.cccccccc.......', 'cccccccccc......', 'cckccccccccccc..', 'cccccccccccccccc', 'nncccccccccccccc', 'cccccccccccccccc', '.cccccccccccccc.', '.cccccccccccccc.', '..cc.cc...cc.cc.', '..cc.cc...cc.cc.']],
+  ['faisca', 'Faísca', '⚡', 120, 'Nuvenzinha elétrica: carrega sua energia para o treino.', { c: '#C9D4EA', y: '#FFD84A' }, [
+    '....cccccc......', '..cccccccccc....', '.cccccccccccc...', 'cccckcccckcccc..', 'cccckcccckcccc..', 'cchccccmmcchcc..', '.cccccccccccc...', '..cccccccccc....', '.....yy..yy.....', '....yy..yy......', '...yyyyyyy......', '.....yy.........', '....yy..........']],
+  ['brasa', 'Brasa', '🔥', 120, 'Chaminha que não deixa a sequência apagar.', { f: '#E2572E', o: '#FFB547' }, [
+    '.......f........', '......ff....f...', '.....fff...ff...', '....ffff..fff...', '...ffffffffff...', '..fffoooooofff..', '..ffooooooooff..', '.ffookooookooff.', '.ffookooookooff.', '.ffooooooooooff.', '.ffoooommoooooff', '..ffoooooooooff.', '...ffffffffff...']],
+  ['gota', 'Gota', '💧', 120, 'Lembra você de beber água o dia todo.', { w: '#4FA3E8', l: '#CDE8FF' }, [
+    '.......w........', '......www.......', '.....wwwww......', '....wwwwwww.....', '...wwwwwwwww....', '..wwlwwwwwwww...', '..wlwwwwwwwww...', '.wwwkwwwwkwwww..', '.wwwkwwwwkwwww..', '.wwhwwwmmwwhww..', '.wwwwwwwwwwwww..', '..wwwwwwwwwww...', '...wwwwwwwww....', '.....wwwww......']],
+  ['broto', 'Broto', '🌱', 120, 'Cresce um pouquinho a cada hábito marcado.', { l: '#5DBB63', s: '#3E8E41', b: '#EBCB8B', t: '#C2643A' }, [
+    '..ll........ll..', '.llll......llll.', '.lllll....lllll.', '..lllll..lllll..', '.....llsslll....', '.......ss.......', '...bbbbbbbbbb...', '..bbbbbbbbbbbb..', '..bbkbbbbbbkbb..', '..bbkbbbbbbkbb..', '..bbhbbmmbbhbb..', '...bbbbbbbbbb...', '...tttttttttt...', '...tttttttttt...', '....tttttttt....']],
   ['dragao', 'Dragãozinho', '🐉', 200, 'Raro: cospe faíscas quando você bate meta.', { d: '#2EA38A', y: '#F3D36B', w: '#FFFFFF', s: '#7A4FD6', l: '#BDEBD9', n: '#1D6B5A' }, [
     '...y......y.....', '...dd....dd.....', '..dddddddddd....', '..ddwkddwkdd....', '..ddwkddwkdd..ss', '..dddddddddd.sss', '...ddnddndd.ssss', 'ss.dddddddd.sss.', 'sss.ddllllddd...', 'ssssdlllllldd...', '.ssddlllllldd.dd', '...ddlllllldddd.', '...dd.dd..dd....']],
 ];
@@ -1628,9 +1687,6 @@ VIEWS.perfil = () => {
   } else if (tab === 'conquistas') {
     body = `<section class="blk"><div class="blk-h"><h2>Títulos</h2><span class="num" style="color:var(--muted);font-size:13px">${TITLES.filter(([id]) => (g.tit || {})[id]).length} de ${TITLES.length} · toque para usar</span></div>
     <div class="titles"><button class="ttl${!g.title ? ' on' : ''}" data-act="set-title" data-k=""><span>⭐</span><b>${LEVEL_TITLE(st.level)}</b><small>Título do seu nível</small></button>${TITLES.map(([id, ic, name, desc]) => { const has = (g.tit || {})[id]; return has ? `<button class="ttl${g.title === id ? ' on' : ''}" data-act="set-title" data-k="${id}"><span>${ic}</span><b>${esc(name)}</b><small>${esc(desc)}</small></button>` : `<div class="ttl lock"><span>🔒</span><b>${esc(name)}</b><small>${esc(desc)}</small></div>`; }).join('')}</div></section>
-  <section class="blk"><div class="blk-h"><h2>Aparências</h2><span class="num" style="color:var(--muted);font-size:13px">${Object.keys(AV_UNLOCK).filter(k => !avLocked(...k.split('.'))).length} de ${Object.keys(AV_UNLOCK).length} desbloqueadas</span></div>
-    <div class="group">${Object.entries(AV_UNLOCK).map(([key, r]) => { const lk = avLocked(...key.split('.')); return `<div class="row"><span class="rk-ic">${lk ? '🔒' : '🎨'}</span><div class="main"><div class="t">${esc(AV_LABEL(key))}</div><div class="s">${lk ? `Desbloqueia com ${esc(lk)}` : 'Liberado para o seu avatar'}</div></div></div>`; }).join('')}</div>
-    <div class="btns"><button class="btn primary" data-act="av-edit">Usar no avatar</button></div></section>
   <section class="blk"><div class="blk-h"><h2>Conquistas</h2><span class="num" style="color:var(--muted);font-size:13px">${got} de ${ACHIEVEMENTS.length}</span></div>
     <div class="achs">${ACHIEVEMENTS.map(([id, ic, name, desc]) => { const d = (g.ach || {})[id]; return `<div class="ach${d ? ' on' : ''}" title="${esc(desc)}"><span class="ach-i">${d ? ic : '🔒'}</span><b>${esc(name)}</b><small>${d ? `${pad(parse(d).getDate())}/${pad(parse(d).getMonth() + 1)}/${parse(d).getFullYear()}` : esc(desc)}</small></div>`; }).join('')}</div></section>`;
   } else {
@@ -1657,9 +1713,9 @@ function avEditorBody(d) {
     ${sec('Cabelo', thumbs('hair'))}${sec('Cor do cabelo', sw('hc', AV_HAIR))}
     ${sec('Olhos', chips('eyes'))}${sec('Boca', chips('mouth'))}${sec('Barba', thumbs('beard'))}
     ${sec('Chapéu', thumbs('hat'))}${d.hat !== 'nenhum' ? sec('Cor do chapéu', sw('hatc', AV_CLOTH)) : ''}
-    ${sec('Parte de cima', thumbs('top'))}${sec('Cor principal', sw('topc', AV_CLOTH))}${d.top === 'colete' || d.top === 'jaqueta' ? sec('Cor de baixo do colete / detalhe', sw('top2c', AV_CLOTH)) : ''}
+    ${sec('Parte de cima', thumbs('top'))}${sec('Cor principal', sw('topc', AV_CLOTH))}${['colete', 'jaqueta', 'sobrecasaca', 'avental', 'poncho', 'tabardo', 'forja', 'jardineira', 'terno', 'jaleco', 'listras', 'collant'].includes(d.top) ? sec('Cor de baixo do colete / detalhe', sw('top2c', AV_CLOTH)) : ''}
     ${sec('Parte de baixo', chips('bottom'))}${sec('Cor da parte de baixo', sw('botc', AV_CLOTH))}
-    ${sec('Acessório', thumbs('acc'))}${['fone', 'cachecol'].includes(d.acc) ? sec('Cor do acessório', sw('accc', AV_CLOTH)) : ''}
+    ${sec('Acessório', thumbs('acc'))}${['fone', 'cachecol', 'paleta', 'regador'].includes(d.acc) ? sec('Cor do acessório', sw('accc', AV_CLOTH)) : ''}
     ${sec('Fundo', sw('bg', AV_BG))}
   </div>`;
 }
@@ -2515,7 +2571,8 @@ VIEWS.ajustes = () => `${header('', 'Ajustes')}
     <button class="btn" data-act="export">Exportar backup</button><label class="btn" for="import-file" style="cursor:pointer">Importar backup</label></div>
     <input type="file" id="import-file" accept="application/json,.json" hidden>
     <p class="note">O backup é um arquivo .json com tudo: agenda, reuniões, treinos, finanças, estudos, tarefas, hábitos e leituras.</p></section>
-  ${CAREER_PROGRAM ? `<section class="blk"><div class="blk-h"><h2>Programa de carreira</h2></div><div class="btns" style="margin:0"><button class="btn" data-act="car-reimport">Reimportar programa original</button></div></section>` : ''}
+  ${bakSection()}
+  ${CAREER_PROGRAM ? `<section class="blk"><div class="blk-h"><h2>Programa de carreira</h2></div><div class="btns" style="margin:0"><button class="btn" data-act="car-reimport">Reimportar programa original</button></div><p class="note">Volta as 35 tarefas do Painel de Foco UX/UI ao estado inicial.</p></section>` : ''}
   <section class="blk"><div class="btns" style="margin:0"><button class="btn danger" data-act="wipe">Apagar todos os dados</button></div></section>`;
 
 /* ---------- folha (sheet) ---------- */
@@ -3111,9 +3168,13 @@ Tempo: ${t.tempo} · Semana ${t.w} — ${S.career.foco[t.w] || ''}` }); persist(
     const st = JSON.parse(JSON.stringify(S));
     for (const x of (st.habits && st.habits.journal) || []) if (String(x.url).startsWith('idb:')) { try { const b = await idbGet(x.url.slice(4)); if (b) x.url = await blobToDataURL(b); } catch (e) {} }
     const data = JSON.stringify({ app: 'Rotina', version: 1, exported: new Date().toISOString(), state: st }, null, 2);
-    const name = `rotina-backup-${today()}.json`;
-    try { const dl = window.claude?.use ? await window.claude.use('downloads') : null; if (dl) { await dl.save({ filename: name, data }); return; } } catch (e) { if (e && e.code !== 'unavailable') return; }
-    try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type: 'application/json' })); a.download = name; a.click(); } catch (e) { toast('Não foi possível exportar aqui'); }
+    await saveJson(`rotina-backup-${today()}.json`, data);
+  },
+  'bak-now': async () => { if (S.meta.demo) { toast('Saia dos dados de exemplo para guardar cópias'); return; } toast('Guardando cópia…'); await autoBackup(true); toast('Cópia de hoje guardada'); },
+  'bak-get': async el => { try { const t = await bakData(el.dataset.s, el.dataset.k); if (!t) throw 0; await saveJson(`rotina-backup-${el.dataset.k}.json`, t); } catch (e) { toast('Não encontrei essa cópia'); } },
+  'bak-restore': async el => {
+    if (!el.classList.contains('arm')) { el.classList.add('arm'); el.textContent = 'Confirmar'; setTimeout(() => { if (el.isConnected) { el.classList.remove('arm'); el.textContent = 'Restaurar'; } }, 3000); return; }
+    try { const t = await bakData(el.dataset.s, el.dataset.k); if (!t) throw 0; restoreState(t); toast(`Dados de ${fmtDay(el.dataset.k).toLowerCase()} restaurados`); render(); } catch (e) { toast('Não consegui restaurar essa cópia'); }
   },
   'wipe': el => {
     if (!el.classList.contains('arm')) { el.classList.add('arm'); el.textContent = 'Toque de novo para apagar tudo'; setTimeout(() => { if (el.isConnected) { el.classList.remove('arm'); el.textContent = 'Apagar todos os dados'; } }, 3000); return; }
@@ -3196,6 +3257,65 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
 }
 try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+/* ---------- cópias automáticas: uma por dia, guardadas no aparelho (IndexedDB) e, com conta, também na nuvem ---------- */
+const BAK_KEEP = 14;
+let BAK = { local: [], cloud: [], busy: false };
+const bakIdb = () => new Promise((res, rej) => { try { const r = indexedDB.open('rotina-bak', 1); r.onupgradeneeded = () => r.result.createObjectStore('b', { keyPath: 'd' }); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } });
+const bakTx = async (mode, fn) => { const db = await bakIdb(); return new Promise((res, rej) => { const t = db.transaction('b', mode), out = fn(t.objectStore('b')); t.oncomplete = () => res(out && out.result); t.onerror = () => rej(t.error); }); };
+async function bakList() {
+  try { BAK.local = ((await bakTx('readonly', s => s.getAll())) || []).map(x => ({ d: x.d, size: x.data.length })).sort((a, b) => b.d.localeCompare(a.d)); } catch (e) { BAK.local = []; }
+  if (store.db && store.uid) { try { const d = await store.db.doc(`data/users/${store.uid}/backups`).get(); BAK.cloud = d.exists ? (d.data().v || []) : []; } catch (e) {} }
+}
+const bakJson = () => JSON.stringify({ app: 'Rotina', version: 1, exported: new Date().toISOString(), auto: true, state: S });
+async function autoBackup(force) {
+  if (BAK.busy || !S || !S.meta || S.meta.demo) return;
+  BAK.busy = true; const d = today();
+  try {
+    await bakList(); const data = bakJson();
+    if (force || !BAK.local.some(x => x.d === d)) {
+      await bakTx('readwrite', s => s.put({ d, data }));
+      const old = BAK.local.map(x => x.d).filter(x => x !== d).slice(BAK_KEEP - 1);
+      if (old.length) await bakTx('readwrite', s => old.forEach(k => s.delete(k)));
+    }
+    if (store.db && store.uid && (force || !BAK.cloud.some(x => x.d === d))) {
+      const assets = await window.claude.use('assets').catch(() => null);
+      if (assets) {
+        const up = await assets.upload(new Blob([data], { type: 'application/json' }));
+        const prev = BAK.cloud.find(x => x.d === d); if (prev) assets.delete(prev.id).catch(() => {});
+        let list = [{ d, id: up.id, url: up.url, size: data.length }, ...BAK.cloud.filter(x => x.d !== d)].sort((a, b) => b.d.localeCompare(a.d));
+        list.slice(BAK_KEEP).forEach(x => assets.delete(x.id).catch(() => {})); list = list.slice(0, BAK_KEEP);
+        await store.db.doc(`data/users/${store.uid}/backups`).set({ v: list });
+      }
+    }
+    await bakList();
+  } catch (e) {} finally { BAK.busy = false; }
+  if (UI.sub === 'ajustes' && !$('#sheet').classList.contains('show')) render();
+}
+async function bakData(src, d) {
+  if (src === 'local') { const r = await bakTx('readonly', s => s.get(d)); return r && r.data; }
+  const x = BAK.cloud.find(y => y.d === d); if (!x) return null; const res = await fetch(x.url || '/_blob/' + x.id); return res.ok ? await res.text() : null;
+}
+function restoreState(txt) {
+  const j = JSON.parse(txt); const st = j.state || j; const base = emptyState();
+  if (typeof st !== 'object' || !st.events) throw 0;
+  MODULES.forEach(m => S[m] = st[m] ?? base[m]); ensureCareer(); ensureFinance(); S.meta.demo = false;
+  persist(...MODULES); Object.keys((S.writing && S.writing.texts) || {}).forEach(persistText);
+}
+async function saveJson(name, data) {
+  try { const dl = window.claude?.use ? await window.claude.use('downloads') : null; if (dl) { await dl.save({ filename: name, data }); return; } } catch (e) { if (e && e.code !== 'unavailable') return; }
+  try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type: 'application/json' })); a.download = name; a.click(); } catch (e) { toast('Não foi possível baixar aqui'); }
+}
+function bakSection() {
+  const days = [...new Set([...BAK.local.map(x => x.d), ...BAK.cloud.map(x => x.d)])].sort().reverse();
+  const kb = n => n > 1e6 ? (n / 1e6).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' MB' : Math.max(1, Math.round(n / 1e3)) + ' KB';
+  const rows = days.map(d => { const l = BAK.local.find(x => x.d === d), c = BAK.cloud.find(x => x.d === d), src = c ? 'cloud' : 'local';
+    return `<div class="row"><span class="rk-ic">🗂️</span><div class="main"><div class="t">${fmtDay(d)}${d === today() ? '' : ` · ${WD[parse(d).getDay()]}`}</div><div class="s">${[l && 'neste aparelho', c && 'na sua conta'].filter(Boolean).join(' e ')} · ${kb((l || c).size)}</div></div><div style="display:flex;gap:6px"><button class="btn sm" data-act="bak-get" data-s="${src}" data-k="${d}">Baixar</button><button class="btn sm" data-act="bak-restore" data-s="${src}" data-k="${d}">Restaurar</button></div></div>`; }).join('');
+  return `<section class="blk"><div class="blk-h"><h2>Cópias automáticas</h2><span style="color:var(--muted);font-size:13px">uma por dia</span></div>
+    <div class="group">${rows || `<div class="empty">${S.meta.demo ? 'As cópias começam quando você sair dos dados de exemplo.' : 'A primeira cópia é feita em instantes.'}</div>`}</div>
+    <div class="btns"><button class="btn sm" data-act="bak-now">Fazer uma cópia agora</button></div>
+    <p class="note">Todo dia em que você abre o app ele guarda sozinho uma cópia de tudo, ${store.mode === 'conta' ? 'neste aparelho e na sua conta Claude' : 'neste aparelho'}. Ficam as últimas ${BAK_KEEP}. Restaurar troca os dados atuais pelos daquele dia.</p></section>`;
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) autoBackup(); });
 
 /* ---------- início ---------- */
 (function boot() {
@@ -3207,7 +3327,7 @@ try { if (navigator.storage && navigator.storage.persist) navigator.storage.pers
   UI.tab = mapTab(UI.tab); if (!['foco', 'carreira', 'escritor', 'resumos'].includes(UI.estMode)) UI.estMode = 'foco'; if (!COL_NEST[UI.colMode]) UI.colMode = 'leituras';
   if (!TABS.some(t => t.k === UI.tab)) UI.tab = 'hoje';
   render();
-  connectDb();
+  Promise.resolve(connectDb()).catch(() => {}).finally(() => setTimeout(autoBackup, 1200));
 })();
 </script>
 </body></html>
