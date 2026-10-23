@@ -1,6 +1,6 @@
 /* Rotina — service worker: guarda o app no aparelho para abrir sem internet.
    Ao publicar uma versão nova do app, troque o número da VERSAO abaixo. */
-const VERSAO = 'rotina-v13';
+const VERSAO = 'rotina-v14';
 const ARQUIVOS = [
   './',
   './index.html',
