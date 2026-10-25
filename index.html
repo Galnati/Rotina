@@ -702,6 +702,8 @@ body{background:var(--bg)}
 .wk-n.w{color:#D99A00}
 .wk-set.done .wk-n{background:transparent}
 .wk-prev{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:4px}
+.wk-diff{font-size:12px;font-weight:800;color:var(--muted)}.wk-diff.up{color:var(--c-fin)}
+.wk-failtip{margin:2px 0 10px;font-size:13px;line-height:1.4;color:var(--muted)}.wk-failtip b{color:var(--c-treino)}
 .wk-set .inp{height:40px;padding:6px;text-align:center;border-radius:10px;font-size:16px;font-variant-numeric:tabular-nums;min-width:0;width:100%}
 .wk-set.done .inp{background:transparent;border-color:transparent;font-weight:700}
 .wk-ck{width:40px;height:40px;border-radius:10px;background:var(--surface-2);color:var(--muted);display:grid;place-items:center;justify-self:center}
@@ -1144,7 +1146,7 @@ const URG_OPTS = (tab = XP_PRIO, sfx = '') => [['baixa', `Baixa · +${tab.baixa}
 const xpBadge = n => `<span class="xpb">+${n} XP</span>`;
 const XP_RULES = [
   ['Hábitos', 'var(--c-habito)', '10 por hábito criado · 5, 10 ou 15 por dia marcado (conforme a importância) · 10 por página do diário'],
-  ['Treinos', 'var(--c-treino)', '20 por ficha criada · 40 por treino feito · 50 por recorde de carga'],
+  ['Treinos', 'var(--c-treino)', '20 por ficha criada · 40 por treino feito · 50 por recorde de carga ou de repetições'],
   ['Estudos', 'var(--c-estudo)', '10 por matéria · 1 a cada 2 min estudados · 25 por resumo · 15 por capítulo · 1 a cada 50 palavras'],
   ['Leitura', 'var(--c-leitura)', '10 por livro cadastrado · 5 por leitura registrada · 1 por página · 100 por livro terminado'],
   ['Agenda e tarefas', 'var(--c-tarefa)', '5 por compromisso ou tarefa cadastrada · 10 por reunião · 10, 20 ou 35 ao concluir, conforme a urgência'],
@@ -1229,7 +1231,7 @@ const ACHIEVEMENTS = [
   ['treino1', '🏋️', 'Primeiro treino', 'Registre um treino', s => s.workouts >= 1],
   ['treino10', '💪', 'Mês de ferro', '10 treinos no mesmo mês', s => s.workMonth >= 10],
   ['treino100', '🦾', 'Cem treinos', 'Registre 100 treinos', s => s.workouts >= 100],
-  ['recorde', '🏆', 'Recorde pessoal', 'Aumente a carga máxima de um exercício', s => s.prs >= 1],
+  ['recorde', '🏆', 'Recorde pessoal', 'Aumente a carga máxima ou as repetições até a falha', s => s.prs >= 1],
   ['livro1', '📖', 'Primeira estante', 'Termine um livro', s => s.booksDone >= 1],
   ['livro10', '📚', 'Rato de biblioteca', 'Termine 10 livros', s => s.booksDone >= 10],
   ['pag1000', '🔖', 'Mil páginas', 'Leia 1.000 páginas', s => s.pages >= 1000],
@@ -1284,7 +1286,7 @@ const TITLES = [
   ['leitor', '📚', 'Leitor voraz', 'Termine 5 livros', s => s.booksDone >= 5],
   ['bibliotecario', '🏛️', 'Bibliotecário', 'Tenha 20 livros na coleção', s => s.reg.book >= 20],
   ['academia', '🏋️', 'Rato de academia', 'Registre 30 treinos', s => s.workouts >= 30],
-  ['forca', '💪', 'Força bruta', 'Bata 3 recordes de carga', s => s.prs >= 3],
+  ['forca', '💪', 'Força bruta', 'Bata 3 recordes de carga ou de repetições', s => s.prs >= 3],
   ['estudioso', '🎓', 'Estudioso', 'Estude 10 horas', s => s.studyMin >= 600],
   ['escritor', '✍️', 'Escritor de verdade', 'Escreva 5.000 palavras', s => s.words >= 5000],
   ['tarefas', '✅', 'Mestre das tarefas', 'Conclua 30 tarefas', s => s.tasks >= 30],
@@ -2065,6 +2067,9 @@ function wkPrev(exId) {
   const x = logs[0] && logs[0].ex.find(x => x.exId === exId); return x ? x.sets : [];
 }
 const wkRepsNum = r => { const m = String(r || '').match(/\d+/g); return m ? +m[m.length - 1] : 0; };
+// série "até a falha" (ou AMRAP/máximo): a meta não tem número, então o progresso é quantas repetições você fez
+const wkFail = r => /falha|failure|amrap|m[áa]x/i.test(String(r || ''));
+const wkPrevTxt = pv => { const k = wkNum(pv.kg), r = wkRepsNum(pv.reps); return `${k ? esc(pv.kg) + 'kg x ' : ''}${r || 'falha'}${k ? '' : ' reps'}`; };
 function wkStats(a) {
   let vol = 0, sets = 0;
   a.ex.forEach(x => x.sets.forEach(s => { if (!s.done) return; sets++; vol += wkNum(s.kg || s.tkg) * wkRepsNum(s.reps || s.treps); }));
@@ -2135,6 +2140,7 @@ function wkDetailView() {
   ${p.exercises.length ? p.exercises.map(e => { let n = 0; return `<div class="wk-exd">
     <div class="wk-exh"><a class="exlink" href="${esc(exVideo(e))}" target="_blank" rel="noopener" aria-label="Vídeo de como fazer ${esc(e.name)}">${I.play}<span>${esc(e.name)}</span></a>${e.prAt && e.prAt >= iso(addDays(new Date(), -14)) ? '<span class="wk-pr">🏆 Recorde</span>' : ''}</div>
     <div class="wk-rest">${WK_IC.clock}<span>Timer de descanso: ${fmtRest(e.rest ?? 90)}</span></div>
+    ${wkFail(e.reps) ? `<div class="wk-rest wk-fail">🔥<span>Até a falha · recorde: ${e.prReps ? e.prReps + ' repetições' : 'ainda sem registro'}</span></div>` : ''}
     <div class="wk-tbl"><div class="wk-tr h"><span>SÉRIE</span><span>KG</span><span>FAIXA DE REPETIÇÕES</span></div>
     ${wkTargets(e).map(s => `<div class="wk-tr"><span class="${s.w ? 'wk-w' : ''}">${s.w ? 'W' : ++n}</span><span>${s.tkg || '—'}</span><span>${esc(s.treps || '—')}</span></div>`).join('')}</div>
   </div>`; }).join('') : '<div class="group"><div class="empty"><b>Sem exercícios</b>Toque em “Editar rotina” para adicionar.</div></div>'}
@@ -2151,17 +2157,19 @@ function wkActiveView() {
     <button class="btn primary wk-finish" data-act="wk-finish">Concluir</button></div>
   ${UI.wkPick ? `<div class="wk-pick"><span>Iniciar descanso agora</span><div class="chips">${REST_OPTS.filter(Boolean).map(s => `<button class="chip" data-act="wk-rest-go" data-s="${s}">${s < 60 ? s + 's' : fmtRest(s).replace(' 0s', '')}</button>`).join('')}</div></div>` : ''}
   <div class="wk-stats"><div><span>Duração</span><b id="wk-dur" class="acc">${fmtDur(Date.now() - a.start)}</b></div><div><span>Volume</span><b id="wk-vol">${fmtKg(st.vol)}</b></div><div><span>Séries</span><b id="wk-sets">${st.sets}</b></div></div>
-  ${a.ex.map((x, i) => { const prev = wkPrev(x.exId); let wi = 0, ni = 0; return `<section class="wk-ex">
+  ${a.ex.map((x, i) => { const prev = wkPrev(x.exId); let wi = 0, ni = 0; const fail = x.sets.some(s => !s.w && wkFail(s.treps)), pe = fail && wkPlan(a.planId)?.exercises.find(e => e.id === x.exId);
+    const last = prev.filter(p => !p.w).map(p => wkRepsNum(p.reps)).filter(Boolean); return `<section class="wk-ex">
     <div class="wk-exh"><a class="exlink" href="${esc(exVideo(x))}" target="_blank" rel="noopener" aria-label="Vídeo de como fazer ${esc(x.name)}">${I.play}<span>${esc(x.name)}</span></a><button class="x" data-act="wk-exdel" data-i="${i}" aria-label="Remover ${esc(x.name)} deste treino">${I.x}</button></div>
     <div class="wk-chips"><label class="wk-chip">${WK_IC.clock}<span>Descanso:</span><select data-wk="rest" data-i="${i}" aria-label="Tempo de descanso de ${esc(x.name)}">${REST_OPTS.concat(REST_OPTS.includes(x.rest) ? [] : [x.rest]).sort((p, q) => p - q).map(s => `<option value="${s}" ${s === x.rest ? 'selected' : ''}>${fmtRest(s)}</option>`).join('')}</select></label>
       <button class="wk-chip" data-act="wk-note" data-i="${i}">📝 Nota</button></div>
+    ${fail ? `<p class="wk-failtip">🔥 <b>Até a falha:</b> anote quantas repetições você fez em cada série.${last.length ? ` Última vez: ${last.join(', ')}.` : ''}${pe && pe.prReps ? ` Recorde: ${pe.prReps}.` : ''}</p>` : ''}
     ${x.showNote || x.note ? `<textarea class="inp wk-note" data-wk="note" data-i="${i}" rows="2" placeholder="Anote como foi: ajuste de banco, pegada, sensação…">${esc(x.note || '')}</textarea>` : ''}
     <div class="wk-grid wk-gh"><span>SÉRIE</span><span>ANTERIOR</span><span>KG</span><span>REPS</span><span aria-label="Feito">${WK_IC.check}</span></div>
     ${x.sets.map((s, j) => { const same = prev.filter(p => !!p.w === !!s.w), pv = same[s.w ? wi++ : ni++]; const num = s.w ? 'W' : ni; return `<div class="wk-grid wk-set${s.done ? ' done' : ''}">
       <button class="wk-n${s.w ? ' w' : ''}" data-act="wk-type" data-i="${i}" data-j="${j}" aria-label="Série ${num}. Toque para alternar aquecimento">${num}</button>
-      <span class="wk-prev">${pv ? `${esc(pv.kg || 0)}kg x ${esc(pv.reps || 0)}` : '—'}</span>
+      <span class="wk-prev">${pv ? wkPrevTxt(pv) : '—'}${s.done && wkFail(s.treps) && pv && wkRepsNum(s.reps) && wkRepsNum(pv.reps) && wkRepsNum(s.reps) !== wkRepsNum(pv.reps) ? (d => ` <b class="wk-diff${d > 0 ? ' up' : ''}">${d > 0 ? '+' : ''}${d}</b>`)(wkRepsNum(s.reps) - wkRepsNum(pv.reps)) : ''}</span>
       <input class="inp" inputmode="decimal" data-wk="kg" data-i="${i}" data-j="${j}" value="${esc(s.kg)}" placeholder="${esc(s.tkg || (pv && pv.kg) || '0')}" aria-label="Carga em kg">
-      <input class="inp" inputmode="numeric" data-wk="reps" data-i="${i}" data-j="${j}" value="${esc(s.reps)}" placeholder="${esc(s.treps || (pv && pv.reps) || '0')}" aria-label="Repetições">
+      <input class="inp" inputmode="numeric" data-wk="reps" data-i="${i}" data-j="${j}" value="${esc(s.reps)}" placeholder="${esc(wkFail(s.treps) ? (pv && wkRepsNum(pv.reps) ? String(wkRepsNum(pv.reps)) : 'máx') : (s.treps || (pv && pv.reps) || '0'))}" aria-label="${wkFail(s.treps) ? 'Repetições feitas até a falha' : 'Repetições'}">
       <button class="wk-ck" data-act="wk-check" data-i="${i}" data-j="${j}" aria-pressed="${s.done ? 'true' : 'false'}" aria-label="${s.done ? 'Desmarcar série' : 'Marcar série como feita'}">${WK_IC.check}</button></div>`; }).join('')}
     <div class="wk-setbtns"><button class="wk-add" data-act="wk-addset" data-i="${i}">+ Adicionar série</button>${x.sets.length > 1 ? `<button class="wk-add sm" data-act="wk-delset" data-i="${i}" aria-label="Remover última série">− Série</button>` : ''}</div>
   </section>`; }).join('')}
@@ -3118,6 +3126,7 @@ Tempo: ${t.tempo} · Semana ${t.w} — ${S.career.foco[t.w] || ''}` }); persist(
   'wk-rest-skip': () => { const a = S.workouts.active; if (a) { a.restEnd = 0; persist('workouts'); } wkTick(); },
   'wk-check': el => {
     const a = S.workouts.active; if (!a) return; const x = a.ex[+el.dataset.i], s = x && x.sets[+el.dataset.j]; if (!s) return;
+    if (!s.done && wkFail(s.treps) && !wkRepsNum(s.reps)) { toast('Até a falha: digite quantas repetições você fez'); $(`input[data-wk="reps"][data-i="${el.dataset.i}"][data-j="${el.dataset.j}"]`)?.focus(); return; }
     s.done = !s.done;
     if (s.done) {
       if (!String(s.kg).trim()) s.kg = s.tkg || '';
@@ -3145,6 +3154,8 @@ Tempo: ${t.tempo} · Semana ${t.w} — ${S.career.foco[t.w] || ''}` }); persist(
       const pe = p.exercises.find(e => e.id === x.exId); if (!pe) return;
       const mx = Math.max(0, ...x.sets.filter(s => !s.w).map(s => wkNum(s.kg))); const base = pe.pr ?? wkNum(pe.load);
       if (mx > base) { if (base > 0) { pe.prs = (pe.prs || 0) + 1; pe.prAt = today(); recs.push(`${pe.name} ${mx.toLocaleString('pt-BR')} kg`); } pe.pr = mx; }
+      if (wkFail(pe.reps)) { const mr = Math.max(0, ...x.sets.filter(s => !s.w).map(s => wkRepsNum(s.reps))), br = pe.prReps || 0;
+        if (mr > br) { if (br > 0) { pe.prs = (pe.prs || 0) + 1; pe.prAt = today(); recs.push(`${pe.name} ${mr} repetições`); } pe.prReps = mr; } }
     });
     const min = Math.max(1, Math.round((Date.now() - a.start) / 60000));
     S.workouts.log.push({ id: newId(), planId: a.planId || '', name: a.name, date: today(), end: new Date().toTimeString().slice(0, 5), min, vol: st.vol, sets: st.sets, ex });
